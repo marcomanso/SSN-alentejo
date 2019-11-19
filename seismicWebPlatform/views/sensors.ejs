@@ -1,0 +1,51 @@
+<% include top %>
+
+<!--
+<div class="input-group">
+  <input type="text" class="form-control" placeholder="Search">
+  <span class="input-group-btn">
+    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+  </span>
+</div>
+<br />
+-->
+
+<!--
+<form name='sensor_search' action='/sensors' method='get'>
+  <input type='text' name='sensor_name' />
+  <input type='submit' value='Submit' />
+</form>
+-->
+
+  <p></p>
+    <h3>Sensors List 
+      <a class="btn btn-primary float-right" href='/sensors/add'>Add New Sensor</a></h3>
+  
+    <p>Below are sensors registered in this website. Click to access its details.</p>
+  
+  <% if (sensorlist.length > 0) {       
+    for (var sensor of sensorlist) { %>  
+
+  <!-- <a href="/sensors/view?key=<%= sensor.sensorkey %>" class="list-group-item"> -->
+
+
+  <div class="card">
+    <div class="card-header">
+      <a href="/sensors/view/<%= sensor.sensorkey %>">
+        <h6><%= sensor.name %>
+        <span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span></h6>
+      </a>
+    </div>
+      <div class="card-body">
+        <p class="card-text"><%= sensor.description %></p>
+        <a href="/sensors/live/<%= sensor.sensorkey %>" class="card-link btn btn-danger">LIVE Data</a>
+        <a href="/sensors/datafiles/<%= sensor.sensorkey %>" class="card-link btn btn-primary">Datafiles</a>
+      </div>
+    </div>
+
+
+  <% } 
+  } %>
+
+  
+<% include bottom %>

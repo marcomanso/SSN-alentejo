@@ -1,0 +1,47 @@
+<% include top %>
+
+<div id="mapid" class="container-fluid"></div>
+
+<script src="/javascripts/mapSensors.js"></script>
+
+<script>
+  
+  document.getElementById("mapid").width =document.documentElement.clientWidth;
+  document.getElementById("mapid").height=document.documentElement.clientHeight;
+  
+  //var mymap = L.map('mapid').setView([38.5714, -7.9135], 13);
+  var mymap = L.map('mapid');
+
+  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    minZoom: 0,
+    maxZoom: 18,
+    ext: 'png'
+  })
+  .addTo(mymap);
+  
+  <%
+  if (sensorlist) {
+    sensorlist.forEach(function(sensor) {
+  %>
+        addMarker("<%= sensor.sensorkey %>", 
+                  "<%= sensor.name %>", 
+                  "<%= sensor.model %>", 
+                  <%= sensor.latitude %>, 
+                  <%= sensor.longitude %>);
+  <% 
+    }); //sensorlist.forEach
+    if (sensorlist.length!=0)
+  %>
+      mymap.setView(new L.LatLng(
+      <%= sensorlist[sensorlist.length-1].latitude %>, 
+      <%= sensorlist[sensorlist.length-1].longitude %>), 13);
+  <%
+  } // if (sensorlist)
+  %>
+  
+</script>
+
+
+<% include bottom %>

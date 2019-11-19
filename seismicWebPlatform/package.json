@@ -1,0 +1,36 @@
+{
+  "name": "seismic",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "sqlite3-setup": "sqlite3 db/db.sqlite3 --init models/schema-sqlite3.sql",
+    "socket_server": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' node ./server/serverSocketListener",
+    "socket_server_multi": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' node ./server/serverSocketListenerMultiCore",
+    "server_cassandra": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' CASSANDRA_NODE='localhost' node ./server/serverCassandraMultiCore",
+    "start": "PORT=3000 REQUEST_LOG_FILE='log/.' REQUEST_LOG_FORMAT=common SENSOR_DATA_FILE_DIR='data' SQLITE_FILE=db/db.sqlite3 node ./bin/www",
+    "debug": "DEBUG=seismic.* PORT=3000 REQUEST_LOG_FILE='log/.' REQUEST_LOG_FORMAT=common SENSOR_DATA_FILE_DIR='data' SQLITE_FILE=db/db.sqlite3 node ./bin/www"
+  },
+  "dependencies": {
+    "jquery": "^1.9.1",
+    "popper.js": "^1.14.7",
+    "bootstrap": "^4.3.1",
+    "body-parser": "~1.17.1",
+    "cassandra-driver": "3.5.0",
+    "cheerio": "^1.0.0-rc.3",
+    "cookie-parser": "^1.4.4",
+    "debug": "~2.6.3",
+    "ejs": "^2.5.9",
+    "express": "~4.15.2",
+    "file-stream-rotator": "^0.2.1",
+    "htmlparser": "^1.7.7",
+    "morgan": "~1.8.1",
+    "passport.socketio": "^3.7.0",
+    "request": "^2.88.0",
+    "serve-favicon": "~2.4.2",
+    "socket.io": "^2.3.0",
+    "sqlite3": "^4.1.0",
+    "tail": "^1.4.0",
+    "tail-stream": "^0.3.4",
+    "websocket": "^1.0.30"
+  }
+}

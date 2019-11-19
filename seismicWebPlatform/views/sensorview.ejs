@@ -1,0 +1,49 @@
+<% include top %>
+
+<p></p>
+
+<div class="card">
+  <h5 class="card-header"><%= sensor.name %>
+    <span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span></h5>
+  <div class="card-body">
+    <p class="card-text"><%= sensor.description %></p>
+    <p><strong>Position (Lat, Lon, Elev):</strong> (<%= sensor.latitude %>, <%= sensor.longitude %>, <%= sensor.elevation %>)</p>
+    <p><strong>Model: </strong><a href="<%= sensor.model_URL %>" target="_blank"><%= sensor.model %></a></p>
+    <p><strong>Sensor URL: </strong><a target="_blank" href="<%= sensor.sensor_URL %>/sensors/view/<%= sensor.sensorkey %>"><%= sensor.sensor_URL %> <span class="glyphicon glyphicon-new-window"></span></a></p>
+    <p><strong>Sensor WS: </strong><%= sensor.data_URL %></p>
+    <p>
+      <a class="btn btn-danger" href="/sensors/live/<%= sensor.sensorkey %>">LIVE data</a> 
+      <a class="btn btn-primary" href="/sensors/datafiles/<%= sensor.sensorkey %>">Datafiles</a> 
+    </p>
+    <div id="mapidsmall"></div>
+  </div>
+  <div class="card-footer">
+    <div class="btn-group col-12" role="group" aria-label="Delete/Edit">
+      <a type="button" class="btn btn-danger" href="/sensors/destroy/<%= sensor.sensorkey %>">Delete</a>
+      <a type="button" class="btn btn-primary" href="/sensors/edit/<%= sensor.sensorkey %>">Edit</a>
+    </div>
+  </div>
+
+</div>
+
+    <script>
+      var mymap = L.map('mapidsmall').setView([<%= sensor.latitude %>, <%= sensor.longitude %>], 18);
+                                               
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(mymap);
+
+      var marker = L.marker(
+        [<%= sensor.latitude %>, <%= sensor.longitude %>], 
+        { title: '<%= sensor.title %>'})
+        .addTo(mymap);
+
+      marker.bindPopup(
+         "<span STYLE='font-size: 12pt'><b><%= sensor.name %></b></span><br/>\
+         <b>Location:</b> LatLng (<%= sensor.latitude %>, <%= sensor.longitude %>)<br/>\
+         <b>Model: </b><%= sensor.model %><br/>");
+      marker.openPopup();
+
+    </script>
+    
+<% include bottom %>

@@ -1,0 +1,227 @@
+<% include top %>
+
+<p></p>
+<h5>File data for <a href="/sensors/view/<%= sensor.sensorkey %>"><%= sensor.name %></a>
+<span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span></h5>
+
+<div class="sensorData">
+  <div class="connectionLabel">Connection Status: </div>
+  <div id="connect_status" class="connectionStatus">File read.</div>
+  <div id="message" class="messageValue"></div>
+
+  <div id="sensor" class="sensorValueID"></div>
+  <div id="timestamp" class="sensorValueTime"></div>
+  <div id="valueX" class="sensorValueX"></div>
+  <div id="valueY" class="sensorValueY"></div>
+  <div id="valueZ" class="sensorValueZ"></div>
+</div>
+
+<div id="graphDiv" class="chart">
+  <!--  <canvas id="canvas" width="500" height="500"></canvas> -->
+  <canvas id="canvas"></canvas>
+</div> <!-- graphDiv -->
+
+<div id="debugC" class="debug"></div>
+
+<script>
+
+  // Data samples are stored here
+  var dataSetX = [];
+  var dataSetY = [];
+  var dataSetZ = [];
+
+  var sensorPeriodMs = 5 ; //TODO:  HAS TO BE SET AUTOMATICALLY
+
+  var MAX_Y_AXIS =2.0;
+  //var MAX_Y_AXIS =16384.0;
+  //var MAX_Y_AXIS =8192.0; 
+  //var MAX_Y_AXIS = 8700.0;
+  //var MAX_Y_AXIS =4096.0;
+
+  //DRAW CHART IN SEVERAL ROWS? NO = 1; YES = how many?
+  var nbr_rows = 8;
+  var current_row = 0; //starts at row 0 !!
+  var current_x = 0;
+  
+  //var height_factor = 1;
+
+  var dataStore = [];
+  var avgValue = [];
+  var BITSHIFT = 2; //bitshift
+  var NBR_SAMPLES = 16; //mean calculated by bitshifting 2 bits
+
+  //var MAX_TIME_OF_ROW = 3600.0;  // 1 hour 
+  //var MAX_TIME_OF_ROW = 1800.0;  // 1/2 hour 
+  var MAX_TIME_OF_ROW = 900.0;  // 1/4 hour
+  //var MAX_TIME_OF_ROW = 225.0;  // 1/16 hour 
+  var timeFirst = 0.0;
+  var max_width = 0.0;
+  var max_height = 0.0;
+  
+  ////
+  //
+  document.addEventListener( 'DOMContentLoaded', function () {
+
+    document.getElementById("canvas").width =document.documentElement.clientWidth;
+    document.getElementById("canvas").height=document.documentElement.clientHeight;
+
+    readFile();
+
+  });  
+  
+  function readFile() {
+
+    var FILENAME = "<%= dir + '/' + filename %>";
+
+    // parse file 
+    var newLine = "";
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        var str = this.responseText;
+        var index=0;
+        var prevIndex=0;
+        while ( (index=str.indexOf("\n", prevIndex+1))!=-1 ) {
+          dataStore.push(str.slice(prevIndex,index));
+          //onNewData(str.slice(prevIndex,index));
+          prevIndex = index;
+        }
+        document.getElementById("message").innerHTML = "Parsed: "+FILENAME+ " ("+this.readyState+","+this.status+")";
+      }
+      else {
+        if (this.status == 200) {
+          document.getElementById("message").innerHTML = FILENAME + " ("+this.readyState+","+this.status+")";
+        } else if (this.status== 400) {
+          document.getElementById("message").innerHTML = "SUCCESS reading "+FILENAME + " (" +this.readyState+","+this.status+")";
+        } else {
+          document.getElementById("message").innerHTML = "Error reading "+FILENAME + " (" +this.readyState+","+this.status+")";
+        }
+      }
+    };
+    xhttp.open("GET", FILENAME, true);
+    xhttp.send();
+
+    //create timer - call onNewData
+    setInterval(function(){ 
+      for (var i=200; i--;) {
+        if (dataStore.length==0) break;
+        onNewData(dataStore.shift());
+      }
+      //if (dataStore.length!=0) onNewData(dataStore.shift()); 
+    }, 1);    
+  }
+  
+  function onNewData (data) {
+
+    // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_nano": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
+    
+    var sData = JSON.parse(data);
+    
+    //if (sData.length == 8) {
+
+    var timeData   = parseInt(sData.time_epoch_sec,10) + parseInt(sData.time_nano,10) / 1000000.0; //convert time from micro_s to seconds
+
+      //initialise first time?
+      if (timeFirst===0) {
+        timeFirst = timeData;
+      }
+
+      drawData(timeData, sData);
+
+      document.getElementById("sensor").innerHTML = "Sensor: "+sData.sensorid;
+      document.getElementById("timestamp").innerHTML = "Date_Time="+sData.time_epoch_sec+"."+sData.time_nano;
+
+      document.getElementById("valueX").innerHTML = "x="+sData.accel_x;
+      document.getElementById("valueY").innerHTML = "y="+sData.accel_y;
+      document.getElementById("valueZ").innerHTML = "z="+sData.accel_x;
+
+    //}
+
+  };
+
+  function cleanSensorData() {
+    document.getElementById("sensor").innerHTML = "";
+    document.getElementById("timestamp").innerHTML = "";
+    document.getElementById("valueX").innerHTML = "";
+    document.getElementById("valueY").innerHTML = "";
+    document.getElementById("valueZ").innerHTML = "";
+  };
+  
+  function boundValueToMax(value, max_value) {
+    if (value>0 && value>max_value)
+      value=max_value-1;
+    else if (value<0 && value<-max_value)
+      value=-max_value+1;
+    return value;
+  }
+
+  function drawData(timeData, data) {
+
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+    //calculate Y range (depending on row)
+
+    var max_width=canvas.width;
+    var max_height=canvas.height / nbr_rows;	
+
+    var y_offset = max_height * current_row;
+    
+    //var y_offset = 0;
+    var current_x = (max_width/MAX_TIME_OF_ROW)*(timeData-timeFirst);
+
+    //CLEAR
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(current_x, y_offset, 1, max_height);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(current_x+1, y_offset, 1, max_height);
+    
+    // Draw axis
+    ctx.fillStyle = "#bbbbbb";
+    ctx.fillRect(current_x, 0+y_offset, 1, 1);
+    ctx.fillRect(current_x, max_height*1/4+y_offset, 1, 1);
+    ctx.fillRect(current_x, max_height/2+y_offset, 1, 1);
+    ctx.fillRect(current_x, max_height*3/4+y_offset, 1, 1);
+    ctx.fillRect(current_x, max_height+y_offset-1, 1, 1);
+    
+    // Draw samples
+    // accel X
+    ctx.fillStyle = "#FF0000";
+    var yy_ax = max_height/2 * (1 - boundValueToMax(data.accel_x,MAX_Y_AXIS)/MAX_Y_AXIS) + y_offset;
+    ctx.fillRect(current_x, yy_ax, 1, 1);
+
+    ctx.fillStyle = "#00FF00";
+    var yy_ay = max_height/2 * (1 - boundValueToMax(data.accel_y,MAX_Y_AXIS)/MAX_Y_AXIS) + y_offset;
+    ctx.fillRect(current_x, yy_ay, 1, 1);
+
+    ctx.fillStyle = "#0000FF";
+    var yy_az = max_height/2 * (1 - boundValueToMax(data.accel_z,MAX_Y_AXIS)/MAX_Y_AXIS) + y_offset;
+    ctx.fillRect(current_x, yy_az, 1, 1);
+
+    //current_x++;
+
+    if (current_x>max_width-1) {
+    //if (current_x>max_width) {
+
+      ctx.fillStyle = "#000000";
+      ctx.font="14px Arial";
+      ctx.textAlign="right";
+      ctx.fillText("time (epoch): "+data.time_epoch_sec,
+                   max_width, 
+                   y_offset+15);
+
+      timeFirst = timeData;
+      
+      //current_x = 0;
+      
+      //increase row
+      current_row++; 
+      if (current_row>=nbr_rows) current_row=0;
+    }
+
+  };
+  
+  
+</script>
+
+<% include bottom %>
