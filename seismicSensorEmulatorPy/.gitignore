@@ -1,0 +1,11 @@
+# Keys
+*.pem
+*.pub
+
+#Logs
+log
+logs
+*.log
+
+#Databases
+*db.sqlite3
