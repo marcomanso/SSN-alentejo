@@ -11,6 +11,7 @@ var error = require('debug')('sensors:error');
 var index = require('./routes/index');
 var sensors = require('./routes/sensors');
 var users = require('./routes/users');
+var certificates = require('./routes/certificates');
 
 var app = express();
 
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/sensors', sensors);
 app.use('/users', users);
+app.use('/certificates', certificates);
 
 //bootstrap
 app.use('/vendor/bootstrap', express.static(

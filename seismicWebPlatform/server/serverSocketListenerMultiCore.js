@@ -7,17 +7,23 @@ var http = require('http'),
     //Tail = require('tail').Tail,
     Tail = require('tail-stream'),
     url = require('url'),
+    nodeRSA = require('node-rsa'),
     WebSocketServer = require('websocket').server;
+
+var rsa = new nodeRSA();
+//rsa.setOptions({signingScheme: 'pss-sha1'});
 
 http.globalAgent.maxSockets = Infinity;
 
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
 
+var certificates = require('../models/certificates-sqlite')
+
 var utils = require('../utils/utils.js');
 var debug = require('debug')('seismic:server');
 
-
+var MESSAGE_AUTH = process.env.MESSAGE_AUTH || "sensor"
 
 //
 // FILES AND LOGS
@@ -105,6 +111,12 @@ function streamFile(filename, clientWS) {
 }
 
 
+function rejectRequest(req) {
+  writeLogAndConsole("log_", "wsserver.on request - from sensor " + req.remoteAddress + " connection rejected ");
+  req.reject();
+}
+
+
 if (cluster.isMaster) {
     // Fork workers.
     for (var i = 0; i < numCPUs; i++) {
@@ -139,32 +151,8 @@ wsserver.mount({ httpServer: server,
   writeLogAndConsole("log_","Server started at "+utils.getDateTime_InYYYYMMDD_HHMMSS(new Date()));
 
   wsserver.on('request', function(req) {
-
-    if (req.requestedProtocols[0] === "sensor") {
-
-      writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols);    
-
-      //var connection = req.accept('arduino', req.origin);
-      var connection = req.accept(req.requestedProtocols[0], req.origin);
-
-      //get sensor ID
-      var sensorID = req.resource;
-      connection.on('message', function(message) {
-        if (message.type === 'utf8') {
-          writeLog(sensorID, message.utf8Data);
-        }
-        else {
-          console.log("Discarded message from "+sensorID);
-        }
-      });
-      connection.on('close', function(reasonCode, description) {
-        writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
-      });
-      connection.on('error', function(err) {
-        writeLogAndConsole("log_", "connection.on error "+err);
-      });
-    }
-    else if (req.requestedProtocols[0] === "client") {
+    
+    if (req.requestedProtocols[0] === "client") {
 
       //get requested sensor ID
       var sensorID = req.resource;
@@ -198,10 +186,10 @@ wsserver.mount({ httpServer: server,
             //if different, then we should update the sensor
             //file to get new data
             if (filenameSensor !== newFile) {
-              
+
               //if (tailfd) tailfd.unwatch();
               //if (tailfd) tailfd.close();
-              
+
               filenameSensor = newFile;
               tailfd = streamFile(filenameSensor, connectionClient);
 
@@ -222,9 +210,88 @@ wsserver.mount({ httpServer: server,
       }
 
     }
+    
+    // authenticate sensor
+
+    else if (req.requestedProtocols[0] === "sensor") {
+
+      //get id and signature
+      sensorkey=req.httpRequest.headers['user-agent'];
+      signature_b64=req.httpRequest.headers['x-custom'];
+      writeLogAndConsole("log_","Received connection request from sensor="+sensorkey);
+      //writeLogAndConsole("log_","sig size: "+signature_b64.length+"=> "+signature_b64);
+          
+      var isActive = certificates.isActive(sensorkey)
+      .then(status => {
+       
+        if (isActive==1) {          
+          //writeLogAndConsole("log_","certificates.isActive on "+sensorkey+" gave "+status);
+          writeLogAndConsole("log_","Certificate exists and is active.")
+
+          sensor_pub = certificates.readPubKey(sensorkey)
+          .then(key => {
+            //writeLogAndConsole("log_", "certificates.readPubKey on "+sensorkey+" gave "+key);
+
+            sensor_pubkey = rsa.importKey(key, 'pkcs8-public-pem');
+            rsa.setOptions({signingScheme: 'sha1'});
+
+            //writeLogAndConsole("log_","rsa: "+sensor_pubkey);
+
+            result=rsa.verify(MESSAGE_AUTH, signature_b64, 'utf8', 'base64')
+
+            writeLogAndConsole("log_","sensor "+sensorkey+" certificate verification is "+result);      
+
+            if (result) {
+              //accept connection
+              writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
+
+              //var connection = req.accept('arduino', req.origin);
+              var connection = req.accept(req.requestedProtocols[0], req.origin);
+
+              //get sensor ID
+              var sensorID = req.resource;
+              connection.on('message', function(message) {
+                if (message.type === 'utf8') {
+                  writeLog(sensorID, message.utf8Data);
+                }
+                else {
+                  console.log("Discarded message from "+sensorID);
+                }
+              });
+              connection.on('close', function(reasonCode, description) {
+                writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
+              });
+              connection.on('error', function(err) {
+                writeLogAndConsole("log_", "connection.on error "+err);
+              });
+
+            }
+            else {
+              rejectRequest(req)
+            }
+          })
+          .catch(err => { 
+            writeLogAndConsole("log_","Error certificates.readPubKey on "+sensorkey);
+            rejectRequest(req);
+          });
+        }
+        else {
+          writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
+          rejectRequest(req)
+        }
+      })
+      .catch(err => { 
+        writeLogAndConsole("log_","Error certificates.isActive on "+sensorkey);
+        rejectRequest(req);
+      });
+            
+    }
     else {
+      rejectRequest(req);
+      /*
       writeLogAndConsole("log_", "wsserver.on request - from sensor " + req.remoteAddress + " rejected protocol "+req.requestedProtocols);
       req.reject();
+      */
     }
 
   });

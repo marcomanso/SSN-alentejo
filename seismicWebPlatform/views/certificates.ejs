@@ -1,0 +1,26 @@
+<% include top %>
+
+<p></p>
+<h3>Sensor Certificates List</h3>
+
+<p>List of public certificates for sensors.</p>
+
+<% if (certificateslist.length > 0) {       
+  for (var certificate of certificateslist) { %>  
+
+<div class="card">
+  <div class="card-header">
+    <h6><%= certificate[0] %>
+    <span class="badge badge-pill badge-dark">
+      Status: <%= certificate[2] %></span></h6>
+</div>
+  <div class="card-body">
+    <p class="card-text"><%= certificate[1] %></p>
+  </div>
+</div>
+
+<% } 
+} %>
+
+
+<% include bottom %>

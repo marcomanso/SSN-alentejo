@@ -1,4 +1,4 @@
-CIRCLE_RADIUS = 1;
+CIRCLE_RADIUS = 5;
 
 var sensorMarkerMap = {};
 

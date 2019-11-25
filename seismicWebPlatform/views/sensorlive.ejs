@@ -81,8 +81,13 @@
       
       // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_nano": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
       
-      var sData = JSON.parse(event.data);
-      
+      var sData;
+      try {
+        sData= JSON.parse(event.data);
+      }
+      catch (e) {
+        return;
+      }      
       
       //if (sData.length == 8) {
         

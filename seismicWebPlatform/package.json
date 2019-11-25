@@ -5,10 +5,10 @@
   "scripts": {
     "sqlite3-setup": "sqlite3 db/db.sqlite3 --init models/schema-sqlite3.sql",
     "socket_server": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' node ./server/serverSocketListener",
-    "socket_server_multi": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' node ./server/serverSocketListenerMultiCore",
+    "socket_server_multi": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' MESSAGE_AUTH='sensor' SENSOR_SQLITE_FILE=./sensordb/sensorDB.sqlite3 node ./server/serverSocketListenerMultiCore",
     "server_cassandra": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' CASSANDRA_NODE='localhost' node ./server/serverCassandraMultiCore",
-    "start": "PORT=3000 REQUEST_LOG_FILE='log/.' REQUEST_LOG_FORMAT=common SENSOR_DATA_FILE_DIR='data' SQLITE_FILE=db/db.sqlite3 node ./bin/www",
-    "debug": "DEBUG=seismic.* PORT=3000 REQUEST_LOG_FILE='log/.' REQUEST_LOG_FORMAT=common SENSOR_DATA_FILE_DIR='data' SQLITE_FILE=db/db.sqlite3 node ./bin/www"
+    "start": "PORT=3000 REQUEST_LOG_FILE='log/.' REQUEST_LOG_FORMAT=common SENSOR_DATA_FILE_DIR='data' SENSOR_SQLITE_FILE=sensordb/sensorDB.sqlite3 SQLITE_FILE=db/db.sqlite3 node ./bin/www",
+    "debug": "DEBUG=seismic.* PORT=3000 REQUEST_LOG_FILE='log/.' REQUEST_LOG_FORMAT=common SENSOR_DATA_FILE_DIR='data' SENSOR_SQLITE_FILE=sensordb/sensorDB.sqlite3 SQLITE_FILE=db/db.sqlite3 node ./bin/www"
   },
   "dependencies": {
     "jquery": "^1.9.1",
@@ -31,6 +31,7 @@
     "sqlite3": "^4.1.0",
     "tail": "^1.4.0",
     "tail-stream": "^0.3.4",
+    "node-rsa": "^1.0.6",
     "websocket": "^1.0.30"
   }
 }
