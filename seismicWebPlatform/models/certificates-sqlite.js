@@ -37,7 +37,7 @@ exports.readPubKey = function(sensorkey) {
           reject(err);
         else {
           var key;
-          if ( typeof row.status !== 'undefined') {
+          if ( typeof row !== 'undefined') {
             key=row.certificate;
             debug("Sensor="+row.sensorkey+" Certificate="+key);
           }
@@ -58,7 +58,7 @@ exports.isActive = function(sensorkey) {
           reject(err);
         else {
           var status=0;
-          if ( typeof row.status !== 'undefined') {
+          if ( typeof row !== 'undefined') {
             status=row.status;
             debug("Sensor="+row.sensorkey+" Status="+status);
           }
