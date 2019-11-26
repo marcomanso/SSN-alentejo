@@ -221,10 +221,10 @@ wsserver.mount({ httpServer: server,
       writeLogAndConsole("log_","Received connection request from sensor="+sensorkey);
       //writeLogAndConsole("log_","sig size: "+signature_b64.length+"=> "+signature_b64);
           
-      var isActive = certificates.isActive(sensorkey)
+      certificates.isActive(sensorkey)
       .then(status => {
-       
-        if (isActive==1) {          
+        
+        if (status==1) {          
           //writeLogAndConsole("log_","certificates.isActive on "+sensorkey+" gave "+status);
           writeLogAndConsole("log_","Certificate exists and is active.")
 
