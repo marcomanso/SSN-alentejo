@@ -209,27 +209,24 @@ wsserver.mount({ httpServer: server,
 
       }
 
-    }
+    } //if client
     
-    // authenticate sensor
-
     else if (req.requestedProtocols[0] === "sensor") {
 
       //get id and signature
       sensorkey=req.httpRequest.headers['user-agent'];
-      signature_b64=req.httpRequest.headers['x-custom'];
+      msg_signed_b64=req.httpRequest.headers['x-custom'];
       writeLogAndConsole("log_","Received connection request from sensor="+sensorkey);
-      //writeLogAndConsole("log_","sig size: "+signature_b64.length+"=> "+signature_b64);
-          
+
       certificates.isActive(sensorkey)
-      .then(status => {
-        
-        if (status==1) {          
+        .then(status => {
+
+        if (status==1) {
           //writeLogAndConsole("log_","certificates.isActive on "+sensorkey+" gave "+status);
           writeLogAndConsole("log_","Certificate exists and is active.")
 
           sensor_pub = certificates.readPubKey(sensorkey)
-          .then(key => {
+            .then(key => {
             //writeLogAndConsole("log_", "certificates.readPubKey on "+sensorkey+" gave "+key);
 
             sensor_pubkey = rsa.importKey(key, 'pkcs8-public-pem');
@@ -237,7 +234,7 @@ wsserver.mount({ httpServer: server,
 
             //writeLogAndConsole("log_","rsa: "+sensor_pubkey);
 
-            result=rsa.verify(MESSAGE_AUTH, signature_b64, 'utf8', 'base64')
+            result=rsa.verify(message, msg_signed_b64, 'utf8', 'base64')
 
             writeLogAndConsole("log_","sensor "+sensorkey+" certificate verification is "+result);      
 
@@ -266,26 +263,24 @@ wsserver.mount({ httpServer: server,
               });
 
             }
-            else {
-              rejectRequest(req)
-            }
-          })
-          .catch(err => { 
-            writeLogAndConsole("log_","Error certificates.readPubKey on "+sensorkey);
-            rejectRequest(req);
+            
           });
-        }
+        }//if status (is Active)
         else {
           writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
           rejectRequest(req)
         }
-      })
-      .catch(err => { 
+      }); //certificates.isActive.then
+
+
+      }
+      catch(err) {
         writeLogAndConsole("log_","Error certificates.isActive on "+sensorkey);
         rejectRequest(req);
-      });
-            
-    }
+      };
+    
+    }// if sensor
+              
     else {
       rejectRequest(req);
       /*

@@ -74,8 +74,11 @@ exports.read = function(sensorkey) {
         if (err) 
           reject(err);
         else {
-          var sensor = new Sensor(row.sensorkey, row.name, row.description, row.lat, row.lon, row.elevation, row.model, row.model_URL, row.timecreated, row.sensor_URL, row.data_URL);
-          debug('READ '+ util.inspect(sensor));
+          var sensor;
+          if ( typeof row !== 'undefined') {
+            var sensor = new Sensor(row.sensorkey, row.name, row.description, row.lat, row.lon, row.elevation, row.model, row.model_URL, row.timecreated, row.sensor_URL, row.data_URL);
+            debug('READ '+ util.inspect(sensor));
+          }
           resolve(sensor);
         }
       }); 

@@ -76,6 +76,9 @@
     // parse file 
     var newLine = "";
     var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", FILENAME, true);
+    //xhttp.open("GET", FILENAME, false);
+    //xhttp.responseType = 'arraybuffer';
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         var str = this.responseText;
@@ -98,9 +101,25 @@
         }
       }
     };
-    xhttp.open("GET", FILENAME, true);
-    xhttp.send();
-
+    xhttp.onerror = function () {
+      document.getElementById("message").innerHTML = "ERROR parsing "+FILENAME+" ("+this.readyState+","+this.status+")";
+      console.log("error....");
+    };
+    xhttp.onload = function() {
+      document.getElementById("message").innerHTML = "LOADED  "+FILENAME+" ("+this.readyState+","+this.status+")";
+      //console.log("request onload status"+xhttp.status+" response: "+xhttp.response);
+      
+      //var sensorData = xhttp.response;
+      
+      //
+            
+    };
+    xhttp.onprogress = function(event) {
+      document.getElementById("message").innerHTML = "LOADING  "+FILENAME+" ("+event.loaded+" of "+event.total+")";
+      //console.log("request onprogress: loaded "+event.loaded+" bytes of total "+event.total+" bytes");
+    }
+    xhttp.send();    
+    
     //create timer - call onNewData
     setInterval(function(){ 
       for (var i=200; i--;) {
@@ -109,6 +128,7 @@
       }
       //if (dataStore.length!=0) onNewData(dataStore.shift()); 
     }, 1);    
+    
   }
   
   function onNewData (data) {
