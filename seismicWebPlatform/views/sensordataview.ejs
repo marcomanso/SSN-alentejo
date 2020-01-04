@@ -107,12 +107,7 @@
     };
     xhttp.onload = function() {
       document.getElementById("message").innerHTML = "LOADED  "+FILENAME+" ("+this.readyState+","+this.status+")";
-      //console.log("request onload status"+xhttp.status+" response: "+xhttp.response);
-      
-      //var sensorData = xhttp.response;
-      
-      //
-            
+      //console.log("request onload status"+xhttp.status+" response: "+xhttp.response);    
     };
     xhttp.onprogress = function(event) {
       document.getElementById("message").innerHTML = "LOADING  "+FILENAME+" ("+event.loaded+" of "+event.total+")";
@@ -148,7 +143,7 @@
 
       drawData(timeData, sData);
 
-      document.getElementById("sensor").innerHTML = "Sensor: "+sData.sensorID;
+      document.getElementById("sensor").innerHTML = "Sensor: "+sData.sensorid;
       document.getElementById("timestamp").innerHTML = "Date_Time="+sData.time_epoch_sec+"."+sData.time_nano;
 
       document.getElementById("valueX").innerHTML = "x="+sData.accel_x;

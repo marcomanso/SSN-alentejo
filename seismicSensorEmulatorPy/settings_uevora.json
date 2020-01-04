@@ -2,7 +2,5 @@
   "host": "193.137.179.141",
   "rest_port": "3000",
   "sensor_data_port": "3030",
-  "protocol": "sensor",
-  "loginSuffix" : "rest-auth/login/",
-  "userDataSuffix" : "user/data"
+  "protocol": "sensor"
 }

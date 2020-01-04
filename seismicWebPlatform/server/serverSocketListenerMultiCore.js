@@ -8,10 +8,11 @@ var http = require('http'),
     Tail = require('tail-stream'),
     url = require('url'),
     nodeRSA = require('node-rsa'),
+    //crypto = require('crypto');
     WebSocketServer = require('websocket').server;
 
 var rsa = new nodeRSA();
-//rsa.setOptions({signingScheme: 'pss-sha1'});
+rsa.setOptions({signingScheme: 'pss-sha1'});
 
 http.globalAgent.maxSockets = Infinity;
 
@@ -126,6 +127,7 @@ if (cluster.isMaster) {
         console.log('worker ' + worker.process.pid + ' died');
         // cluster.fork(); //replace worker?
     });
+  
 } else { 
 
   var server = http.createServer( function(req, res) {
@@ -226,15 +228,18 @@ wsserver.mount({ httpServer: server,
           writeLogAndConsole("log_","Certificate exists and is active.")
 
           sensor_pub = certificates.readPubKey(sensorkey)
-            .then(key => {
+          .then(key => {
+          
             //writeLogAndConsole("log_", "certificates.readPubKey on "+sensorkey+" gave "+key);
 
+            //sensor_pubkey = crypto.createPublicKey(key)
+            //v = crypto.createVerify('sha1')
+            //result = v.verify(message, msg_signed_b64)
+            
             sensor_pubkey = rsa.importKey(key, 'pkcs8-public-pem');
             rsa.setOptions({signingScheme: 'sha1'});
 
-            //writeLogAndConsole("log_","rsa: "+sensor_pubkey);
-
-            result=rsa.verify(message, msg_signed_b64, 'utf8', 'base64')
+            result=rsa.verify(MESSAGE_AUTH, msg_signed_b64, 'utf8', 'base64')
 
             writeLogAndConsole("log_","sensor "+sensorkey+" certificate verification is "+result);      
 
@@ -263,8 +268,13 @@ wsserver.mount({ httpServer: server,
               });
 
             }
-            
-          });
+            else {
+              //nok on result
+              writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
+              rejectRequest(req)
+            }
+
+          });//certificates.readPubKey
         }//if status (is Active)
         else {
           writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
@@ -273,14 +283,17 @@ wsserver.mount({ httpServer: server,
       }); //certificates.isActive.then
 
 
-      }
+      } //if sensor
+    
+    /*
       catch(err) {
         writeLogAndConsole("log_","Error certificates.isActive on "+sensorkey);
         rejectRequest(req);
       };
     
     }// if sensor
-              
+      */
+
     else {
       rejectRequest(req);
       /*

@@ -11,8 +11,12 @@ import json
 import ssl
 import math
 
-import rsa
+#import rsa
 import base64
+
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA
 
 #import asyncio
 import websocket  # websocket-client
@@ -78,9 +82,22 @@ def read_sensor_certificate(SENSOR_CERT_FILE):
   return data
 
 def generate_signature():
-  sensor_pem = read_sensor_certificate(sensor_data['key']+".pem")
-  privkey = rsa.PrivateKey.load_pkcs1(sensor_pem)
-  signature = rsa.sign(MESSAGE_KEY, privkey, 'SHA-1')
+  #PKCS#1 (uses RSA)
+  #sensor_pem = #read_sensor_certificate(sensor_data['key']+".pem")
+  #privkey = rsa.PrivateKey.load_pkcs8(sensor_pem)
+  #signature = rsa.sign(MESSAGE_KEY, privkey, 'SHA-1')
+
+  #PKCS#8 (uses crypto)
+  key = RSA.importKey(open(sensor_data['key']+".pem", 'r').read())
+  h = SHA.new(MESSAGE_KEY)
+  signer = PKCS1_v1_5.new(key)
+  signature = signer.sign(h)
+    
+  print(key)
+  print(h)
+  print(signer)
+  print(signature)
+  
   return base64.b64encode(signature)
   #key_priv=RSA.importKey(read_sensor_certificate(sensor_data['key']+".pem"))
   #h = SHA.new(str.encode(MESSAGE_KEY))
