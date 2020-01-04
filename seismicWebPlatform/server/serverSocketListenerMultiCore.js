@@ -217,9 +217,11 @@ wsserver.mount({ httpServer: server,
 
       //get id and signature
       sensorkey=req.httpRequest.headers['user-agent'];
-      msg_signed_b64=req.httpRequest.headers['x-custom'];
+      msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
       writeLogAndConsole("log_","Received connection request from sensor="+sensorkey);
 
+      try {
+                         
       certificates.isActive(sensorkey)
         .then(status => {
 
@@ -282,27 +284,15 @@ wsserver.mount({ httpServer: server,
         }
       }); //certificates.isActive.then
 
-
-      } //if sensor
-    
-    /*
+  } //try
       catch(err) {
-        writeLogAndConsole("log_","Error certificates.isActive on "+sensorkey);
+        writeLogAndConsole("log_","Error processing certificates");
         rejectRequest(req);
-      };
-    
-    }// if sensor
-      */
-
-    else {
-      rejectRequest(req);
-      /*
-      writeLogAndConsole("log_", "wsserver.on request - from sensor " + req.remoteAddress + " rejected protocol "+req.requestedProtocols);
-      req.reject();
-      */
-    }
-
-  });
+      }    
+  
+    }//if protocol sensor
+  
+  });//wsserver.on request
 
   wsserver.on('close', function(conn, reason, description) {
     writeLogAndConsole("log_", "wsserver.on close "+reason +" "+ description);

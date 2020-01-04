@@ -93,10 +93,10 @@ def generate_signature():
   signer = PKCS1_v1_5.new(key)
   signature = signer.sign(h)
     
-  print(key)
-  print(h)
-  print(signer)
-  print(signature)
+  #print(key)
+  #print(h)
+  #print(signer)
+  #print(signature)
   
   return base64.b64encode(signature)
   #key_priv=RSA.importKey(read_sensor_certificate(sensor_data['key']+".pem"))
@@ -204,7 +204,7 @@ def connect_to_server_ws():
   signature=generate_signature()
   signature_b64 = str(signature, "utf-8")
   
-  #print(signature)
+  print(signature_b64)
   #print("sig size:",len(signature_b64),"=>",signature_b64)
   
   WS_SENSOR_DATA.connect(

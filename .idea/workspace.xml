@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0307e4f5-eb27-4459-9b91-b1f16bd86bc6" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/PhoneSensor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/Signature.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/service/SensorService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/SSNApp/app/src/main/res/layout/settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/.idea/caches/gradle_models.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/AccelData.java" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/AccelData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/AccelerometerMainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/AccelerometerMainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/ChartView.java" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/ChartView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/RESTWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/RESTWrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/TextInputDialog.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/TimerSendData.java" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/TimerSendData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/WebSocketWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/java/com/marcomanso/phoneaccelerometer/WebSocketWrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/res/drawable/ic_error_48px.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/res/drawable/ic_warning_48px.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/res/drawable/indicator.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/res/layout/activity_accelerometer_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/res/layout/activity_accelerometer_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/app/src/main/res/values/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SSNApp/gradlew.bat" beforeDir="false" afterPath="$PROJECT_DIR$/SSNApp/gradlew.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seismicSensorEmulatorPy/settings_localhost.json" beforeDir="false" afterPath="$PROJECT_DIR$/seismicSensorEmulatorPy/settings_localhost.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seismicSensorEmulatorPy/settings_uevora.json" beforeDir="false" afterPath="$PROJECT_DIR$/seismicSensorEmulatorPy/settings_uevora.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seismicWebPlatform/views/sensordataview.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/seismicWebPlatform/views/sensordataview.ejs" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="11" />
+    <option name="y" value="23" />
+    <option name="width" value="1328" />
+    <option name="height" value="850" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="SSN-alentejo" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SSN-alentejo" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+    </configuration>
+    <configuration default="true" type="Applet">
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0307e4f5-eb27-4459-9b91-b1f16bd86bc6" name="Default Changelist" comment="" />
+      <created>1578049747648</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1578049747648</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="11" y="23" width="1328" height="850" extended-state="0" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" visible="true" weight="0.32976282" />
+      <window_info id="Structure" side_tool="true" />
+      <window_info id="Image Layers" />
+      <window_info id="Designer" />
+      <window_info id="Resources Explorer" />
+      <window_info id="Capture Tool" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info id="Captures" order="0" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="TestFairy" />
+      <window_info anchor="bottom" id="TODO" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Palette&#9;" />
+    </layout>
+  </component>
+</project>
