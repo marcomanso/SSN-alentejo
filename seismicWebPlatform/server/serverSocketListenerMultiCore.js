@@ -215,7 +215,10 @@ wsserver.mount({ httpServer: server,
     
     else if (req.requestedProtocols[0] === "sensor") {
 
-      //get id and signature
+      //TODO: check if sensor is active
+      //then see if should accept connection
+      
+      //get id 
       sensorkey=req.httpRequest.headers['user-agent'];
       msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
       writeLogAndConsole("log_","Received connection request from sensor="+sensorkey);
@@ -229,54 +232,29 @@ wsserver.mount({ httpServer: server,
           //writeLogAndConsole("log_","certificates.isActive on "+sensorkey+" gave "+status);
           writeLogAndConsole("log_","Certificate exists and is active.")
 
-          sensor_pub = certificates.readPubKey(sensorkey)
-          .then(key => {
-          
-            //writeLogAndConsole("log_", "certificates.readPubKey on "+sensorkey+" gave "+key);
+          //accept connection
+          writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
 
-            //sensor_pubkey = crypto.createPublicKey(key)
-            //v = crypto.createVerify('sha1')
-            //result = v.verify(message, msg_signed_b64)
-            
-            sensor_pubkey = rsa.importKey(key, 'pkcs8-public-pem');
-            rsa.setOptions({signingScheme: 'sha1'});
+          //var connection = req.accept('arduino', req.origin);
+          var connection = req.accept(req.requestedProtocols[0], req.origin);
 
-            result=rsa.verify(MESSAGE_AUTH, msg_signed_b64, 'utf8', 'base64')
-
-            writeLogAndConsole("log_","sensor "+sensorkey+" certificate verification is "+result);      
-
-            if (result) {
-              //accept connection
-              writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
-
-              //var connection = req.accept('arduino', req.origin);
-              var connection = req.accept(req.requestedProtocols[0], req.origin);
-
-              //get sensor ID
-              var sensorID = req.resource;
-              connection.on('message', function(message) {
-                if (message.type === 'utf8') {
-                  writeLog(sensorID, message.utf8Data);
-                }
-                else {
-                  console.log("Discarded message from "+sensorID);
-                }
-              });
-              connection.on('close', function(reasonCode, description) {
-                writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
-              });
-              connection.on('error', function(err) {
-                writeLogAndConsole("log_", "connection.on error "+err);
-              });
-
+          //get sensor ID
+          var sensorID = req.resource;
+          connection.on('message', function(message) {
+            if (message.type === 'utf8') {
+              writeLog(sensorID, message.utf8Data);
             }
             else {
-              //nok on result
-              writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
-              rejectRequest(req)
+              console.log("Discarded message from "+sensorID);
             }
+          });
+          connection.on('close', function(reasonCode, description) {
+            writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
+          });
+          connection.on('error', function(err) {
+            writeLogAndConsole("log_", "connection.on error "+err);
+          });
 
-          });//certificates.readPubKey
         }//if status (is Active)
         else {
           writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
