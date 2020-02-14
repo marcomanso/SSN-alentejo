@@ -264,11 +264,15 @@ wsserver.mount({ httpServer: server,
 
   } //try
       catch(err) {
-        writeLogAndConsole("log_","Error processing certificates");
+        writeLogAndConsole("log_","Error processing certificates - reject");
         rejectRequest(req);
       }    
   
     }//if protocol sensor
+    else {
+      writeLogAndConsole("log_","Error processing sensor connection - reject");
+      rejectRequest(req);
+    }
   
   });//wsserver.on request
 

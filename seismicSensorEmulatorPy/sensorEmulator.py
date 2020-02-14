@@ -1,4 +1,21 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
+
+#
+# instalation
+#
+# pyenv
+# add to .bash_profile:
+#    eval "$(pyenv init -)"
+# 
+# 
+# pip install pycryptodome
+# pip install websocket_client
+#
+#  check /Users/marcomanso/.pyenv/versions/3.7.3/lib/python3.7/site-packages
+# 
+# -> fix the problem by renaming the install directory crypto to => Crypto
+
+
 import os
 import sys
 import time
@@ -204,12 +221,14 @@ def connect_to_server_ws():
   signature=generate_signature()
   signature_b64 = str(signature, "utf-8")
   
-  print(signature_b64)
+  #print(signature_b64)
   #print("sig size:",len(signature_b64),"=>",signature_b64)
   
   WS_SENSOR_DATA.connect(
     ws_url, 
-    header=["user-agent: "+sensor_data['key'], "x-custom: "+signature_b64], 
+    header=[
+      "user-agent: "+sensor_data['key'], 
+      "x-custom: "+signature_b64], 
     subprotocols=[settings_data['protocol']])
   
     
