@@ -215,10 +215,7 @@ wsserver.mount({ httpServer: server,
     
     else if (req.requestedProtocols[0] === "sensor") {
 
-      //TODO: check if sensor is active
-      //then see if should accept connection
-      
-      //get id 
+      //get id and signature
       sensorkey=req.httpRequest.headers['user-agent'];
       msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
       writeLogAndConsole("log_","Received connection request from sensor="+sensorkey);
@@ -232,32 +229,54 @@ wsserver.mount({ httpServer: server,
           //writeLogAndConsole("log_","certificates.isActive on "+sensorkey+" gave "+status);
           writeLogAndConsole("log_","Certificate exists and is active.")
 
-          //accept connection
-          writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
+          sensor_pub = certificates.readPubKey(sensorkey)
+          .then(key => {
+          
+            //writeLogAndConsole("log_", "certificates.readPubKey on "+sensorkey+" gave "+key);
 
-          //var connection = req.accept('arduino', req.origin);
-          var connection = req.accept(req.requestedProtocols[0], req.origin);
+            //sensor_pubkey = crypto.createPublicKey(key)
+            //v = crypto.createVerify('sha1')
+            //result = v.verify(message, msg_signed_b64)
+            
+            sensor_pubkey = rsa.importKey(key, 'pkcs8-public-pem');
+            rsa.setOptions({signingScheme: 'sha1'});
 
-          //get sensor ID
-          var sensorID = req.resource;
-          connection.on('message', function(message) {
+            result=rsa.verify(MESSAGE_AUTH, msg_signed_b64, 'utf8', 'base64')
 
-writeLogAndConsole("-- received: "+message);
+            writeLogAndConsole("log_","sensor "+sensorkey+" certificate verification is "+result);      
 
-            if (message.type === 'utf8') {
-              writeLog(sensorID, message.utf8Data);
+            if (result) {
+              //accept connection
+              writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
+
+              //var connection = req.accept('arduino', req.origin);
+              var connection = req.accept(req.requestedProtocols[0], req.origin);
+
+              //get sensor ID
+              var sensorID = req.resource;
+              connection.on('message', function(message) {
+                if (message.type === 'utf8') {
+                  writeLog(sensorID, message.utf8Data);
+                }
+                else {
+                  console.log("Discarded message from "+sensorID);
+                }
+              });
+              connection.on('close', function(reasonCode, description) {
+                writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
+              });
+              connection.on('error', function(err) {
+                writeLogAndConsole("log_", "connection.on error "+err);
+              });
+
             }
             else {
-              console.log("Discarded message from "+sensorID);
+              //nok on result
+              writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
+              rejectRequest(req)
             }
-          });
-          connection.on('close', function(reasonCode, description) {
-            writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
-          });
-          connection.on('error', function(err) {
-            writeLogAndConsole("log_", "connection.on error "+err);
-          });
 
+          });//certificates.readPubKey
         }//if status (is Active)
         else {
           writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
@@ -267,15 +286,11 @@ writeLogAndConsole("-- received: "+message);
 
   } //try
       catch(err) {
-        writeLogAndConsole("log_","Error processing certificates - reject");
+        writeLogAndConsole("log_","Error processing certificates");
         rejectRequest(req);
       }    
   
     }//if protocol sensor
-    else {
-      writeLogAndConsole("log_","Error processing sensor connection - reject");
-      rejectRequest(req);
-    }
   
   });//wsserver.on request
 
