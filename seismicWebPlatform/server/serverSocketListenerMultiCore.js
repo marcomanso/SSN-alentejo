@@ -43,10 +43,30 @@ function checkDirectoryExistsSync(basePath) {
   }
 }
 
-function writeLog(name, message) {
-  var sensorPath = basePath + "/" + name;
+function writeSensorData(name, message) {
+  //create under year, month, day  
+  //var sensorPath = basePath + "/" + name;
+  date = new Date();
+  var sensorPath = basePath+"/"+name;
   checkDirectoryExistsSync(sensorPath);
-  fs.appendFile(sensorPath+"/"+name+"_"+utils.getDateTime_In_YYYYMMDD_HH(new Date())+'.txt', message+'\n', function (err) {
+  sensorPath+="/"+date.getFullYear();
+  checkDirectoryExistsSync(sensorPath);
+  sensorPath+="/"+utils.getPaddedNumber(date.getMonth()+1);
+  checkDirectoryExistsSync(sensorPath);
+  sensorPath+="/"+utils.getPaddedNumber(date.getDate());
+  checkDirectoryExistsSync(sensorPath);
+  var filename   = name+"_"+utils.getDateTime_In_YYYYMMDD_HH(new Date())+'.txt';
+  fs.appendFile(sensorPath+"/"+filename, message+'\n', function (err) {
+    if (err) console.log('Error: '+err);
+  });
+}
+function writeLog(name, message) {
+  //create under year, month, day  
+  var sensorPath = basePath + "/" + name;
+  date = new Date();
+  var filename   = utils.getDateTime_In_YYYYMMDD_HH(new Date())+'.txt';
+  checkDirectoryExistsSync(sensorPath);
+  fs.appendFile(sensorPath+"/"+filename, message+'\n', function (err) {
     if (err) console.log('Error: '+err);
   });
 }
@@ -245,7 +265,7 @@ wsserver.mount({ httpServer: server,
 writeLogAndConsole("-- received: "+message);
 
             if (message.type === 'utf8') {
-              writeLog(sensorID, message.utf8Data);
+              writeSensorData(sensorID, message.utf8Data);
             }
             else {
               console.log("Discarded message from "+sensorID);

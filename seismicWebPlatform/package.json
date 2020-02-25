@@ -11,27 +11,27 @@
     "debug": "DEBUG=seismic.* PORT=3000 REQUEST_LOG_FILE='log/.' REQUEST_LOG_FORMAT=common SENSOR_DATA_FILE_DIR='data' SENSOR_SQLITE_FILE=sensordb/sensorDB.sqlite3 SQLITE_FILE=db/db.sqlite3 node ./bin/www"
   },
   "dependencies": {
-    "jquery": "^1.9.1",
-    "popper.js": "^1.14.7",
-    "bootstrap": "^4.3.1",
     "body-parser": "~1.17.1",
+    "bootstrap": "^4.4.1",
     "cassandra-driver": "3.5.0",
     "cheerio": "^1.0.0-rc.3",
     "cookie-parser": "^1.4.4",
     "debug": "~2.6.3",
-    "ejs": "^2.5.9",
+    "ejs": "^2.7.4",
     "express": "~4.15.2",
     "file-stream-rotator": "^0.2.1",
     "htmlparser": "^1.7.7",
+    "jquery": "^1.9.1",
     "morgan": "~1.8.1",
+    "node-rsa": "^1.0.7",
     "passport.socketio": "^3.7.0",
-    "request": "^2.88.0",
+    "popper.js": "^1.16.1",
+    "request": "^2.88.2",
     "serve-favicon": "~2.4.2",
     "socket.io": "^2.3.0",
-    "sqlite3": "^4.1.0",
+    "sqlite3": "^4.1.1",
     "tail": "^1.4.0",
     "tail-stream": "^0.3.4",
-    "node-rsa": "^1.0.6",
-    "websocket": "^1.0.30"
+    "websocket": "^1.0.31"
   }
 }

@@ -1,6 +1,10 @@
 
 module.exports = {
 
+   getPaddedNumber: function (number) {
+     return (number < 10 ? "0" : "") + number;
+   },
+  
    getDateTime_In_YYYYMMDD: function(date) {
 	   var year = date.getFullYear();
 	   var month = date.getMonth() + 1;
