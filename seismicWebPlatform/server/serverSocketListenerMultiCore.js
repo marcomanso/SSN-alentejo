@@ -329,7 +329,24 @@ wsserver.mount({ httpServer: server,
           connection.on('message', function(message) {
             //writeLogAndConsole("-- received: "+message);
             if (message.type === 'utf8') {
-              writeSensorData(sensorID, message.utf8Data);
+              //HACK:  read data and reconvert to 1g scale
+              try {
+                if (sensor_conversion_range==1) {
+                  writeSensorData(sensorID, message.utf8Data);
+                }
+                else {
+                  measurement=JSON.parse(message.utf8Data);
+                  measurement['accel_x'] = Number(measurement['accel_x'])/sensor_conversion_range;
+                  measurement['accel_y'] = Number(measurement['accel_y'])/sensor_conversion_range;
+                  measurement['accel_z'] = Number(measurement['accel_z'])/sensor_conversion_range;
+                  writeSensorData(sensorID, JSON.stringify(measurement));
+                }                
+              }
+              catch (e) {
+                writeLogAndConsole("log_","Malformed JSON from sensor data: "+message.utf8Data)
+                rejectRequest(req);
+                return;
+              } 
             }
             else {
               console.log("Discarded message from "+sensorID);
