@@ -271,35 +271,23 @@ wsserver.mount({ httpServer: server,
       //then see if should accept connection
       
       //get id 
-      var sensorkey=req.httpRequest.headers['user-agent'];   
-      //get operation information
-      var sensorOperation;
-      if (req.httpRequest.headers['user-config']) {
-        sensorOperation = JSON.parse(req.httpRequest.headers['user-config']);
+      var sensorData=JSON.parse(req.httpRequest.headers['user-agent']);
+      if (typeof sensorData == "undefined") {    
+        writeLogAndConsole("log_","Cannot retrieve sensor_id information.")
+        rejectRequest(req);
       }
-            
-      var DEF_SENSOR_FREQUENCY = 100;
-      var DEF_SENSOR_RANGE_G   = 2;
-      var DEF_CONVERSION_RAGE  = 1;
-
-      //put defaults
-      var sensor_frequency = DEF_SENSOR_FREQUENCY;
-      var sensor_range_g   = DEF_SENSOR_RANGE_G;
-      var sensor_conversion_range = DEF_CONVERSION_RAGE;
-      if ( typeof sensorOperation !== 'undefined' && sensorOperation ) {
-        sensor_frequency=1000.0/parseFloat(sensorOperation['period_ms']);
-        if (isNaN(sensor_frequency)) {
-          sensor_frequency = DEF_SENSOR_FREQUENCY;
-        }
-        sensor_range_g=parseFloat(sensorOperation['max_range']);
-        if (isNaN(sensor_range_g)) {
-          sensor_range_g = DEF_SENSOR_RANGE_G;
-        }
-        sensor_conversion_range=parseFloat(sensorOperation['conversion_scale_1g']);
-        if (isNaN(sensor_conversion_range)) {
-          sensor_conversion_range = DEF_CONVERSION_RAGE;
-        }
-        
+      var sensorkey=sensorData['sensor_id'];
+      sensor_frequency=1000.0/parseFloat(sensorData['period_ms']);
+      if (isNaN(sensor_frequency)) {
+        sensor_frequency = DEF_SENSOR_FREQUENCY;
+      }
+      sensor_range_g=parseFloat(sensorData['max_range']);
+      if (isNaN(sensor_range_g)) {
+        sensor_range_g = DEF_SENSOR_RANGE_G;
+      }
+      sensor_conversion_range=parseFloat(sensorData['conversion_scale_1g']);
+      if (isNaN(sensor_conversion_range)) {
+        sensor_conversion_range = DEF_CONVERSION_RAGE;
       }
      
      //for now do not use certificates //msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
