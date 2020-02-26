@@ -228,7 +228,10 @@ def connect_to_server_ws():
     ws_url, 
     header=[
       "user-agent: "+sensor_data['key'], 
-      "x-custom: "+signature_b64], 
+      "user-config: { \"max_range\": "+sensor_data['range']
+      +", \"conversion_scale_1g\": 1, \"period_ms\": " +
+      str(1000.0/sensor_data['frequency'])+ " }",
+      "x-custom: "  +signature_b64], 
     subprotocols=[settings_data['protocol']])
   
     

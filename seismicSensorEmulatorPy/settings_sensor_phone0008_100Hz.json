@@ -11,7 +11,7 @@
   
   "frequency": 100,
   "variability_amount": 0.5,
-  "range": "2g",
+  "range": "2",
   "convert_scale": 1
 
 }

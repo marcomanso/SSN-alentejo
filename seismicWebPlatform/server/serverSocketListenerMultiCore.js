@@ -2,6 +2,7 @@
 * using WebSocket-Node
 */
 
+
 var http = require('http'),
     fs = require('fs'),
     //Tail = require('tail').Tail,
@@ -26,6 +27,11 @@ var debug = require('debug')('seismic:server');
 
 var MESSAGE_AUTH = process.env.MESSAGE_AUTH || "sensor"
 
+// DEFAULTS
+var DEF_SENSOR_FREQUENCY = 100;
+var DEF_SENSOR_RANGE_G   = 2;
+var DEF_CONVERSION_RAGE  = 1;
+
 //
 // FILES AND LOGS
 //
@@ -43,21 +49,41 @@ function checkDirectoryExistsSync(basePath) {
   }
 }
 
-function writeSensorData(name, message) {
+function writeIt (dateW, sensorName, message, next) {
+  var sensorPath = basePath
+          +"/"+sensorName
+          +"/"+date.getUTCFullYear()
+          +"/"+utils.getPaddedNumber(date.getUTCMonth()+1)
+          +"/"+utils.getPaddedNumber(date.getUTCDate());  
+  var filename = 
+      sensorName
+      +"_"+utils.getDateTime_In_YYYYMMDD_HH(dateW)+'.txt';
+  fs.appendFile(sensorPath+"/"+filename, message+'\n', function (err) {
+    if (err) {
+      next(err);
+    }
+  });
+}
+
+function writeSensorData(sensorName, message) {
   //create under year, month, day  
   //var sensorPath = basePath + "/" + name;
-  date = new Date();
-  var sensorPath = basePath+"/"+name;
-  checkDirectoryExistsSync(sensorPath);
-  sensorPath+="/"+date.getUTCFullYear();
-  checkDirectoryExistsSync(sensorPath);
-  sensorPath+="/"+utils.getPaddedNumber(date.getUTCMonth()+1);
-  checkDirectoryExistsSync(sensorPath);
-  sensorPath+="/"+utils.getPaddedNumber(date.getUTCDate());
-  checkDirectoryExistsSync(sensorPath);
-  var filename   = name+"_"+utils.getDateTime_In_YYYYMMDD_HH(new Date())+'.txt';
-  fs.appendFile(sensorPath+"/"+filename, message+'\n', function (err) {
-    if (err) console.log('Error: '+err);
+  date = new Date();  
+  writeIt (date, sensorName, message, function (err) {
+    //first time might be OK
+    //dir and/or file might not exist - need to create it
+    var sensorPath = basePath+"/"+sensorName;
+    checkDirectoryExistsSync(sensorPath);
+    sensorPath+="/"+date.getUTCFullYear();
+    checkDirectoryExistsSync(sensorPath);
+    sensorPath+="/"+utils.getPaddedNumber(date.getUTCMonth()+1);
+    checkDirectoryExistsSync(sensorPath);
+    sensorPath+="/"+utils.getPaddedNumber(date.getUTCDate());
+    checkDirectoryExistsSync(sensorPath);
+    //second time - if error again give up....
+    writeIt( date, sensorName, message, function (err) { 
+      console.log('Error: '+err);
+    });
   });
 }
 function writeLog(name, message) {
@@ -245,9 +271,40 @@ wsserver.mount({ httpServer: server,
       //then see if should accept connection
       
       //get id 
-      sensorkey=req.httpRequest.headers['user-agent'];
-      msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
-      writeLogAndConsole("log_","Received connection request from sensor="+sensorkey);
+      var sensorkey=req.httpRequest.headers['user-agent'];   
+      //get operation information
+      var sensorOperation=JSON.parse(req.httpRequest.headers['user-config']);
+            
+      var DEF_SENSOR_FREQUENCY = 100;
+      var DEF_SENSOR_RANGE_G   = 2;
+      var DEF_CONVERSION_RAGE  = 1;
+
+      //put defaults
+      var sensor_frequency = DEF_SENSOR_FREQUENCY;
+      var sensor_range_g   = DEF_SENSOR_RANGE_G;
+      var sensor_conversion_range = DEF_CONVERSION_RAGE;
+      if ( typeof sensorOperation !== 'undefined' && sensorOperation ) {
+        sensor_frequency=1000.0/parseFloat(sensorOperation['period_ms']);
+        if (isNaN(sensor_frequency)) {
+          sensor_frequency = DEF_SENSOR_FREQUENCY;
+        }
+        sensor_range_g=parseFloat(sensorOperation['max_range']);
+        if (isNaN(sensor_range_g)) {
+          sensor_range_g = DEF_SENSOR_RANGE_G;
+        }
+        sensor_conversion_range=parseFloat(sensorOperation['conversion_scale_1g']);
+        if (isNaN(sensor_conversion_range)) {
+          sensor_conversion_range = DEF_CONVERSION_RAGE;
+        }
+        
+      }
+     
+     //for now do not use certificates //msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
+      
+      writeLogAndConsole("log_","Received connection request from sensor="+sensorkey
+                         +" with operation parameters f="+sensor_frequency
+                         +" range="+sensor_range_g
+                         +" conversion_range="+sensor_conversion_range);
 
       try {
                          
@@ -261,15 +318,12 @@ wsserver.mount({ httpServer: server,
           //accept connection
           writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
 
-          //var connection = req.accept('arduino', req.origin);
           var connection = req.accept(req.requestedProtocols[0], req.origin);
 
           //get sensor ID
           var sensorID = req.resource;
           connection.on('message', function(message) {
-
             //writeLogAndConsole("-- received: "+message);
-
             if (message.type === 'utf8') {
               writeSensorData(sensorID, message.utf8Data);
             }
