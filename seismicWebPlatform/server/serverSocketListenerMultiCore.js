@@ -76,7 +76,13 @@ function writeLogAndConsole(name, message) {
 }
 
 function getLiveDataFilename(name) {
-  return basePath + "/" + name + "/" + name + "_"+utils.getDateTime_In_YYYYMMDD_HH(new Date())+'.txt';                
+  date = new Date();
+  return basePath 
+    + "/" + name 
+    + "/" + date.getUTCFullYear()
+    + "/" + utils.getPaddedNumber(date.getUTCMonth()+1)
+    + "/" + utils.getPaddedNumber(date.getUTCDate())
+    + name + "_"+utils.getDateTime_In_YYYYMMDD_HH(new Date())+'.txt';                
 }
 
 function getLiveDataDir(name) {
