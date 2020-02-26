@@ -270,6 +270,11 @@ wsserver.mount({ httpServer: server,
       //TODO: check if sensor is active
       //then see if should accept connection
       
+      var sensorkey;
+      var sensor_frequency;
+      var sensor_range_g;
+      var sensor_conversion_range;
+      
       //get id 
       try {
         var sensorData=JSON.parse(req.httpRequest.headers['user-agent']);
@@ -277,7 +282,7 @@ wsserver.mount({ httpServer: server,
           writeLogAndConsole("log_","Cannot retrieve sensor_id information.")
           rejectRequest(req);
         }
-        var sensorkey=sensorData['sensor_id'];
+        sensorkey=sensorData['sensor_id'];
         sensor_frequency=1000.0/parseFloat(sensorData['period_ms']);
         if (isNaN(sensor_frequency)) {
           sensor_frequency = DEF_SENSOR_FREQUENCY;
@@ -290,22 +295,24 @@ wsserver.mount({ httpServer: server,
         if (isNaN(sensor_conversion_range)) {
           sensor_conversion_range = DEF_CONVERSION_RAGE;
         }
+        
+        //for now do not use certificates //msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
+
       }
       catch (e) {        
         writeLogAndConsole("log_","Malformed JSON from headers: "+req.httpRequest.headers['user-agent'])
         rejectRequest(req);
+        return;
       }
      
-     //for now do not use certificates //msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
-      
-      writeLogAndConsole("log_","Received connection request from sensor="+sensorkey
-                         +" with operation parameters f="+sensor_frequency
-                         +" range="+sensor_range_g
-                         +" conversion_range="+sensor_conversion_range);
-
       try {
                          
-      certificates.isActive(sensorkey)
+        writeLogAndConsole("log_","Received connection request from sensor="+sensorkey
+                           +" with operation parameters f="+sensor_frequency
+                           +" range="+sensor_range_g
+                           +" conversion_range="+sensor_conversion_range);
+
+        certificates.isActive(sensorkey)
         .then(status => {
 
         if (status==1) {
