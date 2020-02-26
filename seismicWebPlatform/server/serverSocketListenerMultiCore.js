@@ -32,6 +32,8 @@ var DEF_SENSOR_FREQUENCY = 100;
 var DEF_SENSOR_RANGE_G   = 2;
 var DEF_CONVERSION_RAGE  = 1;
 
+// process.env.SENSOR_EVENT_THRESHOLD 1g?
+
 //
 // FILES AND LOGS
 //
@@ -358,7 +360,6 @@ wsserver.mount({ httpServer: server,
           connection.on('error', function(err) {
             writeLogAndConsole("log_", "connection.on error "+err);
           });
-
         }//if status (is Active)
         else {
           writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
@@ -366,12 +367,12 @@ wsserver.mount({ httpServer: server,
         }
       }); //certificates.isActive.then
 
-  } //try
-      catch(err) {
-        writeLogAndConsole("log_","Error processing certificates - reject");
-        rejectRequest(req);
-      }    
-  
+    } //try
+    catch(err) {
+      writeLogAndConsole("log_","Error processing certificates - reject");
+      rejectRequest(req);
+    }    
+
     }//if protocol sensor
     else {
       writeLogAndConsole("log_","Error processing sensor connection - reject");
