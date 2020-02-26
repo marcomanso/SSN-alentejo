@@ -6,28 +6,28 @@ module.exports = {
    },
   
    getDateTime_In_YYYYMMDD: function(date) {
-	   var year = date.getFullYear();
-	   var month = date.getMonth() + 1;
+	   var year = date.getUTCFullYear();
+       var month = date.getUTCMonth() + 1;
 	   month = (month < 10 ? "0" : "") + month;
-	   var day  = date.getDate();
+       var day  = date.getUTCDate();
 	   day = (day < 10 ? "0" : "") + day;
 
 	   return "" + year + "" + month + "" + day;
    },
 
    getDateTime_In_HHMMSS: function(date) {
-	   var hour = date.getHours();
+	   var hour = date.getUTCHours();
 	   hour = (hour < 10 ? "0" : "") + hour;
-	   var min  = date.getMinutes();
+	   var min  = date.getUTCMinutes();
 	   min = (min < 10 ? "0" : "") + min;
-	   var sec  = date.getSeconds();
+	   var sec  = date.getUTCSeconds();
 	   sec = (sec < 10 ? "0" : "") + sec;
 
 	   return "" + hour + "" + min + "" + sec;
    },
 
    getDateTime_In_YYYYMMDD_HH: function(date) {
-	   var hour = date.getHours();
+	   var hour = date.getUTCHours();
 	   hour = (hour < 10 ? "0" : "") + hour;
    	   return this.getDateTime_In_YYYYMMDD(date) + "_" + hour;
    },

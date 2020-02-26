@@ -4,6 +4,13 @@ fs = require('fs');
 
 var debug = require('debug')('seismic:utils');
 
+module.exports.isDefined = function (variable) {
+  if (typeof variable === 'undefined')
+    return false;
+  else
+    return true;
+}
+
 module.exports.getSensorURLFiles = function (name, url) { 
   var files = [];
   return new Promise((resolve, reject) => {
@@ -22,27 +29,29 @@ module.exports.getSensorURLFiles = function (name, url) {
 } //end getSensorFiles
 
 module.exports.getSensorFiles = function (name, path) { 
-  var files = [];
+  return fs.readdirSync(path);
+  
+  /*
   return new Promise((resolve, reject) => {
     fs.readdir(path, function(err, items) {
       if (err) {
         debug("Error: "+err.message);
         //return reject(err);
         //error?  no problem - return no files
-        resolve(files);
+        resolve(files, directories);
       }
+      console.log("Add sensor file: "+f);      
       for ( f of items ) {
-        files.push(f);
-        debug("Add sensor file: "+f);
+        files.push(f);        
+        //stat = f.statSync()
+        if (f.isDirectory()) 
+          directories.push(f);
+        else if (f.isFile())      
+          files.push(f);
       }
-      /*
-      for (var i=0; i<items.length; i++) {
-        if (items[i].indexOf(name)!==-1)
-          files.push(items[i]);
-          debug("Add sensor file: "+items[i]);
-      }
-      */
-      resolve(files);
+      resolve(files, directories);
     });
   }) //end Promise 
+  */
+  
 } //end getSensorFiles

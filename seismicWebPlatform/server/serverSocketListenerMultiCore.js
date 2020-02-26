@@ -49,11 +49,11 @@ function writeSensorData(name, message) {
   date = new Date();
   var sensorPath = basePath+"/"+name;
   checkDirectoryExistsSync(sensorPath);
-  sensorPath+="/"+date.getFullYear();
+  sensorPath+="/"+date.getUTCFullYear();
   checkDirectoryExistsSync(sensorPath);
-  sensorPath+="/"+utils.getPaddedNumber(date.getMonth()+1);
+  sensorPath+="/"+utils.getPaddedNumber(date.getUTCMonth()+1);
   checkDirectoryExistsSync(sensorPath);
-  sensorPath+="/"+utils.getPaddedNumber(date.getDate());
+  sensorPath+="/"+utils.getPaddedNumber(date.getUTCDate());
   checkDirectoryExistsSync(sensorPath);
   var filename   = name+"_"+utils.getDateTime_In_YYYYMMDD_HH(new Date())+'.txt';
   fs.appendFile(sensorPath+"/"+filename, message+'\n', function (err) {
@@ -262,7 +262,7 @@ wsserver.mount({ httpServer: server,
           var sensorID = req.resource;
           connection.on('message', function(message) {
 
-writeLogAndConsole("-- received: "+message);
+            //writeLogAndConsole("-- received: "+message);
 
             if (message.type === 'utf8') {
               writeSensorData(sensorID, message.utf8Data);
