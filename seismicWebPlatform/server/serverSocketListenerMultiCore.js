@@ -273,7 +273,10 @@ wsserver.mount({ httpServer: server,
       //get id 
       var sensorkey=req.httpRequest.headers['user-agent'];   
       //get operation information
-      var sensorOperation=JSON.parse(req.httpRequest.headers['user-config']);
+      var sensorOperation;
+      if (req.httpRequest.headers['user-config']) {
+        sensorOperation = JSON.parse(req.httpRequest.headers['user-config']);
+      }
             
       var DEF_SENSOR_FREQUENCY = 100;
       var DEF_SENSOR_RANGE_G   = 2;
