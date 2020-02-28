@@ -131,9 +131,9 @@
     // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_micro": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
     
     var sData = JSON.parse(data);
-    if (typeof sData.time_micro == "undefined")
-      sData.time_micro = sData.time_nano;
-
+    if ( !sData.hasOwnProperty("time_micro") )
+      sData["time_micro"] = sData.time_nano;
+    
     //if (sData.length == 8) {
 
     var timeData   = parseInt(sData.time_epoch_sec,10) + parseInt(sData.time_micro,10) / 1000000.0; //convert time from micro_s to seconds

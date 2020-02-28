@@ -79,7 +79,7 @@
 
       //parse data
       
-      // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_millis": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
+      // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_micro": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
       
       var sData;
       try {
@@ -102,7 +102,7 @@
         drawData(timeData, sData);
 
         document.getElementById("sensor").innerHTML = "Sensor: "+sData.sensorid;
-        document.getElementById("timestamp").innerHTML = "Date_Time="+sData.time_epoch_sec+"."+sData.time_millis;
+        document.getElementById("timestamp").innerHTML = "Date_Time="+sData.time_epoch_sec+"."+sData.time_micro;
 
         document.getElementById("valueX").innerHTML = "x="+sData.accel_x;
         document.getElementById("valueY").innerHTML = "y="+sData.accel_y;
@@ -136,7 +136,7 @@
 
   }, false );
 
-  // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_millis": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
+  // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_micro": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
 
   function drawData(timeData, data) {
 
