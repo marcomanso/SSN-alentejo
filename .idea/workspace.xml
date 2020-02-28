@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0307e4f5-eb27-4459-9b91-b1f16bd86bc6" name="Default Changelist" comment="" />
+    <list default="true" id="0307e4f5-eb27-4459-9b91-b1f16bd86bc6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/seismicWebPlatform/server/serverSocketListenerMultiCore.js" beforeDir="false" afterPath="$PROJECT_DIR$/seismicWebPlatform/server/serverSocketListenerMultiCore.js" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,7 +25,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -36,6 +37,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">

@@ -79,7 +79,7 @@
 
       //parse data
       
-      // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_nano": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
+      // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_millis": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
       
       var sData;
       try {
@@ -90,8 +90,9 @@
       }      
       
       //if (sData.length == 8) {
-        
-      var timeData   = parseInt(sData.time_epoch_sec,10) + parseInt(sData.time_nano,10) / 1000000.0; //convert time from micro_s to seconds
+      if (typeof sData.time_micro == "undefined")
+        sData.time_micro = sData.time_nano;
+      var timeData   = parseInt(sData.time_epoch_sec,10) + parseInt(sData.time_micro,10) / 1000000.0; //convert time from micro_s to seconds
 
         //initialise first time?
         if (timeFirst===0) {
@@ -101,7 +102,7 @@
         drawData(timeData, sData);
 
         document.getElementById("sensor").innerHTML = "Sensor: "+sData.sensorid;
-        document.getElementById("timestamp").innerHTML = "Date_Time="+sData.time_epoch_sec+"."+sData.time_nano;
+        document.getElementById("timestamp").innerHTML = "Date_Time="+sData.time_epoch_sec+"."+sData.time_millis;
 
         document.getElementById("valueX").innerHTML = "x="+sData.accel_x;
         document.getElementById("valueY").innerHTML = "y="+sData.accel_y;
@@ -135,7 +136,7 @@
 
   }, false );
 
-  // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_nano": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
+  // { "sensorid": "02a6d5a15e844e69920b551e8144e767", "time_epoch_sec": 1569834172, "time_millis": 666000, "accel_x": -0.09245689958333969, "accel_y": 0.01995989866554737, "accel_z": 0.9985566735267639 }
 
   function drawData(timeData, data) {
 

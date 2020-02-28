@@ -367,15 +367,16 @@ wsserver.mount({ httpServer: server,
         }
       }); //certificates.isActive.then
 
-    } //try
-    catch(err) {
-      writeLogAndConsole("log_","Error processing certificates - reject");
-      rejectRequest(req);
-    }    
+      } //try
+      catch(err) {
+        writeLogAndConsole("log_","Error processing certificates - reject");
+        rejectRequest(req);
+      }    
 
     }//if protocol sensor
+    
     else {
-      writeLogAndConsole("log_","Error processing sensor connection - reject");
+      writeLogAndConsole("log_","Error processing connection - reject");
       rejectRequest(req);
     }
   
