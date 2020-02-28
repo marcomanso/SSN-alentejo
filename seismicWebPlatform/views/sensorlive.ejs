@@ -90,8 +90,8 @@
       }      
       
       //if (sData.length == 8) {
-      if (typeof sData.time_micro == "undefined")
-        sData.time_micro = sData.time_nano;
+      if ( !sData.hasOwnProperty("time_micro") )
+        sData["time_micro"] = sData.time_nano;
       var timeData   = parseInt(sData.time_epoch_sec,10) + parseInt(sData.time_micro,10) / 1000000.0; //convert time from micro_s to seconds
 
         //initialise first time?
