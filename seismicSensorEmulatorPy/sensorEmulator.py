@@ -253,7 +253,7 @@ def stream_data_forever(option):
   while (True):
     t=time.time()
     t_sec=int(t)
-    t_nano=int((t-t_sec)*1000000)
+    t_millis=int((t-t_sec)*1000000)
     
     if (option=='6'):
       generate_sin_values(t)
@@ -264,7 +264,7 @@ def stream_data_forever(option):
     data= json.dumps({
       "sensorID":       sensor_data['key'],
       "time_epoch_sec": t_sec,
-      "time_nano":      t_nano,
+      "time_millis":    t_millis,
       "accel_x":        a_x,
       "accel_y":        a_y,
       "accel_z":        a_z })
@@ -317,6 +317,7 @@ def menu():
   print()
   print('\t5 - Start RANDOM STREAMING (will loop forever)')
   print('\t6 - Start SIN STREAMING (will loop forever)')
+  print('\t7 - Start SIN STREAMING in BINARY mode (will loop forever)')
   print()
   print('\t0 - QUIT')
   print()

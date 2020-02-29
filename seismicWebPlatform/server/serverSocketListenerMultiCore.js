@@ -329,8 +329,13 @@ wsserver.mount({ httpServer: server,
           //get sensor ID
           var sensorID = req.resource;
           connection.on('message', function(message) {
+            
             //writeLogAndConsole("-- received: "+message);
             if (message.type === 'utf8') {
+
+              console.log("Received UTF8 Message of " + message.utf8Data.length + " bytes");
+              //console.log(message.utf8Data);
+
               //HACK:  read data and reconvert to 1g scale
               try {
                 if (sensor_conversion_range==1) {
@@ -349,6 +354,29 @@ wsserver.mount({ httpServer: server,
                 rejectRequest(req);
                 return;
               } 
+            }
+            else if (message.type === 'binary') {
+              
+              console.log("Received Binary Message of " + message.binaryData.length + " bytes");
+              console.log(message.binaryData);
+              
+              /*
+              var data = message.binaryData;
+              var len = data.length;              
+              
+              var buf = new Buffer(len);
+              var arr = new Int32Array(buf);
+              for (var i = 0; i < len; i+=4 ) {
+                var r = data.readUInt8(i);
+                var g = data.readUInt8(i+1);
+                var b = data.readUInt8(i+2);
+                var y = Math.floor((77*r + 28*g + 151*b)/255);
+                var v = y + (y << 8) + (y << 16) + (0xFF << 24);
+                buf.writeInt32LE(v, i);
+                
+              }
+              */
+              
             }
             else {
               console.log("Discarded message from "+sensorID);
