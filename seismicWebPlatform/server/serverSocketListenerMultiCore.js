@@ -333,7 +333,7 @@ wsserver.mount({ httpServer: server,
             //writeLogAndConsole("-- received: "+message);
             if (message.type === 'utf8') {
 
-              console.log("Received UTF8 Message of " + message.utf8Data.length + " bytes");
+              //console.log("Received UTF8 Message of " + message.utf8Data.length + " bytes");
               //console.log(message.utf8Data);
 
               //HACK:  read data and reconvert to 1g scale
