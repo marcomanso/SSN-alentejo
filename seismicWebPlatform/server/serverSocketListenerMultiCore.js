@@ -364,12 +364,34 @@ wsserver.mount({ httpServer: server,
               console.log("---- got: "+message.binaryData);
               console.log("---- got: "+message.binaryData.toString());
               
+              /*
+              Received Binary Message of 35 bytes
+                ---- got: 1583082116 793000 9965 26486 255004
+                  ---- got: 1583082116 793000 9965 26486 255004
+              Received Binary Message of 36 bytes
+                ---- got: 1583082116 801000 10632 26610 256541
+                  ---- got: 1583082116 801000 10632 26610 256541
+              Received Binary Message of 36 bytes
+                ---- got: 1583082116 809000 12463 26017 256756
+                  ---- got: 1583082116 809000 12463 26017 256756
+              Received Binary Message of 36 bytes
+                ---- got: 1583082116 817000 12705 25140 256781
+                  ---- got: 1583082116 817000 12705 25140 256781
+              */
+              
               if ( message.binaryData.length < MESSAGE_BINARY_LENGTH ) {
                 writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
               }
               else {
-                //parse character '20' (space) - should have 4 (5 fields)
-                data=message.binaryData;
+                messageArray = message.binaryData.split(' ');
+                if (messageArray.length < 5) {
+                  writeLogAndConsole("log_", "Error in message contents - number of fields is :"+messageArray.length);
+                }
+                else {
+                  
+                }
+                
+                
                 
                 
                 /*
