@@ -383,7 +383,7 @@ wsserver.mount({ httpServer: server,
                 writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
               }
               else {
-                messageArray = message.binaryData.split(' ');
+                messageArray = message.binaryData.toString().split(' ');
                 if (messageArray.length < 5) {
                   writeLogAndConsole("log_", "Error in message contents - number of fields is :"+messageArray.length);
                 }
