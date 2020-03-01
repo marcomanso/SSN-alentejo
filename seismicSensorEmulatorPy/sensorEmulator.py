@@ -54,6 +54,8 @@ global DATA_VARIABILITY_AMOUNT
 DATA_VARIABILITY_AMOUNT = 0.2
 global DATA_FREQUENCY_HZ 
 DATA_FREQUENCY_HZ = 10.0
+global CONVERT_SCALE
+CONVERT_SCALE = 16384 #=16-bits
 
 global SETTINGS_FILE
 global settings_data
@@ -89,6 +91,7 @@ def read_sensor(FILE):
     sensor_data = json.load(json_file)
     DATA_VARIABILITY_AMOUNT = float(sensor_data['variability_amount'])
     DATA_FREQUENCY_HZ = float(sensor_data['frequency'])
+    CONVERT_SCALE     = float(sensor_data['convert_scale'])
     print(json.dumps(sensor_data,indent=2))
 
     
@@ -199,21 +202,21 @@ def generate_random_values():
   global a_x
   global a_y
   global a_z
-  a_x =  1.0+DATA_VARIABILITY_AMOUNT*random.randint(-50,50)/100.0
-  a_y =  0.0+DATA_VARIABILITY_AMOUNT*random.randint(-50,50)/100.0
-  a_z = -1.0+DATA_VARIABILITY_AMOUNT*random.randint(-50,50)/100.0
+  a_x = CONVERT_SCALE*( 1.0+DATA_VARIABILITY_AMOUNT*random.randint(-50,50)/100.0)
+  a_y = CONVERT_SCALE*( 0.0+DATA_VARIABILITY_AMOUNT*random.randint(-50,50)/100.0)
+  a_z = CONVERT_SCALE*(-1.0+DATA_VARIABILITY_AMOUNT*random.randint(-50,50)/100.0)
 
   
 def generate_sin_values(t):
   global a_x
   global a_y
   global a_z
-  a_x = math.sin(2.0*math.pi*DATA_FREQUENCY_HZ*t/1000.0)
-  a_y = math.cos(2.0*math.pi*DATA_FREQUENCY_HZ*t/1000.0)
+  a_x = CONVERT_SCALE*math.sin(2.0*math.pi*DATA_FREQUENCY_HZ*t/1000.0)
+  a_y = CONVERT_SCALE*math.cos(2.0*math.pi*DATA_FREQUENCY_HZ*t/1000.0)
   a_z = a_x+a_y
 
 
-def connect_to_server_ws():
+def connect_to_server_ws(mode):
   global WS_SENSOR_DATA
   ws_url = get_url_sensor_ws()
   print("Connect to: "+ws_url)
@@ -228,8 +231,9 @@ def connect_to_server_ws():
     ws_url, 
     header=[
       "user-agent: { \"sensor_id\": \""+sensor_data['key']
-      + "\", \"max_range\": "+sensor_data['range']
-      +", \"conversion_scale_1g\": 1, \"period_ms\": " 
+      +"\", \"max_range\": "+sensor_data['range']
+      +", \"conversion_scale_1g\": "+str(sensor_data['convert_scale'])
+      +", \"period_ms\": " 
       +str(1000.0/sensor_data['frequency'])+ " }",
       "x-custom: "  +signature_b64], 
     subprotocols=[settings_data['protocol']])
@@ -241,36 +245,61 @@ def send_data_to_server_ws(data):
   except websocket.WebSocketException as err:
     print("-- Error in websocket:",err)
     
-    
+def send_bin_data_to_server_ws(data):
+  try:
+    WS_SENSOR_DATA.send_binary(data)
+  except websocket.WebSocketException as err:
+    print("-- Error in websocket:",err)
+
+
 def stream_data_forever(option):
   global timeDATA_PREV
   global timeDATA_NOW
   PERIOD_s = 1.0/DATA_FREQUENCY_HZ;
   #PERIOD_s = 0.1
   
-  connect_to_server_ws()
+  if (option=='7'):
+    connect_to_server_ws("binary")
+  else:
+    connect_to_server_ws("utf-8")
   
   while (True):
     t=time.time()
     t_sec=int(t)
-    t_millis=int((t-t_sec)*1000000)
+    t_micro=int((t-t_sec)*1000000)
     
-    if (option=='6'):
+    if (option=='6' or option=='7'):
       generate_sin_values(t)
     else:
       generate_random_values()
-    
-    #
-    data= json.dumps({
-      "sensorID":       sensor_data['key'],
-      "time_epoch_sec": t_sec,
-      "time_millis":    t_millis,
-      "accel_x":        a_x,
-      "accel_y":        a_y,
-      "accel_z":        a_z })
+
+    if (option=='7'):
+      #binary data
+      #print(a_x.to_bytes(4, byteorder='big'))
+      #data=
+      print(t_sec, t_micro, a_x, a_y, a_z)
+      
+      
+      a_x_int=int(a_x)
+      data=t_sec.to_bytes(4, byteorder='big', signed=False)
+      data+=t_micro.to_bytes(4, byteorder='big', signed=False)
+      data+=a_x_int.to_bytes(4, byteorder='big', signed=True)
+      data+=int(a_y).to_bytes(4, byteorder='big', signed=True)
+      data+=int(a_z).to_bytes(4, byteorder='big', signed=True)
+      #
+      send_bin_data_to_server_ws(data)
+    else:
+      data= json.dumps({
+        "sensorID":       sensor_data['key'],
+        "time_epoch_sec": t_sec,
+        "time_micro":     t_micro,
+        "accel_x":        a_x,
+        "accel_y":        a_y,
+        "accel_z":        a_z })
+      send_data_to_server_ws(data)
+
     #print("-- sending: "+data)
     #send_data_to_server_ws(data);
-    send_data_to_server_ws(data)
     
     #
     timeDATA_PREV = timeDATA_NOW
@@ -296,7 +325,6 @@ def stream_data_forever(option):
     time.sleep(PERIOD_s)
 
 
-  
 ##
 ## MENU
 
@@ -338,6 +366,8 @@ def menu():
   elif (inTxt =='5'):
     stream_data_forever(inTxt)
   elif (inTxt =='6'):
+    stream_data_forever(inTxt)
+  elif (inTxt =='7'):
     stream_data_forever(inTxt)
 
 

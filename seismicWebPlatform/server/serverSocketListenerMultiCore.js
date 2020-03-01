@@ -23,9 +23,12 @@ var numCPUs = require('os').cpus().length;
 var certificates = require('../models/certificates-sqlite')
 
 var utils = require('../utils/utils.js');
+var dataUtils = require('../utils/datautils.js');
 var debug = require('debug')('seismic:server');
 
 var MESSAGE_AUTH = process.env.MESSAGE_AUTH || "sensor"
+
+var MESSAGE_BINARY_LENGTH = 20; // 20 = 5 values (each has 4bytes=32bits)
 
 // DEFAULTS
 var DEF_SENSOR_FREQUENCY = 100;
@@ -359,7 +362,20 @@ wsserver.mount({ httpServer: server,
               
               console.log("Received Binary Message of " + message.binaryData.length + " bytes");
               console.log(message.binaryData);
+              if ( message.binaryData.length < MESSAGE_BINARY_LENGTH ) {
+                writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
+              }
+              else {
+                var time_epoch = message.binaryData.readUInt32BE(0);
+                var time_micro = message.binaryData.readUInt32BE(4);
+                var a_x = message.binaryData.readInt32BE(8);
+                var a_y = message.binaryData.readInt32BE(12);
+                var a_z = message.binaryData.readInt32BE(16);
+                
+                console.log("---- got: "+time_epoch+" "+time_micro+" "+a_x+" "+a_y+" "+a_z);
+              }
               
+        
               /*
               var data = message.binaryData;
               var len = data.length;              
