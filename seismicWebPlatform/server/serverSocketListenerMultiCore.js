@@ -360,7 +360,7 @@ wsserver.mount({ httpServer: server,
             }
             else if (message.type === 'binary') {
               
-              console.log("Received Binary Message of " + message.binaryData.length + " bytes");
+              console.log("Sensor: "+sensorID+" Received Binary Message of " + message.binaryData.length + " bytes");
               console.log("---- got: "+message.binaryData);
               console.log("---- got: "+message.binaryData.toString());
               
