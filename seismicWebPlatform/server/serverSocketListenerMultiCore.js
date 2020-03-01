@@ -395,7 +395,7 @@ wsserver.mount({ httpServer: server,
                     accel_y:        Number(messageArray[3])/sensor_conversion_range,
                     accel_z:        Number(messageArray[4])/sensor_conversion_range
                   };
-                  console.log(JSON.stringify((measure));
+                  console.log(JSON.stringify(measure));
                   //writeSensorData(sensorID, JSON.stringify(measurement));
                 }
                 
