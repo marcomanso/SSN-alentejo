@@ -361,11 +361,44 @@ wsserver.mount({ httpServer: server,
             else if (message.type === 'binary') {
               
               console.log("Received Binary Message of " + message.binaryData.length + " bytes");
-              console.log(message.binaryData);
-              if ( message.binaryData.length < MESSAGE_BINARY_LENGTH ) {
+              console.log("---- got: "+message.binaryData);
+              console.log("---- got: "+str(message.binaryData));
+              if ( message.binaryData.length < MESSAGE_BINARY_LENGTH 
+                  || message.binaryData. ) {
                 writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
               }
               else {
+                //parse character '20' (space) - should have 4 (5 fields)
+                data=message.binaryData;
+                
+                
+                /*
+                1  5  8  3  0  ...  
+                
+                <Buffer 
+                31 35 38 33 30 38 30 36 37 37 
+                20 
+                35 38 36 30 30 30 
+                20 
+                33 39 39 35 
+                20 
+                32 32 34 34 36 
+                20 
+                32 35 37 32 39 36>              
+                
+                  Received Binary Message of 37 bytes
+                  <Buffer 
+                31 35 38 33 30 38 30 37 36 34 
+                20 
+                37 36 39 30 30 30 
+                20 
+                2d 32 30 38 35 37 
+                20 
+                31 31 39 32 33 
+                20 
+                32 35 30 32 30 33>
+
+                  
                 var time_epoch = message.binaryData.readUInt32BE(0);
                 var time_micro = message.binaryData.readUInt32BE(4);
                 var a_x = message.binaryData.readInt32BE(8);
@@ -373,6 +406,8 @@ wsserver.mount({ httpServer: server,
                 var a_z = message.binaryData.readInt32BE(16);
                 
                 console.log("---- got: "+time_epoch+" "+time_micro+" "+a_x+" "+a_y+" "+a_z);
+                */
+                
               }
               
         
