@@ -374,6 +374,7 @@ wsserver.mount({ httpServer: server,
                 }
                 else {
                   let measurement = {
+                    sensor_id:      sensorID,
                     time_epoch_sec: Number(messageArray[0]),
                     time_micro:     Number(messageArray[1]),
                     accel_x:        Number(messageArray[2])/sensor_conversion_range,
