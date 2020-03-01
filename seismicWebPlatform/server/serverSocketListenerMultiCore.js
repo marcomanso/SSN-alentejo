@@ -363,8 +363,8 @@ wsserver.mount({ httpServer: server,
               console.log("Received Binary Message of " + message.binaryData.length + " bytes");
               console.log("---- got: "+message.binaryData);
               console.log("---- got: "+str(message.binaryData));
-              if ( message.binaryData.length < MESSAGE_BINARY_LENGTH 
-                  || message.binaryData. ) {
+              
+              if ( message.binaryData.length < MESSAGE_BINARY_LENGTH ) {
                 writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
               }
               else {
