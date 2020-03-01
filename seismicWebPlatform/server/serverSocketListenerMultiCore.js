@@ -388,10 +388,26 @@ wsserver.mount({ httpServer: server,
                   writeLogAndConsole("log_", "Error in message contents - number of fields is :"+messageArray.length);
                 }
                 else {
-                  
+                  let measure = {
+                    time_epoch_sec: messageArray[0],
+                    time_micro:     messageArray[1],
+                    accel_x:        Number(messageArray[2])/sensor_conversion_range,
+                    accel_y:        Number(messageArray[3])/sensor_conversion_range,
+                    accel_z:        Number(messageArray[4])/sensor_conversion_range
+                  };
+                  console.log(JSON.stringify((measure));
+                  //writeSensorData(sensorID, JSON.stringify(measurement));
                 }
                 
-                
+                /*
+                "{ \"sensorid\": \"%s\", 
+                \"time_epoch_sec\": %lu, 
+                \"time_micro\": %lu, 
+                \"accel_x\": %d, 
+                \"accel_y\": %d, 
+                \"accel_z\": %d }",
+                */
+
                 
                 
                 /*
