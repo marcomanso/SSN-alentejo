@@ -373,7 +373,7 @@ wsserver.mount({ httpServer: server,
                   writeLogAndConsole("log_", "Error in message contents - number of fields is :"+messageArray.length);
                 }
                 else {
-                  let measure = {
+                  let measurement = {
                     time_epoch_sec: Number(messageArray[0]),
                     time_micro:     Number(messageArray[1]),
                     accel_x:        Number(messageArray[2])/sensor_conversion_range,
