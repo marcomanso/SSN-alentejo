@@ -360,24 +360,9 @@ wsserver.mount({ httpServer: server,
             }
             else if (message.type === 'binary') {
               
-              console.log("Sensor: "+sensorID+" Received Binary Message of " + message.binaryData.length + " bytes");
-              console.log("---- got: "+message.binaryData);
-              console.log("---- got: "+message.binaryData.toString());
-              
-              /*
-              Received Binary Message of 35 bytes
-                ---- got: 1583082116 793000 9965 26486 255004
-                  ---- got: 1583082116 793000 9965 26486 255004
-              Received Binary Message of 36 bytes
-                ---- got: 1583082116 801000 10632 26610 256541
-                  ---- got: 1583082116 801000 10632 26610 256541
-              Received Binary Message of 36 bytes
-                ---- got: 1583082116 809000 12463 26017 256756
-                  ---- got: 1583082116 809000 12463 26017 256756
-              Received Binary Message of 36 bytes
-                ---- got: 1583082116 817000 12705 25140 256781
-                  ---- got: 1583082116 817000 12705 25140 256781
-              */
+              //console.log("Sensor: "+sensorID+" Received Binary Message of " + message.binaryData.length + " bytes");
+              //console.log("---- got: "+message.binaryData);
+              //console.log("---- got: "+message.binaryData.toString());
               
               if ( message.binaryData.length < MESSAGE_BINARY_LENGTH ) {
                 writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
@@ -389,83 +374,16 @@ wsserver.mount({ httpServer: server,
                 }
                 else {
                   let measure = {
-                    time_epoch_sec: messageArray[0],
-                    time_micro:     messageArray[1],
+                    time_epoch_sec: Number(messageArray[0]),
+                    time_micro:     Number(messageArray[1]),
                     accel_x:        Number(messageArray[2])/sensor_conversion_range,
                     accel_y:        Number(messageArray[3])/sensor_conversion_range,
                     accel_z:        Number(messageArray[4])/sensor_conversion_range
                   };
-                  console.log(JSON.stringify(measure));
-                  //writeSensorData(sensorID, JSON.stringify(measurement));
+                  writeSensorData(sensorID, JSON.stringify(measurement));
                 }
-                
-                /*
-                "{ \"sensorid\": \"%s\", 
-                \"time_epoch_sec\": %lu, 
-                \"time_micro\": %lu, 
-                \"accel_x\": %d, 
-                \"accel_y\": %d, 
-                \"accel_z\": %d }",
-                */
 
-                
-                
-                /*
-                1  5  8  3  0  ...  
-                
-                <Buffer 
-                31 35 38 33 30 38 30 36 37 37 
-                20 
-                35 38 36 30 30 30 
-                20 
-                33 39 39 35 
-                20 
-                32 32 34 34 36 
-                20 
-                32 35 37 32 39 36>              
-                
-                  Received Binary Message of 37 bytes
-                  <Buffer 
-                31 35 38 33 30 38 30 37 36 34 
-                20 
-                37 36 39 30 30 30 
-                20 
-                2d 32 30 38 35 37 
-                20 
-                31 31 39 32 33 
-                20 
-                32 35 30 32 30 33>
-
-                  
-                var time_epoch = message.binaryData.readUInt32BE(0);
-                var time_micro = message.binaryData.readUInt32BE(4);
-                var a_x = message.binaryData.readInt32BE(8);
-                var a_y = message.binaryData.readInt32BE(12);
-                var a_z = message.binaryData.readInt32BE(16);
-                
-                console.log("---- got: "+time_epoch+" "+time_micro+" "+a_x+" "+a_y+" "+a_z);
-                */
-                
               }
-              
-        
-              /*
-              var data = message.binaryData;
-              var len = data.length;              
-              
-              var buf = new Buffer(len);
-              var arr = new Int32Array(buf);
-              for (var i = 0; i < len; i+=4 ) {
-                var r = data.readUInt8(i);
-                var g = data.readUInt8(i+1);
-                var b = data.readUInt8(i+2);
-                var y = Math.floor((77*r + 28*g + 151*b)/255);
-                var v = y + (y << 8) + (y << 16) + (0xFF << 24);
-                buf.writeInt32LE(v, i);
-                
-              }
-              */
-              
             }
             else {
               console.log("Discarded message from "+sensorID);
