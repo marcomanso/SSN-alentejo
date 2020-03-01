@@ -1,0 +1,17 @@
+{
+  "key": "sensor_phone0006",
+  "name": "Test sensor phone006",
+  "description": "Test sensor of a 3-axis accelerometer.",
+  "model": "Emulated Sensor",
+  "model_URL": "",
+  
+  "latitude": 38.575,
+  "longitude": -7.915,
+  "elevation": 0.0,
+  
+  "frequency": 1,
+  "variability_amount": 0.5,
+  "range": "2",
+  "convert_scale": 16384
+
+}
