@@ -17,25 +17,22 @@ client.onMessageArrived = mqtt_onMessageArrived;
 function mqtt_init() {
   // connect the client
   client.connect(options);
-  console.log("init");
+  console.log("mqtt_init");
 }
 
 // called when the client connects
 function mqtt_onConnect() {
-  // Once a connection has been made, make a subscription and send a message.
-  console.log("onConnect");
+  console.log("mqtt_onConnect");
   client.subscribe(MQTT_TOPIC_SUB_MAIN);
   //message = new Paho.MQTT.Message("Hello");
   //message.destinationName = "World";
   //client.send(message);
 }
 
-// called when the client connects
 function mqtt_onFail() {
-  // Once a connection has been made, make a subscription and send a message.
-  console.log("onFail");
+  console.log("mqtt_onFail");
   
-  mqtt_init();
+  //mqtt_init();
 
   //retry
   //init();
@@ -44,7 +41,7 @@ function mqtt_onFail() {
 // called when the client loses its connection
 function mqtt_onConnectionLost(responseObject) {
   if (responseObject.errorCode !== 0) {
-    console.log("onConnectionLost:"+responseObject);
+    console.log("mqtt_onConnectionLost:"+responseObject);
     
     //retry
     //init();
