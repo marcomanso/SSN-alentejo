@@ -186,6 +186,8 @@ def get_url_sensor_ws():
   
   
 def get_string_value(v):
+  #scale value
+  v = v / CONVERT_SCALE;
   WIDTH=13 # ranges from 0(=-1) to 5 (=0) 8(+1)
   s = list("-"*WIDTH)
   
@@ -277,17 +279,17 @@ def stream_data_forever(option):
       #binary data
       #print(a_x.to_bytes(4, byteorder='big'))
       #data=
+      print("Not WORKING - would send below data....")
       print(t_sec, t_micro, a_x, a_y, a_z)
       
-      
-      a_x_int=int(a_x)
-      data=t_sec.to_bytes(4, byteorder='big', signed=False)
-      data+=t_micro.to_bytes(4, byteorder='big', signed=False)
-      data+=a_x_int.to_bytes(4, byteorder='big', signed=True)
-      data+=int(a_y).to_bytes(4, byteorder='big', signed=True)
-      data+=int(a_z).to_bytes(4, byteorder='big', signed=True)
+#      a_x_int=int(a_x)
+#      data=t_sec.to_bytes(4, byteorder='big', signed=False)
+#      data+=t_micro.to_bytes(4, byteorder='big', signed=False)
+#      data+=a_x_int.to_bytes(4, byteorder='big', signed=True)
+#      data+=int(a_y).to_bytes(4, byteorder='big', signed=True)
+#      data+=int(a_z).to_bytes(4, byteorder='big', signed=True)
       #
-      send_bin_data_to_server_ws(data)
+#      send_bin_data_to_server_ws(data)
     else:
       data= json.dumps({
         "sensorID":       sensor_data['key'],
@@ -345,7 +347,7 @@ def menu():
   print()
   print('\t5 - Start RANDOM STREAMING (will loop forever)')
   print('\t6 - Start SIN STREAMING (will loop forever)')
-  print('\t7 - Start SIN STREAMING in BINARY mode (will loop forever)')
+  print('\t7 - Start SIN STREAMING in BINARY mode (will loop forever) - NOT WORKING')
   print()
   print('\t0 - QUIT')
   print()

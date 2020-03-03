@@ -137,12 +137,10 @@ function streamFile(filename, clientWS) {
     });    
     
     tailfd.on("data", data => {
-
       var lines = data.toString('utf8').split('\n');
       lines.forEach( line => {
         clientWS.send(line);
       });
-      
     });
     tailfd.on("eof", data => {
     });
@@ -150,18 +148,6 @@ function streamFile(filename, clientWS) {
       //writeLogAndConsole("log_", error);
     });
 
-    /*  Tail
-    tailfd = new Tail(filename, "\n", {  }, true);
-    tailfd.on("line", data => {
-      
-      console.log("data: "+data);
-      
-      clientWS.send(data);
-    });
-    tailfd.on("error", error => {
-      writeLogAndConsole("log_", error);
-    });
-    */
   }
   catch(err) { writeLogAndConsole("log_", err); };
   

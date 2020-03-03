@@ -1,0 +1,115 @@
+<% include top %>
+
+<div id="mapid" class="container-fluid"></div>
+
+<!-- <script src="/javascripts/leaflet-heat.js"></script> -->
+<script src="/javascripts/heatmap.js"></script>
+<script src="/javascripts/leaflet-heatmap.js"></script>
+<script src="/javascripts/mapSensors.js"></script>
+
+<script>
+
+  //GLOBALS
+  var CIRCLE_RADIUS_DEFAULT = 5;
+  var STATUS_COLOR_UNKNOWN  = "#bbbbbb";
+  var STATUS_COLOR_ACTIVE   = "#aaaaff";
+  var STATUS_COLOR_INACTIVE = "#ffaaaa";
+
+  var sensorMap = {};
+
+  var MQTT_HOSTNAME = "templo.ict.uevora.pt"
+  var MQTT_PORT = 1884
+  var MQTT_CLIENT_ID = "ssnWebClientId"+ Math.random().toString(16).substr(2, 8)
+  var MQTT_TOPIC_SUB = "ssnalentejo/#"
+  
+  //
+  document.getElementById("mapid").width =document.documentElement.clientWidth;
+  document.getElementById("mapid").height=document.documentElement.clientHeight;
+  
+  //var mymap = L.map('mapid').setView([38.5714, -7.9135], 13);
+  var mymap = L.map('mapid');
+
+  L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.{ext}', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    minZoom: 0,
+    maxZoom: 18,
+    ext: 'png'
+  })
+  .addTo(mymap);
+
+
+/*
+  
+  //heat_data = [];
+  var cfg = {
+    // radius should be small ONLY if scaleRadius is true (or small radius is intended)
+    // if scaleRadius is false it will be the constant radius used in pixels
+    "radius": 40,
+    "blur":.75,
+    "maxOpacity": .8,
+    // scales the radius based on map zoom
+    "scaleRadius": false,
+    // if set to false the heatmap uses the global maximum for colorization
+    // if activated: uses the data maximum within the current map boundaries
+    //   (there will always be a red spot with useLocalExtremas true)
+    "useLocalExtrema": false,
+    // which field name in your data represents the latitude - default "lat"
+    latField: 'lat',
+    // which field name in your data represents the longitude - default "lng"
+    lngField: 'lng',
+    // which field name in your data represents the data value - default "value"
+    valueField: 'count'
+  };
+  var heatmapLayer = new HeatmapOverlay(cfg);  
+  heatmapLayer.setData({max:10, data: []});
+  //heatmapLayer.setDataMax(5);  
+  
+*/
+
+  //while creating page: parse sensors and build 
+  //first sensor map to show (info is from DB, not live)
+  if (sensorlist) {
+
+    sensorlist.forEach(function(sensor) {
+
+      addSensorToMap(
+        sensor.sensorkey, 
+        sensor.name,
+        sensor.latitude,
+        sensor.longitude,
+        sensor.elevation,
+        0);
+
+      addMarketToMap(sensor);
+
+    }); //sensorlist.forEach
+
+    if (sensorlist.length!=0)
+      mymap.setView(new L.LatLng(
+          sensorlist[sensorlist.length-1].latitude, 
+          sensorlist[sensorlist.length-1].longitude), 
+          13);
+
+  } // if (sensorlist)
+
+
+  
+ //       var v = Math.random()*10;
+ //       heatmapLayer.addData( {lat:<%= sensor.latitude %>,lng:<%= sensor.longitude %>,count:1} );
+ 
+ //       heat_data.push([<%= sensor.latitude %>, <%= sensor.longitude %>, 5.2]);
+  
+ 
+
+
+  /*
+  mymap.addLayer(heatmapLayer);
+  
+  var heat = L.heatLayer(heat_data, {radius: 30, blur: 30, gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'} }).addTo(mymap);
+  */
+
+</script>
+
+
+<% include bottom %>
