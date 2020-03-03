@@ -3,28 +3,32 @@
 */
 
 
-var http = require('http'),
-    fs = require('fs'),
-    //Tail = require('tail').Tail,
-    Tail = require('tail-stream'),
-    url = require('url'),
+var http    = require('http'),
+    fs      = require('fs'),
+    //Tail  = require('tail').Tail,
+    Tail    = require('tail-stream'),
+    url     = require('url'),
     nodeRSA = require('node-rsa'),
+    mqtt    = require('mqtt'),
     //crypto = require('crypto');
     WebSocketServer = require('websocket').server;
+
+var cluster = require('cluster');
+var numCPUs = require('os').cpus().length;
+
+var certificates = require('../models/certificates-sqlite')
+var sensorDB     = require('../models/sensors-sqlite')
+
+var utils = require('../utils/utils.js');
+var dataUtils = require('../utils/datautils.js');
+var debug = require('debug')('seismic:server');
 
 var rsa = new nodeRSA();
 rsa.setOptions({signingScheme: 'pss-sha1'});
 
 http.globalAgent.maxSockets = Infinity;
 
-var cluster = require('cluster');
-var numCPUs = require('os').cpus().length;
-
-var certificates = require('../models/certificates-sqlite')
-
-var utils = require('../utils/utils.js');
-var dataUtils = require('../utils/datautils.js');
-var debug = require('debug')('seismic:server');
+//
 
 var MESSAGE_AUTH = process.env.MESSAGE_AUTH || "sensor"
 
@@ -36,6 +40,119 @@ var DEF_SENSOR_RANGE_G   = 2;
 var DEF_CONVERSION_RAGE  = 1;
 
 // process.env.SENSOR_EVENT_THRESHOLD 1g?
+
+//
+// SENSOR MAP FOR SENSOR DATA
+var sensorDBMap = {};
+var sensorInfoMap = {};
+var sensorEventMap = {};
+function fillSensorInfoMap(sensorData) {
+  /*
+  MQTT status messages are to be JSON formatted as:
+  {
+    "sensorid": "4222973344b945d0b4918fd919dae63a", 
+
+    "name": name
+    "latitude": 38,
+    "longitude": -7,
+    "elevation": 0,
+    "sensor_URL":
+    "data_URL": 
+
+    "frequency": 100,
+    "range": 2,
+    "conversion_range": 1,
+    "last_update_sec": 1583165821,
+   }
+  */
+
+  var sensor_frequency=1000.0/parseFloat(sensorData['period_ms']);
+  if (isNaN(sensor_frequency)) {
+    sensor_frequency = DEF_SENSOR_FREQUENCY;
+  }
+  var sensor_range_g=parseFloat(sensorData['max_range']);
+  if (isNaN(sensor_range_g)) {
+    sensor_range_g = DEF_SENSOR_RANGE_G;
+  }
+  var sensor_conversion_range=parseFloat(sensorData['conversion_scale_1g']);
+  if (isNaN(sensor_conversion_range)) {
+    sensor_conversion_range = DEF_CONVERSION_RAGE;
+  }  
+  //
+  let sensor = {};
+  sensor.sensorid =sensorData['sensor_id'];
+  sensor.frequency=sensor_frequency;
+  sensor.range    =sensor_range_g;
+  sensor.conversion_range  =sensor_conversion_range;
+  sensor.last_update_sec   =Math.round(date.getTime()/1000);
+  sensor.last_update_micro =0;
+  //
+  let sensor_db=sensorDBMap[sensor.sensorid];
+  sensor.name      =sensor_db.name;
+  sensor.latitude  =sensor_db.latitude;
+  sensor.longitude =sensor_db.longitude;
+  sensor.elevation =sensor_db.elevation;
+  sensor.sensor_URL=sensor_db.sensor_URL;
+  sensor.data_URL  =sensor_db.data_URL;
+  //
+  sensorInfoMap[sensor.sensorid]=sensor;
+}
+
+
+//
+// MQTT
+var DEF_MQTT_SERVER     = "server1.particle-summary.pt"
+var DEF_MQTT_PORT       = 18830
+var DEF_MQTT_CLIENT_NAME= "ssnalentejo_sensor_server"
+var DEF_MQTT_TOPIC_MAIN = "ssnalentejo" 
+
+var PUBLISH_PERIOD      = 1000 // = 1 second
+
+MQTT_SERVER     = (process.env.MQTT_SERVER      || DEF_MQTT_SERVER); 
+MQTT_PORT       = (process.env.MQTT_PORT        || DEF_MQTT_PORT);
+MQTT_TOPIC_MAIN = (process.env.MQTT_TOPIC_MAIN  || DEF_MQTT_TOPIC_MAIN); 
+
+var MQTT_TOPIC_PUB_TEST  = MQTT_TOPIC_MAIN+"/test" 
+var MQTT_TOPIC_PUB_INFO  = "/info" 
+var MQTT_TOPIC_PUB_EVENT = "/event" 
+
+var mqtt_client;
+
+function mqttSetup() {
+
+  mqtt_client  = mqtt.connect('mqtt://'+MQTT_SERVER, {port: MQTT_PORT});
+  mqtt_client.on('error',function(error){ 
+    console.log("Can't connect: "+error);
+  });
+  mqtt_client.on('connect', function () {
+    console.log("MQTT connect to "+MQTT_SERVER);
+    //mqtt_client.subscribe(MQTT_TOPIC_PUB, function (err) {
+    //  if (!err) {
+    //    console.log("MQTT subscribe to "+MQTT_TOPIC_PUB);
+    //  }
+    //});
+    //mqtt_client.publish(MQTT_TOPIC_PUB, 'Hello SSN')
+  });
+  mqtt_client.on('message', function (topic, message) {
+    // message is Buffer
+    console.log("topic: "+topic+" | message:"+message.toString())
+  });
+}
+
+function mqttPublishSensorInfoMessage(sensorId) {
+
+  var time_now = date.getTime();
+  if ( (time_now-1000*sensorInfoMap[sensorId].last_update_sec) > PUBLISH_PERIOD ) {
+    //console.log("-- now  time "+date.getTime());
+    //console.log("-- last time "+(1000*sensorInfoMap[sensorId].last_update_sec).toString());
+    sensorInfoMap[sensorId].last_update_sec=Math.round(time_now/1000);
+    mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_INFO, JSON.stringify(sensorInfoMap[sensorId]))
+  }
+}
+function mqttPublishSensorEventMessage(sensorId) {
+    mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, 'Hello SSN')
+}
+
 
 //
 // FILES AND LOGS
@@ -156,22 +273,25 @@ function streamFile(filename, clientWS) {
 
 
 function rejectRequest(req) {
-  writeLogAndConsole("log_", "wsserver.on request - from sensor " + req.remoteAddress + " connection rejected ");
+  writeLogAndConsole("log_", "wsserver.on request - from address " + req.remoteAddress + " connection rejected ");
   req.reject();
 }
 
 
 if (cluster.isMaster) {
-    // Fork workers.
-    for (var i = 0; i < numCPUs; i++) {
-        cluster.fork();
-    }
-    cluster.on('exit', function(worker, code, signal) {
-        console.log('worker ' + worker.process.pid + ' died');
-        // cluster.fork(); //replace worker?
-    });
+
+  // Fork workers.
+  for (var i = 0; i < numCPUs; i++) {
+      cluster.fork();
+  }
+  cluster.on('exit', function(worker, code, signal) {
+      console.log('worker ' + worker.process.pid + ' died');
+      // cluster.fork(); //replace worker?
+  });
   
 } else { 
+
+  mqttSetup();
 
   var server = http.createServer( function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -180,14 +300,12 @@ if (cluster.isMaster) {
 
   var wsserver = new WebSocketServer();
   /*
-wsserver.mount({ httpServer: server, 
-		autoAcceptConnections: false });
-*/
   wsserver.mount({ httpServer: server, 
-                  autoAcceptConnections: false, 
-                  
+		autoAcceptConnections: false });
+  */
+  wsserver.mount({ httpServer: server, 
+                  autoAcceptConnections: false,                   
                   fragmentOutgoingMessages: false,
-                  
                   keepalive:true, 
                   keepaliveInterval:15000, 
                   keepaliveGracePeriod:15000, 
@@ -200,33 +318,33 @@ wsserver.mount({ httpServer: server,
     if (req.requestedProtocols[0] === "client") {
 
       //get requested sensor ID
-      var sensorID = req.resource;
+      var sensorId = req.resource;
 
-      if (!sensorID) {
+      if (!sensorId) {
         var connectionClient = req.reject();
-        writeLogAndConsole("log_", "client: wsserver.on request - from client " + req.remoteAddress + " cannot find sensor "+sensorID);
+        writeLogAndConsole("log_", "client: wsserver.on request - from client " + req.remoteAddress + " cannot find sensor "+sensorId);
       }
       else {
-        writeLogAndConsole("log_", "client: wsserver.on request - accept connection from "+req.remoteAddress + " protocol: "+req.requestedProtocols+" for sensor "+sensorID);
+        writeLogAndConsole("log_", "client: wsserver.on request - accept connection from "+req.remoteAddress + " protocol: "+req.requestedProtocols+" for sensor "+sensorId);
 
         var connectionClient = req.accept('client', req.origin);
 
         //MAKE SURE DATA DIRECTORY EXISTS FOR SENSOR
-        checkDirectoryExistsSync(getLiveDataDir(sensorID));
+        checkDirectoryExistsSync(getLiveDataDir(sensorId));
 
         //look for latest files and stream data
-        var filenameSensor = getLiveDataFilename(sensorID);
+        var filenameSensor = getLiveDataFilename(sensorId);
         writeLogAndConsole("log_","Read live data from "+filenameSensor);
 
         var tailfd = streamFile(filenameSensor, connectionClient);
 
-        var w = fs.watch(getLiveDataDir(sensorID), { encoding: 'utf8' }, (eventType, filename) => {
+        var w = fs.watch(getLiveDataDir(sensorId), { encoding: 'utf8' }, (eventType, filename) => {
 
           if (eventType=='rename') {
             //we don't care about the specific file
             //we are interested in having a new file event
             //that may be (or not) a new sensor data file
-            newFile = getLiveDataFilename(sensorID);
+            newFile = getLiveDataFilename(sensorId);
 
             //if different, then we should update the sensor
             //file to get new data
@@ -261,139 +379,141 @@ wsserver.mount({ httpServer: server,
       //TODO: check if sensor is active
       //then see if should accept connection
       
-      var sensorkey;
-      var sensor_frequency;
-      var sensor_range_g;
-      var sensor_conversion_range;
-      
       //get id 
+      var sensorData;
       try {
-        var sensorData=JSON.parse(req.httpRequest.headers['user-agent']);
+        sensorData=JSON.parse(req.httpRequest.headers['user-agent']);
         if (typeof sensorData == "undefined") {    
           writeLogAndConsole("log_","Cannot retrieve sensor_id information.")
           rejectRequest(req);
         }
-        sensorkey=sensorData['sensor_id'];
-        sensor_frequency=1000.0/parseFloat(sensorData['period_ms']);
-        if (isNaN(sensor_frequency)) {
-          sensor_frequency = DEF_SENSOR_FREQUENCY;
-        }
-        sensor_range_g=parseFloat(sensorData['max_range']);
-        if (isNaN(sensor_range_g)) {
-          sensor_range_g = DEF_SENSOR_RANGE_G;
-        }
-        sensor_conversion_range=parseFloat(sensorData['conversion_scale_1g']);
-        if (isNaN(sensor_conversion_range)) {
-          sensor_conversion_range = DEF_CONVERSION_RAGE;
-        }
-        
-        //for now do not use certificates //msg_signed_b64=decodeURIComponent(req.httpRequest.headers['x-custom']);
-
       }
       catch (e) {        
         writeLogAndConsole("log_","Malformed JSON from headers: "+req.httpRequest.headers['user-agent'])
         rejectRequest(req);
         return;
       }
-     
       try {
-                         
-        writeLogAndConsole("log_","Received connection request from sensor="+sensorkey
-                           +" with operation parameters f="+sensor_frequency
-                           +" range="+sensor_range_g
-                           +" conversion_range="+sensor_conversion_range);
+        sensorDB.read(sensorData['sensor_id'])
+        .then( sensor_db => {
+          if (typeof sensor_db === 'undefined') {
+            writeLogAndConsole("log_","Sensor is not known in DB: "+sensorData['sensor_id'])
+            rejectRequest(req);
+            return;
+          } 
+          else {
+            sensorDBMap[sensorData['sensor_id']]=sensor_db;
+            try {
+              fillSensorInfoMap(sensorData);
+              var sensor=sensorInfoMap[sensorData['sensor_id']];
+              writeLogAndConsole("log_","Received connection request from sensor="+sensor.sensorid
+                                 +" with operation parameters f="+sensor.frequency
+                                 +" range="+sensor.range
+                                 +" conversion_range="+sensor.conversion_range);
+              certificates.isActive(sensor.sensorid)
+              .then(status => {
 
-        certificates.isActive(sensorkey)
-        .then(status => {
+                if (status==1) {
+                  //writeLogAndConsole("log_","certificates.isActive on "+sensorkey+" gave "+status);
+                  writeLogAndConsole("log_","Certificate exists and is active.")
 
-        if (status==1) {
-          //writeLogAndConsole("log_","certificates.isActive on "+sensorkey+" gave "+status);
-          writeLogAndConsole("log_","Certificate exists and is active.")
+                  //accept connection
+                  writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
 
-          //accept connection
-          writeLogAndConsole("log_", "wsserver.on request - accept connection from "+req.resource+" address: "+req.remoteAddress + " protocol: "+req.requestedProtocols); 
+                  var connection = req.accept(req.requestedProtocols[0], req.origin);
 
-          var connection = req.accept(req.requestedProtocols[0], req.origin);
+                  //get sensor ID
+                  var sensorId = req.resource.replace('/','');
+                  connection.on('message', function(message) {
+                    
+                    mqttPublishSensorInfoMessage(sensorId);
 
-          //get sensor ID
-          var sensorID = req.resource;
-          connection.on('message', function(message) {
-            
-            //writeLogAndConsole("-- received: "+message);
-            if (message.type === 'utf8') {
+                    //writeLogAndConsole("-- received: "+message);
+                    if (message.type === 'utf8') {
 
-              //console.log("Received UTF8 Message of " + message.utf8Data.length + " bytes");
-              //console.log(message.utf8Data);
+                      //console.log("Received UTF8 Message of " + message.utf8Data.length + " bytes");
+                      //console.log(message.utf8Data);
 
-              //HACK:  read data and reconvert to 1g scale
-              try {
-                if (sensor_conversion_range==1) {
-                  writeSensorData(sensorID, message.utf8Data);
-                }
+                      //HACK:  read data and reconvert to 1g scale
+                      try {
+                        if (sensor_conversion_range==1) {
+                          writeSensorData(sensorId, message.utf8Data);
+                        }
+                        else {
+                          var sensor_conversion_range = sensorInfoMap[sensorId].conversion_range; 
+                          measurement=JSON.parse(message.utf8Data);
+                          measurement['accel_x'] = Number(measurement['accel_x'])/sensor_conversion_range;
+                          measurement['accel_y'] = Number(measurement['accel_y'])/sensor_conversion_range;
+                          measurement['accel_z'] = Number(measurement['accel_z'])/sensor_conversion_range;
+                          writeSensorData(sensorId, JSON.stringify(measurement));
+                        }                
+                      }
+                      catch (e) {
+                        writeLogAndConsole("log_","Malformed JSON from sensor data: "+message.utf8Data)
+                        rejectRequest(req);
+                        return;
+                      } 
+                    }
+                    else if (message.type === 'binary') {
+                      
+                      //console.log("Sensor: "+sensorId+" Received Binary Message of " + message.binaryData.length + " bytes");
+                      //console.log("---- got: "+message.binaryData);
+                      //console.log("---- got: "+message.binaryData.toString());
+                      
+                      if ( message.binaryData.length < MESSAGE_BINARY_LENGTH ) {
+                        writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
+                      }
+                      else {
+                        messageArray = message.binaryData.toString().split(' ');
+                        if (messageArray.length < 5) {
+                          writeLogAndConsole("log_", "Error in message contents - number of fields is :"+messageArray.length);
+                        }
+                        else {
+                          var sensor_conversion_range = sensorInfoMap[sensorId].conversion_range; 
+                          let measurement = {
+                            sensor_id:      sensorId,
+                            time_epoch_sec: Number(messageArray[0]),
+                            time_micro:     Number(messageArray[1]),
+                            accel_x:        Number(messageArray[2])/sensor_conversion_range,
+                            accel_y:        Number(messageArray[3])/sensor_conversion_range,
+                            accel_z:        Number(messageArray[4])/sensor_conversion_range
+                          };
+                          writeSensorData(sensorId, JSON.stringify(measurement));
+                        }
+
+                      }
+                    }
+                    else {
+                      console.log("Discarded message from "+sensorId);
+                    }
+                  });
+                  connection.on('close', function(reasonCode, description) {
+                    writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
+                  });
+                  connection.on('error', function(err) {
+                    writeLogAndConsole("log_", "connection.on error "+err);
+                  });
+                }//if status (is Active)
                 else {
-                  measurement=JSON.parse(message.utf8Data);
-                  measurement['accel_x'] = Number(measurement['accel_x'])/sensor_conversion_range;
-                  measurement['accel_y'] = Number(measurement['accel_y'])/sensor_conversion_range;
-                  measurement['accel_z'] = Number(measurement['accel_z'])/sensor_conversion_range;
-                  writeSensorData(sensorID, JSON.stringify(measurement));
-                }                
-              }
-              catch (e) {
-                writeLogAndConsole("log_","Malformed JSON from sensor data: "+message.utf8Data)
-                rejectRequest(req);
-                return;
-              } 
-            }
-            else if (message.type === 'binary') {
-              
-              //console.log("Sensor: "+sensorID+" Received Binary Message of " + message.binaryData.length + " bytes");
-              //console.log("---- got: "+message.binaryData);
-              //console.log("---- got: "+message.binaryData.toString());
-              
-              if ( message.binaryData.length < MESSAGE_BINARY_LENGTH ) {
-                writeLogAndConsole("log_", "Error in message length: "+message.binaryData.length);
-              }
-              else {
-                messageArray = message.binaryData.toString().split(' ');
-                if (messageArray.length < 5) {
-                  writeLogAndConsole("log_", "Error in message contents - number of fields is :"+messageArray.length);
+                  writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
+                  rejectRequest(req)
                 }
-                else {
-                  let measurement = {
-                    sensor_id:      sensorID,
-                    time_epoch_sec: Number(messageArray[0]),
-                    time_micro:     Number(messageArray[1]),
-                    accel_x:        Number(messageArray[2])/sensor_conversion_range,
-                    accel_y:        Number(messageArray[3])/sensor_conversion_range,
-                    accel_z:        Number(messageArray[4])/sensor_conversion_range
-                  };
-                  writeSensorData(sensorID, JSON.stringify(measurement));
-                }
+            }); //certificates.isActive.then
 
-              }
-            }
-            else {
-              console.log("Discarded message from "+sensorID);
-            }
-          });
-          connection.on('close', function(reasonCode, description) {
-            writeLogAndConsole("log_", "connection.on close "+reasonCode +" "+ description);      
-          });
-          connection.on('error', function(err) {
-            writeLogAndConsole("log_", "connection.on error "+err);
-          });
-        }//if status (is Active)
-        else {
-          writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
-          rejectRequest(req)
-        }
-      }); //certificates.isActive.then
+            } //try
+            catch(err) {
+              writeLogAndConsole("log_","Error processing certificates - reject");
+              rejectRequest(req);
+            }    
 
-      } //try
-      catch(err) {
-        writeLogAndConsole("log_","Error processing certificates - reject");
-        rejectRequest(req);
+          }
+        });//end sensorDB.read
       }    
+      catch (e) {        
+        writeLogAndConsole("log_","Sensor is not known in DB: "+sensor.sensorid)
+        rejectRequest(req);
+        return;
+      }
 
     }//if protocol sensor
     

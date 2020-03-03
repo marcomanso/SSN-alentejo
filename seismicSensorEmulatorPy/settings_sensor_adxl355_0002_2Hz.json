@@ -1,0 +1,17 @@
+{
+  "key": "sensor_adxl355_0002",
+  "name": "Test sensor_adxl355_0002",
+  "description": "Test sensor of a 3-axis accelerometer.",
+  "model": "Emulated Sensor",
+  "model_URL": "",
+  
+  "latitude": 38.575,
+  "longitude": -7.915,
+  "elevation": 0.0,
+  
+  "frequency": 2,
+  "variability_amount": 0.5,
+  "range": "2",
+  "convert_scale": 1
+
+}

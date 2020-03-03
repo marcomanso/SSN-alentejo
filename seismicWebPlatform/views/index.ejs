@@ -12,28 +12,35 @@
 <script>
 
   //GLOBALS
-  var CIRCLE_RADIUS_DEFAULT = 5;
-  var STATUS_COLOR_STROKE   = "#2222ff";
-  var STATUS_COLOR_UNKNOWN  = "#bbbbbb";
-  var STATUS_COLOR_ACTIVE   = "#aaaaff";
-  var STATUS_COLOR_INACTIVE = "#ffaaaa";
+  var INITIAL_ZOOM          = 9;
+  var CIRCLE_RADIUS_DEFAULT = 3;
+  var STATUS_COLOR_STROKE   = "#333333";
+  var STATUS_COLOR_UNKNOWN  = "#333333";
+  var STATUS_COLOR_ACTIVE   = "#33bb33";
+  var STATUS_COLOR_INACTIVE = "#bb3333";
 
-  var MQTT_HOSTNAME = "templo.ict.uevora.pt"
-  //var MQTT_HOSTNAME = "193.137.179.141"
-  var MQTT_PORT = 1884
-  var MQTT_CLIENT_ID = "ssnWebClientId"+ Math.random().toString(16).substr(2, 8)
+  //var MQTT_HOSTNAME = "localhost"
+  //var MQTT_HOSTNAME = "templo.ict.uevora.pt"
+  var MQTT_HOSTNAME        = "server1.particle-summary.pt"
+  var MQTT_PORT            = 18840
+  var MQTT_CLIENT_ID       = "ssnWebClientId"+ Math.random().toString(16).substr(2, 8)
   //var MQTT_CLIENT_ID = "ssnWebClientId_0001"
-  var MQTT_TOPIC_SUB = "ssnalentejo/#"
-  var MQTT_TOPIC_SUB_INFO  = "ssnalentejo/#/info"
-  var MQTT_TOPIC_SUB_EVENT = "ssnalentejo/#/event"
+  var MQTT_TOPIC_SUB_MAIN  = "ssnalentejo/#"
+  var MQTT_TOPIC_SUB_INFO  = "info"
+  var MQTT_TOPIC_SUB_EVENT = "event"
   
+  var TIMER_PERIOD_MS      = 1000;
+  var TIME_INACTIVE_MS     = 5000;
+  
+  var TIMER = setInterval(sensorTimerProcessing, TIMER_PERIOD_MS);
+
 </script>
 
 <script type="text/JavaScript" src="/javascripts/paho-mqtt.js"></script>
 <script type="text/JavaScript" src="/javascripts/mqtt-client.js"></script>
 
 <script>
-  //var sensorMap = {};
+
   var sensorMap = new Map();
   var sensorMarkerMap = new Map();
 
@@ -63,19 +70,21 @@
      sensorlist.forEach(function(sensor) {
       %>
 
-      addSensorToMap(
+      addSensorFieldsToMap(
         '<%=sensor.sensorkey%>', 
         '<%=sensor.name%>',
         <%=sensor.latitude%>,
         <%=sensor.longitude%>,
         <%=sensor.elevation%>,
+        '<%=sensor.sensor_URL%>',
+        '<%=sensor.data_URL%>',
         0);
 
       addMarkerToMap(sensorMap.get('<%=sensor.sensorkey%>'));
       //addMarkerToMap(sensorMap['<%=sensor.sensorkey%>']);
 
       <%
-      
+
      });
   }
 
@@ -87,7 +96,7 @@
       new L.LatLng(
           sensor.latitude, 
           sensor.longitude), 
-          9);
+          INITIAL_ZOOM);
   }
 
 </script>
