@@ -22,6 +22,8 @@
   //var MQTT_HOSTNAME = "193.137.179.141"
   var MQTT_PORT = 1884
   var MQTT_CLIENT_ID = "ssnWebClientId"+ Math.random().toString(16).substr(2, 8)
+  //var MQTT_CLIENT_ID = "ssnWebClientId_0001"
+  var MQTT_TOPIC_SUB = "ssnalentejo/#"
   var MQTT_TOPIC_SUB_INFO  = "ssnalentejo/#/info"
   var MQTT_TOPIC_SUB_EVENT = "ssnalentejo/#/event"
   
@@ -73,6 +75,7 @@
       //addMarkerToMap(sensorMap['<%=sensor.sensorkey%>']);
 
       <%
+      
      });
   }
 
@@ -80,7 +83,8 @@
 
   if (sensorMap.size!=0) {
     var sensor=sensorMap.values().next().value;
-    mymap.setView(new L.LatLng(
+    mymap.setView(
+      new L.LatLng(
           sensor.latitude, 
           sensor.longitude), 
           9);
