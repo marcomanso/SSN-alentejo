@@ -59,25 +59,7 @@ function addSensorFieldsToMap(sensorid, name, latitude, longitude, elevation, se
 }
 
 function addSensorToMap(sensor) {
-/* {
-  "sensorid":"sensorphone0008",
-  "name":"alcatel tcl phone",
-  "latitude":   0
-  "longitude":  0
-  "elevation":  0,
-  "sensor_URL": "http://192.168.0.101:3000",
-  "data_URL":   "ws://192.168.0.101:3030"
-
-  "frequency":1,
-  "range":2,
-  "conversion_range":1,
-  "last_update_sec":1583248455,
-  "last_update_micro":0,
-  }
-
-*/
-
-  //OK to overwrite if new
+  //OK to overwrite if exists
   let s = {
     "sensorid":   sensor.sensorid,
     "name":       sensor.name, 
@@ -118,10 +100,13 @@ function addMarkerToMap(sensor) {
   .addTo(mymap)
   .bindPopup(
     "<span STYLE='font-size: 12pt'><b>"+sensor.name
-    +"</b></span><br/>\
-    <b>Location:</b> LatLng ("+sensor.latitude+","+sensor.longitude
-    +")<br/><a href='"+sensor.sensor_URL+"/sensors/view/"+sensor.sensorid
-    +"' target='_top'> Click for details</a></br>");
+    +"</b></span><span class=\"badge badge-pill badge-dark\">"+sensor.sensorid
+    +"</span><br/><b>Location:</b><br/> "
+    +"Latitude: "+sensor.latitude
+    +"<br/>Longitude: "+sensor.longitude
+    +"<br/>Elevation: "+sensor.elevation
+    +"<br/>URL: <a href='"+sensor.sensor_URL+"/sensors/view/"+sensor.sensorid
+    +"' target='_top'>"+sensor.sensor_URL+"</a><br/>");
   sensorMarkerMap.set(sensor.sensorid, marker);
 }
 
@@ -141,7 +126,7 @@ function sensorTimerProcessing() {
 
 function isConnectedSensor(sensor) {
   //only if is a connected sensor 
-  //- we know infer by inspecting if "conversion_range" exists
+  //- we infer this by inspecting if "conversion_range" exists
   if (typeof sensor.conversion_range !== 'undefined' )
     return true;
   else
@@ -168,33 +153,18 @@ function newSensorEventMessage(sensorevent_msg) {
 
 function newSensorInfoMessage(sensorinfo_msg) {
 
-/*
-  MQTT status messages are JSON formatted as:
-  {
-  "sensorid":"sensorphone0008",
-  "name":"alcatel tcl phone",
-  "latitude":   0
-  "longitude":  0
-  "elevation":  0,
-  "sensor_URL": "http://192.168.0.101:3000",
-  "data_URL":   "ws://192.168.0.101:3030"
-
-  "frequency":1,
-  "range":2,
-  "conversion_range":1,
-  "last_update_sec":1583248455,
-  "last_update_micro":0,
-   }
-*/
-
   //add to map - no prob with overwrite
   var sensor = JSON.parse(sensorinfo_msg);
   addSensorToMap(sensor);
   var sensorMarker = sensorMarkerMap.get(sensor.sensorid);
   //check if has marker - if not, create
   if (typeof sensorMarker === 'undefined') {
-    console.log("-- new marker: ");
+    console.log("-- new sensor (not in DB) discovered: "+sensor.sensorid);
     addMarkerToMap(sensor);
+  }
+  else {
+    //todo??? update lat-lon?
+    sensorMarker.set
   }
   setSensorAsActive(sensor.sensorid);
 
