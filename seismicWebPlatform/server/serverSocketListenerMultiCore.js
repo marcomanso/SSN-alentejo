@@ -70,29 +70,60 @@ function addCalibrationValue(sensorid, accel_x, accel_y, accel_z) {
   sensorCalibrationValuesXMap.set(sensorid, valuesX);
   sensorCalibrationValuesYMap.set(sensorid, valuesY);
   sensorCalibrationValuesZMap.set(sensorid, valuesZ);
-  //console.log("-- samples for calibration: "+values.length);
+  //console.log("-- samples for calibration: "+valuesX.length);
 }
 function calculateCalibrationValues(sensorid) {
   //calculate average value
   if ( typeof sensorCalibrationValuesXMap.get(sensorid) !== 'undefined' ) {
+
     let samplesX=sensorCalibrationValuesXMap.get(sensorid);
     let samplesY=sensorCalibrationValuesYMap.get(sensorid);
     let samplesZ=sensorCalibrationValuesZMap.get(sensorid);
-    let sampleSize=samples.length;
 
-    var meanX = stat.mean(samplesX);
-    var medianX = stat.median(samplesX);
-    var rmsX = stat.rootMeanSquare(samplesX);
-    var varianceX = stat.variance(samplesX);
-    var sdevX = stat.standardDeviation(samplesX);
-    var medianAbsoluteDeviationX = stat.medianAbsoluteDeviation(samplesX);
+    let sampleSize=samplesX.length;
+    var mean = stat.mean(samplesX);
+    var median = stat.median(samplesX);
+    var rms = stat.rootMeanSquare(samplesX);
+    var variance = stat.variance(samplesX);
+    var sdev = stat.standardDeviation(samplesX);
+    var medianAbsoluteDeviation = stat.medianAbsoluteDeviation(samplesX);
 
-    console.log(".. meanX=",  meanX);
-    console.log(".. medianX=",  medianX);
-    console.log(".. rmsX=",   rmsX);
-    console.log(".. varianceX=",  varianceX);
-    console.log(".. sdevX=",  sdevX);
-    console.log(".. medianAbsoluteDeviationX=",  medianAbsoluteDeviationX);
+    console.log(".. meanX=",  mean);
+    console.log(".. medianX=",  median);
+    console.log(".. rmsX=",   rms);
+    console.log(".. varianceX=",  variance);
+    console.log(".. sdevX=",  sdev);
+    console.log(".. medianAbsoluteDeviationX=",  medianAbsoluteDeviation);
+
+    sampleSize=samplesY.length;
+    mean = stat.mean(samplesY);
+    median = stat.median(samplesY);
+    rms = stat.rootMeanSquare(samplesY);
+    variance = stat.variance(samplesY);
+    sdev = stat.standardDeviation(samplesY);
+    medianAbsoluteDeviation = stat.medianAbsoluteDeviation(samplesY);
+
+    console.log(".. meanY=",  mean);
+    console.log(".. medianY=",  median);
+    console.log(".. rmsY=",   rms);
+    console.log(".. varianceY=",  variance);
+    console.log(".. sdevY=",  sdev);
+    console.log(".. medianAbsoluteDeviationY=",  medianAbsoluteDeviation);
+
+    sampleSize=samplesZ.length;
+    mean = stat.mean(samplesZ);
+    median = stat.median(samplesZ);
+    rms = stat.rootMeanSquare(samplesZ);
+    variance = stat.variance(samplesZ);
+    sdev = stat.standardDeviation(samplesZ);
+    medianAbsoluteDeviation = stat.medianAbsoluteDeviation(samplesZ);
+
+    console.log(".. meanZ=",  mean);
+    console.log(".. medianZ=",  median);
+    console.log(".. rmsZ=",   rms);
+    console.log(".. varianceZ=",  variance);
+    console.log(".. sdevZ=",  sdev);
+    console.log(".. medianAbsoluteDeviationZ=",  medianAbsoluteDeviation);
 
     if ( sampleSize >= CALIBRATION_SAMPLES) {
       let average_x=0;
@@ -108,7 +139,6 @@ function calculateCalibrationValues(sensorid) {
       average_z/=sampleSize;
       console.log("-- samples: "+sampleSize+"-- calibration: "+average_x+" "+average_y+" "+average_z);
       sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
-
 
     }
   }

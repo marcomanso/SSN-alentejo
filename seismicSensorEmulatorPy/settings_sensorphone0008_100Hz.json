@@ -10,7 +10,7 @@
   "elevation": 0.0,
   
   "frequency": 100,
-  "variability_amount": 0,
+  "variability_amount": 0.1,
   "range": "2",
   "convert_scale": 1
 
