@@ -87,6 +87,7 @@ def read_sensor(FILE):
   global sensor_data
   global DATA_VARIABILITY_AMOUNT
   global DATA_FREQUENCY_HZ
+  global CONVERT_SCALE
   with open(FILE) as json_file:  
     sensor_data = json.load(json_file)
     DATA_VARIABILITY_AMOUNT = float(sensor_data['variability_amount'])

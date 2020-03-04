@@ -1,6 +1,6 @@
 {
   "key": "sensorphone0008",
-  "name": "Test sensor phone006",
+  "name": "Test sensor phone008",
   "description": "Test sensor of a 3-axis accelerometer.",
   "model": "Emulated Sensor",
   "model_URL": "",
@@ -10,7 +10,7 @@
   "elevation": 0.0,
   
   "frequency": 100,
-  "variability_amount": 0.5,
+  "variability_amount": 0,
   "range": "2",
   "convert_scale": 1
 

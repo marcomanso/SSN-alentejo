@@ -10,6 +10,7 @@ var http    = require('http'),
     url     = require('url'),
     nodeRSA = require('node-rsa'),
     mqtt    = require('mqtt'),
+    stat    = require('simple-statistics'),
     //crypto = require('crypto');
     WebSocketServer = require('websocket').server;
 
@@ -40,6 +41,84 @@ var DEF_SENSOR_RANGE_G   = 2;
 var DEF_CONVERSION_RAGE  = 1;
 
 // process.env.SENSOR_EVENT_THRESHOLD 1g?
+var CALIBRATION_SAMPLES = 128;
+var sensorCalibrationMap = new Map();
+var sensorCalibrationValuesXMap = new Map();
+var sensorCalibrationValuesYMap = new Map();
+var sensorCalibrationValuesZMap = new Map();
+var DEF_EVENT_THRESHOLD_g = 0.1;
+var DEF_REST_THRESHOLD_g = 0.001;
+
+
+function addCalibrationValue(sensorid, accel_x, accel_y, accel_z) {
+  if (typeof sensorCalibrationValuesXMap.get(sensorid) === 'undefined') {  
+    sensorCalibrationValuesXMap.set(sensorid, []);
+    sensorCalibrationValuesYMap.set(sensorid, []);
+    sensorCalibrationValuesZMap.set(sensorid, []);
+  }
+  let valuesX=sensorCalibrationValuesXMap.get(sensorid);
+  let valuesY=sensorCalibrationValuesYMap.get(sensorid);
+  let valuesZ=sensorCalibrationValuesZMap.get(sensorid);
+  valuesX.unshift(accel_z);
+  valuesY.unshift(accel_y);
+  valuesZ.unshift(accel_x);
+  if (valuesX.length>CALIBRATION_SAMPLES) {
+    valuesX.pop();
+    valuesY.pop();
+    valuesZ.pop();
+  }
+  sensorCalibrationValuesXMap.set(sensorid, valuesX);
+  sensorCalibrationValuesYMap.set(sensorid, valuesY);
+  sensorCalibrationValuesZMap.set(sensorid, valuesZ);
+  //console.log("-- samples for calibration: "+values.length);
+}
+function calculateCalibrationValues(sensorid) {
+  //calculate average value
+  if ( typeof sensorCalibrationValuesXMap.get(sensorid) !== 'undefined' ) {
+    let samplesX=sensorCalibrationValuesXMap.get(sensorid);
+    let samplesY=sensorCalibrationValuesYMap.get(sensorid);
+    let samplesZ=sensorCalibrationValuesZMap.get(sensorid);
+    let sampleSize=samples.length;
+
+    var meanX = stat.mean(samplesX);
+    var medianX = stat.median(samplesX);
+    var rmsX = stat.rootMeanSquare(samplesX);
+    var varianceX = stat.variance(samplesX);
+    var sdevX = stat.standardDeviation(samplesX);
+    var medianAbsoluteDeviationX = stat.medianAbsoluteDeviation(samplesX);
+
+    console.log(".. meanX=",  meanX);
+    console.log(".. medianX=",  medianX);
+    console.log(".. rmsX=",   rmsX);
+    console.log(".. varianceX=",  varianceX);
+    console.log(".. sdevX=",  sdevX);
+    console.log(".. medianAbsoluteDeviationX=",  medianAbsoluteDeviationX);
+
+    if ( sampleSize >= CALIBRATION_SAMPLES) {
+      let average_x=0;
+      let average_y=0;
+      let average_z=0;
+      for ( var i=0; i<sampleSize; i++ ) {
+        average_x+=samplesX[i];
+        average_y+=samplesY[i];
+        average_z+=samplesZ[i];
+      }
+      average_x/=sampleSize;
+      average_y/=sampleSize;
+      average_z/=sampleSize;
+      console.log("-- samples: "+sampleSize+"-- calibration: "+average_x+" "+average_y+" "+average_z);
+      sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
+
+
+    }
+  }
+}
+function isCalibrated(sensorid) {
+  if (typeof sensorCalibrationMap.get(sensorid) !== 'undefined')
+    return true;
+  return false;
+}
+
 
 //
 // SENSOR MAP FOR SENSOR DATA
@@ -446,6 +525,11 @@ if (cluster.isMaster) {
                           measurement['accel_y'] = Number(measurement['accel_y'])/sensor_conversion_range;
                           measurement['accel_z'] = Number(measurement['accel_z'])/sensor_conversion_range;
                           writeSensorData(sensorId, JSON.stringify(measurement));
+                          addCalibrationValue(sensorId, 
+                            measurement['accel_x'],
+                            measurement['accel_y'],
+                            measurement['accel_z']);
+                          calculateCalibrationValues(sensorId);
                         }                
                       }
                       catch (e) {
@@ -479,6 +563,11 @@ if (cluster.isMaster) {
                             accel_z:        Number(messageArray[4])/sensor_conversion_range
                           };
                           writeSensorData(sensorId, JSON.stringify(measurement));
+                          addCalibrationValue(sensorId, 
+                            measurement['accel_x'],
+                            measurement['accel_y'],
+                            measurement['accel_z']);
+                          calculateCalibrationValues(sensorId);
                         }
 
                       }
