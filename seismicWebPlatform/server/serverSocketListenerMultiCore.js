@@ -49,8 +49,7 @@ var sensorCalibrationValuesYMap = new Map();
 var sensorCalibrationValuesZMap = new Map();
 
 var DEF_EVENT_THRESHOLD_g = 0.1;
-var DEF_REST_THRESHOLD_g = 0.001;
-
+var DEF_CALIBRATION_DECAY_FACTOR = 0.000001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
 
 function addCalibrationValue(sensorid, accel_x, accel_y, accel_z) {
   if (typeof sensorCalibrationValuesXMap.get(sensorid) === 'undefined') {  
@@ -99,12 +98,15 @@ function calculateCalibrationValues(sensorid) {
         writeLogAndConsole("log_", sensorid+" first calibration to: "+average_x+" "+average_y+" "+average_z);
       }
       else {
-        let calibr_rms=stat.rootMeanSquare(calibr_sdev);
+        let calibr_rms=(1.0+DEF_CALIBRATION_DECAY_FACTOR)*stat.rootMeanSquare(calibr_sdev);
         let sdev_rms  =stat.rootMeanSquare([sdev_x,sdev_y,sdev_z]);
         if (sdev_rms<calibr_rms) {
           sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
           sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z]);
-          writeLogAndConsole("log_", sensorid+" updated calibration to: "+average_x+" "+average_y+" "+average_z+" std.dev="+sdev_rms);
+          writeLogAndConsole("log_", sensorid+" updated calibration to: "+average_x+" "+average_y+" "+average_z+" std.dev(rms)="+sdev_rms);
+        }
+        else {
+          sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z].map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );          
         }
       }
       /*
