@@ -80,8 +80,8 @@ function calculateCalibrationValues(sensorid) {
     let samplesY=sensorCalibrationValuesYMap.get(sensorid);
     let samplesZ=sensorCalibrationValuesZMap.get(sensorid);
     let sampleSizeX=samplesX.length;
-    let sampleSizeY=samplesY.length;
-    let sampleSizeZ=samplesZ.length;
+    //let sampleSizeY=samplesY.length;
+    //let sampleSizeZ=samplesZ.length;
 
 /*
     let sampleSize=samplesX.length;
@@ -130,12 +130,12 @@ function calculateCalibrationValues(sensorid) {
     console.log(".. medianAbsoluteDeviationZ=",  medianAbsoluteDeviation);
 */
 
-    if ( sampleSize >= CALIBRATION_SAMPLES) {
+    if ( sampleSizeX >= CALIBRATION_SAMPLES) {
       let average_x=stat.mean(samplesX);
       let average_y=stat.mean(samplesX);
       let average_z=stat.mean(samplesX);
       sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
-console.log(sampleSize+"\t"+average_x+"\t"+average_y+"\t"+average_z);
+console.log(sampleSizeX+"\t"+average_x+"\t"+average_y+"\t"+average_z);
     }
   }
 }
