@@ -171,15 +171,15 @@
     // accel X
     ctx.fillStyle = "#FF0000";
     var yy_ax = max_height/2 * (1 - data.accel_x/MAX_Y_AXIS) + y_offset;
-    ctx.fillRect(current_x, yy_ax, 1, 1);
+    ctx.fillRect(current_x, yy_ax, 2, 2);
 
     ctx.fillStyle = "#00FF00";
     var yy_ay = max_height/2 * (1 - data.accel_y/MAX_Y_AXIS) + y_offset;
-    ctx.fillRect(current_x, yy_ay, 1, 1);
+    ctx.fillRect(current_x, yy_ay, 2, 2);
 
     ctx.fillStyle = "#0000FF";
     var yy_az = max_height/2 * (1 - data.accel_z/MAX_Y_AXIS) + y_offset;
-    ctx.fillRect(current_x, yy_az, 1, 1);
+    ctx.fillRect(current_x, yy_az, 2, 2);
 
     //current_x++;
 

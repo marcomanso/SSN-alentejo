@@ -300,7 +300,7 @@ readDirsAndFiles = function (res, sensor, path, year, month, day, next) {
 
   for (f of allFiles) {
     if (f.indexOf('.') !== 0) {
-      if (f.endsWith('.txt') || f.endsWith('.log') || f.endsWith('.json') || f.endsWith('.zip') )
+      if (f.endsWith('.txt') || f.endsWith('.log') || f.endsWith('.json') || f.endsWith('.zip') || f.endsWith('.gz') || f.endsWith('.tgz'))
         files.push(f);
       else
         directories.push(f);

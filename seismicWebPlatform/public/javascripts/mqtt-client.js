@@ -31,6 +31,8 @@ function mqtt_onConnect() {
 
 function mqtt_onFail() {
   console.log("mqtt_onFail");
+
+  document.getElementById("alert_error").style.display = "block";
   
   //mqtt_init();
 
