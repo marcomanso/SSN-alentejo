@@ -9,12 +9,6 @@
   font-size: 12px;
   letter-spacing: 4px;
 }
-.navbar-nav  li a:hover {
-  color: #222222 !important;
-}
-.active>a {
-  color: #777777 !important;;
-}
 
 .media {
   border: 1px;
@@ -30,10 +24,6 @@ html, body {
 body {
   padding: 10px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
 }
 
 header.page-header a.btn-primary {

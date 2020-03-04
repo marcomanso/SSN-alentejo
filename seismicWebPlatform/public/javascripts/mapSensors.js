@@ -96,7 +96,7 @@ function addMarkerToMap(sensor) {
     // fill:  true
     // fillColor: #aaaaaa
     // fillOpacity: 1.0
-  var marker = new L.circleMarker([sensor.latitude, sensor.longitude], options)
+  var marker = new L.circleMarker([sensor.latitude, sensor.longitude, sensor.elevation], options)
   .addTo(mymap)
   .bindPopup(
     "<span STYLE='font-size: 12pt'><b>"+sensor.name
@@ -164,7 +164,12 @@ function newSensorInfoMessage(sensorinfo_msg) {
   }
   else {
     //todo??? update lat-lon?
-    sensorMarker.set
+    if ( sensor.latitude  != sensorMarker.getLatLng().lat 
+      || sensor.longitude != sensorMarker.getLatLng().lng
+      || sensor.elevation != sensorMarker.getLatLng().alt ) {
+    console.log("-- updated location for sensor: "+sensor.sensorid);
+    sensorMarker.setLatLng([sensor.latitude, sensor.longitude, sensor.altitude]);      
+    }
   }
   setSensorAsActive(sensor.sensorid);
 
