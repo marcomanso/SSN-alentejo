@@ -8,6 +8,9 @@ db/db.sqlite
 db/db.sqlite3
 data_old/
 
+#
+package-lock.json
+
 # obsolete
 bower
 
