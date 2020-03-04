@@ -43,9 +43,11 @@ var DEF_CONVERSION_RAGE  = 1;
 // process.env.SENSOR_EVENT_THRESHOLD 1g?
 var CALIBRATION_SAMPLES = 128;
 var sensorCalibrationMap = new Map();
+var sensorCalibrationStdDevMap = new Map();
 var sensorCalibrationValuesXMap = new Map();
 var sensorCalibrationValuesYMap = new Map();
 var sensorCalibrationValuesZMap = new Map();
+
 var DEF_EVENT_THRESHOLD_g = 0.1;
 var DEF_REST_THRESHOLD_g = 0.001;
 
@@ -80,57 +82,32 @@ function calculateCalibrationValues(sensorid) {
     let samplesY=sensorCalibrationValuesYMap.get(sensorid);
     let samplesZ=sensorCalibrationValuesZMap.get(sensorid);
     let sampleSizeX=samplesX.length;
-    //let sampleSizeY=samplesY.length;
-    //let sampleSizeZ=samplesZ.length;
-
-/*
-    let sampleSize=samplesX.length;
-    var mean = stat.mean(samplesX);
-    var median = stat.median(samplesX);
-    var rms = stat.rootMeanSquare(samplesX);
-    var variance = stat.variance(samplesX);
-    var sdev = stat.standardDeviation(samplesX);
-    var medianAbsoluteDeviation = stat.medianAbsoluteDeviation(samplesX);
-
-    console.log(".. meanX=",  mean);
-    console.log(".. medianX=",  median);
-    console.log(".. rmsX=",   rms);
-    console.log(".. varianceX=",  variance);
-    console.log(".. sdevX=",  sdev);
-    console.log(".. medianAbsoluteDeviationX=",  medianAbsoluteDeviation);
-
-    sampleSize=samplesY.length;
-    mean = stat.mean(samplesY);
-    median = stat.median(samplesY);
-    rms = stat.rootMeanSquare(samplesY);
-    variance = stat.variance(samplesY);
-    sdev = stat.standardDeviation(samplesY);
-    medianAbsoluteDeviation = stat.medianAbsoluteDeviation(samplesY);
-
-    console.log(".. meanY=",  mean);
-    console.log(".. medianY=",  median);
-    console.log(".. rmsY=",   rms);
-    console.log(".. varianceY=",  variance);
-    console.log(".. sdevY=",  sdev);
-    console.log(".. medianAbsoluteDeviationY=",  medianAbsoluteDeviation);
-
-    sampleSize=samplesZ.length;
-    mean = stat.mean(samplesZ);
-    median = stat.median(samplesZ);
-    rms = stat.rootMeanSquare(samplesZ);
-    variance = stat.variance(samplesZ);
-    sdev = stat.standardDeviation(samplesZ);
-    medianAbsoluteDeviation = stat.medianAbsoluteDeviation(samplesZ);
-
-    console.log(".. meanZ=",  mean);
-    console.log(".. medianZ=",  median);
-    console.log(".. rmsZ=",   rms);
-    console.log(".. varianceZ=",  variance);
-    console.log(".. sdevZ=",  sdev);
-    console.log(".. medianAbsoluteDeviationZ=",  medianAbsoluteDeviation);
-*/
 
     if ( sampleSizeX >= CALIBRATION_SAMPLES) {
+      //check if std.dev is lower than existing 
+      //if not std.dev exists, accept calibration values
+      let average_x=stat.mean(samplesX);
+      let average_y=stat.mean(samplesY);
+      let average_z=stat.mean(samplesZ);
+      let sdev_x = stat.standardDeviation(samplesX);
+      let sdev_y = stat.standardDeviation(samplesY);
+      let sdev_z = stat.standardDeviation(samplesZ);
+      let calibr_sdev=sensorCalibrationStdDevMap.get(sensorid);
+      if (typeof calibr_sdev === 'undefined') {
+        sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
+        sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z]);
+        writeLogAndConsole("log_", sensorid+" first calibration to: "+average_x+" "+average_y+" "+average_z);
+      }
+      else {
+        let calibr_rms=stat.rootMeanSquare(calibr_sdev);
+        let sdev_rms  =stat.rootMeanSquare([sdev_x,sdev_y,sdev_z]);
+        if (sdev_rms<calibr_rms) {
+          sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
+          sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z]);
+          writeLogAndConsole("log_", sensorid+" updated calibration to: "+average_x+" "+average_y+" "+average_z+" std.dev="+sdev_rms);
+        }
+      }
+      /*
       let average_x=stat.mean(samplesX);
       let variance_x = stat.variance(samplesX);
       let sdev_x = stat.standardDeviation(samplesX);
@@ -146,6 +123,7 @@ function calculateCalibrationValues(sensorid) {
         +"\t"+average_y+"\t"+variance_y+"\t"+sdev_y
         +"\t"+average_z+"\t"+variance_z+"\t"+sdev_z
         );
+        */
     }
   }
 }
