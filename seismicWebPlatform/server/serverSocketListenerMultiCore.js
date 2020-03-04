@@ -132,10 +132,20 @@ function calculateCalibrationValues(sensorid) {
 
     if ( sampleSizeX >= CALIBRATION_SAMPLES) {
       let average_x=stat.mean(samplesX);
-      let average_y=stat.mean(samplesX);
-      let average_z=stat.mean(samplesX);
+      let variance_x = stat.variance(samplesX);
+      let sdev_x = stat.standardDeviation(samplesX);
+      let average_y=stat.mean(samplesY);
+      let variance_y = stat.variance(samplesY);
+      let sdev_y = stat.standardDeviation(samplesY);
+      let average_z=stat.mean(samplesZ);
+      let variance_z = stat.variance(samplesZ);
+      let sdev_z = stat.standardDeviation(samplesZ);
       sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
-console.log(sampleSizeX+"\t"+average_x+"\t"+average_y+"\t"+average_z);
+      console.log(sampleSizeX
+        +"\t"+average_x+"\t"+variance_x+"\t"+sdev_x
+        +"\t"+average_y+"\t"+variance_y+"\t"+sdev_y
+        +"\t"+average_z+"\t"+variance_z+"\t"+sdev_z
+        );
     }
   }
 }
