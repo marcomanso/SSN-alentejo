@@ -61,9 +61,9 @@ function addCalibrationValue(sensorid, accel_x, accel_y, accel_z) {
   let valuesX=sensorCalibrationValuesXMap.get(sensorid);
   let valuesY=sensorCalibrationValuesYMap.get(sensorid);
   let valuesZ=sensorCalibrationValuesZMap.get(sensorid);
-  valuesX.unshift(accel_z);
+  valuesX.unshift(accel_x);
   valuesY.unshift(accel_y);
-  valuesZ.unshift(accel_x);
+  valuesZ.unshift(accel_z);
   if (valuesX.length>CALIBRATION_SAMPLES) {
     valuesX.pop();
     valuesY.pop();
