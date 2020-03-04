@@ -49,7 +49,7 @@ var sensorCalibrationValuesYMap = new Map();
 var sensorCalibrationValuesZMap = new Map();
 
 var DEF_EVENT_THRESHOLD_g = 0.1;
-var DEF_CALIBRATION_DECAY_FACTOR = 0.000001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
+var DEF_CALIBRATION_DECAY_FACTOR = 0.000000001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
 
 function addCalibrationValue(sensorid, accel_x, accel_y, accel_z) {
   if (typeof sensorCalibrationValuesXMap.get(sensorid) === 'undefined') {  
