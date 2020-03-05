@@ -45,7 +45,7 @@ var sensorMeasurementsYMap = new Map();
 var sensorMeasurementsZMap = new Map();
 //
 var CALIBRATION_SAMPLES = 128;
-var DEF_CALIBRATION_DECAY_FACTOR = 0.00001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
+var DEF_CALIBRATION_DECAY_FACTOR = 0.000001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
 var sensorCalibrationMap = new Map();
 var sensorCalibrationStdDevMap = new Map();
 
@@ -447,7 +447,6 @@ function rejectRequest(req) {
   req.reject();
 }
 
-
 if (cluster.isMaster) {
 
   // Fork workers.
@@ -556,6 +555,7 @@ if (cluster.isMaster) {
         if (typeof sensorData == "undefined") {    
           writeLogAndConsole("log_","Cannot retrieve sensor_id information.")
           rejectRequest(req);
+          return;
         }
       }
       catch (e) {        
@@ -677,6 +677,7 @@ if (cluster.isMaster) {
                 else {
                   writeLogAndConsole("log_","Certificate does not exist or is NOT active.")
                   rejectRequest(req)
+                  return;
                 }
             }); //certificates.isActive.then
 
@@ -684,6 +685,7 @@ if (cluster.isMaster) {
             catch(err) {
               writeLogAndConsole("log_","Error processing certificates - reject");
               rejectRequest(req);
+              return;
             }    
 
           }
@@ -700,6 +702,7 @@ if (cluster.isMaster) {
     else {
       writeLogAndConsole("log_","Error processing connection - reject");
       rejectRequest(req);
+      return;
     }
   
   });//wsserver.on request

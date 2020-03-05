@@ -45,6 +45,7 @@ function mqtt_onConnectionLost(responseObject) {
   if (responseObject.errorCode !== 0) {
     console.log("mqtt_onConnectionLost:"+responseObject);
     
+    document.getElementById("alert_error").style.display = "block";
     //retry
     //init();
   }
