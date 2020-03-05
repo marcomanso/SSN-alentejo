@@ -56,7 +56,7 @@ var sensorCalibrationMap = new Map();
 var sensorCalibrationStdDevMap = new Map();
 
 var DEF_EVENT_STDDEV_FACTOR = 2;          // if STD-DEV_measurement is above STD-DEV then assume is signal
-var DEF_EVENT_RECORD_DURATION_MS = 5000;  // time (in ms) to keep event active even if no current_signal
+var DEF_EVENT_RECORD_DURATION_MS = 1000;  // time (in ms) to keep event active even if no current_signal
 
 var sensorEventMap = new Map();  // stores info about event
                               // fields:  
@@ -210,7 +210,7 @@ function resetEventValues(sensorid) {
   if (typeof sensorEventMap.get(sensorid) !== 'undefined') {
     sensorEventMap.delete(sensorid);
   }
-  
+
   /*
   if (typeof sensorEventMap.get(sensorid) !== 'undefined') {
     sensorEventMap.get(sensorid).max_accel_x   =0;
