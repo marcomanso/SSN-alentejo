@@ -147,7 +147,9 @@ console.log("1");
 console.log("2");
             //no entry exists? put data
             if ( typeof sensorEventMap.get(sensorid) === 'undefined') {
+console.log("2.1");
               sensorEventMap.set(sensorid, eventData);
+console.log("2.2");
             }
             //entry exists? check what to update
             else {
