@@ -45,7 +45,8 @@ var sensorMeasurementsYMap = new Map();
 var sensorMeasurementsZMap = new Map();
 //
 var CALIBRATION_SAMPLES = 128;
-var DEF_CALIBRATION_DECAY_FACTOR = 0.000001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
+var DEF_CALIBRATION_DECAY_FACTOR = 0.0; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
+//var DEF_CALIBRATION_DECAY_FACTOR = 0.000001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
 var sensorCalibrationMap = new Map();
 var sensorCalibrationStdDevMap = new Map();
 
