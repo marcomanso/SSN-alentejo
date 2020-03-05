@@ -161,7 +161,7 @@ function processMeasurementValues(sensorid) {
                 +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
             }
             //entry exists? check what to update
-            else {
+            else {               
               sensorEventMap.get(sensorid).time_update_ms=date.getTime();
               if (sensorEventMap.get(sensorid).accel_rms<eventData.accel_rms) {
                 sensorEventMap.get(sensorid).accel_rms  =eventData.accel_rms;
@@ -197,7 +197,7 @@ function processMeasurementValues(sensorid) {
               console.log("TODO: write to MQTT and DB");
 
               resetEventValues(sensorid);
-              
+
             }//if should end
           }//if has started
         }//if has event
@@ -208,6 +208,11 @@ function processMeasurementValues(sensorid) {
 }
 function resetEventValues(sensorid) {  
   if (typeof sensorEventMap.get(sensorid) !== 'undefined') {
+    sensorEventMap.delete(sensorid);
+  }
+  
+  /*
+  if (typeof sensorEventMap.get(sensorid) !== 'undefined') {
     sensorEventMap.get(sensorid).max_accel_x   =0;
     sensorEventMap.get(sensorid).max_accel_y   =0;
     sensorEventMap.get(sensorid).max_accel_z   =0;
@@ -216,6 +221,7 @@ function resetEventValues(sensorid) {
     sensorEventMap.get(sensorid).time_update_ms=0;
     sensorEventMap.get(sensorid).time_end_ms   =0;
   }
+  */
 }
 function isCalibrated(sensorid) {
   if (typeof sensorCalibrationMap.get(sensorid) !== 'undefined')
