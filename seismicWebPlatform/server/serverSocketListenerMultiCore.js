@@ -40,6 +40,10 @@ var DEF_SENSOR_FREQUENCY = 100;
 var DEF_SENSOR_RANGE_G   = 2;
 var DEF_CONVERSION_RAGE  = 1;
 
+//DB operations
+var sensorDBMap = {};
+
+// MEASUREMENTS
 var sensorMeasurementsXMap = new Map();
 var sensorMeasurementsYMap = new Map();
 var sensorMeasurementsZMap = new Map();
