@@ -169,7 +169,7 @@ function processMeasurementValues(sensorid) {
           }//if EVENT
         }//else no update to calibration
         //add decay factor to calibration std.dev
-        sensorCalibrationStdDevMap.set(sensorid, calibr_sdev.map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );
+        sensorCalibrationStdDevMap.set(sensorid, sensorCalibrationStdDevMap.get(sensorid).map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );
       }//else not calibrated
     }//else calibration samples
   }// if there are measurements
