@@ -137,9 +137,9 @@ function processMeasurementValues(sensorid) {
           if ( sdev_rms > DEF_EVENT_STDDEV_FACTOR*calibr_rms ) {
             //YES - collect event data
             let eventData={};
-            eventData.time_start_ms =date.getTime(); 
-            eventData.time_update_ms=date.getTime(); 
-            eventData.time_end_ms   =0;  //indicates ongoing
+            eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
+            eventData.time_update_ms=date.getTime(); //!=0 indicated ongoing event
+            eventData.time_end_ms   =0;
             eventData.max_accel_x   =average_x;
             eventData.max_accel_y   =average_y;
             eventData.max_accel_z   =average_z;
@@ -180,9 +180,10 @@ function processMeasurementValues(sensorid) {
         sensorCalibrationStdDevMap.set(sensorid, sensorCalibrationStdDevMap.get(sensorid).map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );
 
         //IF IN EVENT: determine if should stop it
-        if ( typeof sensorEventMap.get(sensorid) !== 'undefined' ) {
+        if ( typeof sensorEventMap.get(sensorid) !== 'undefined' 
+          && sensorEventMap.get(sensorid).eventData.time_start_ms != 0 ) {
           let time_now=date.getTime();
-          if ( (sensorEventMap.get(sensorid).time_update_ms-sensorEventMap.get(sensorid).time_start_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
+          if ( (time_now-sensorEventMap.get(sensorid).time_update_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
             sensorEventMap.get(sensorid).time_end_ms=time_now;
             writeLogAndConsole("log_", 
               "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_start_ms-sensorEventMap.get(sensorid).time_start_ms)
