@@ -131,6 +131,7 @@ function processMeasurementValues(sensorid) {
           //check if is event
           if ( sdev_rms > DEF_EVENT_STDDEV_FACTOR*calibr_rms ) {
             //YES - collect event data
+console.log("1");            
             let eventData={};
             eventData.time_start_ms =date.getTime(); 
             eventData.time_update_ms=date.getTime(); 
@@ -143,12 +144,14 @@ function processMeasurementValues(sensorid) {
             //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
             eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
             eventData.stddev_rms    =sdev_rms;
+console.log("2");
             //no entry exists? put data
             if ( typeof sensorEvent.get(sensorid) === 'undefined') {
               sensorEventMap.set(sensorid, eventData);
             }
             //entry exists? check what to update
             else {
+console.log("3");
               sensorEvent.get(sensorid).time_update_ms=date.getTime();
               if (sensorEvent.get(sensorid).accel_rms<eventData.accel_rms) {
                 sensorEvent.get(sensorid).accel_rms  =eventData.accel_rms;
