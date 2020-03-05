@@ -40,46 +40,67 @@ var DEF_SENSOR_FREQUENCY = 100;
 var DEF_SENSOR_RANGE_G   = 2;
 var DEF_CONVERSION_RAGE  = 1;
 
-// process.env.SENSOR_EVENT_THRESHOLD 1g?
+var sensorMeasurementsXMap = new Map();
+var sensorMeasurementsYMap = new Map();
+var sensorMeasurementsZMap = new Map();
+//
 var CALIBRATION_SAMPLES = 128;
+var DEF_CALIBRATION_DECAY_FACTOR = 0.00001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
 var sensorCalibrationMap = new Map();
 var sensorCalibrationStdDevMap = new Map();
-var sensorCalibrationValuesXMap = new Map();
-var sensorCalibrationValuesYMap = new Map();
-var sensorCalibrationValuesZMap = new Map();
 
-var DEF_EVENT_THRESHOLD_g = 0.1;
-var DEF_CALIBRATION_DECAY_FACTOR = 0.00001; //decay factor of std.dev at each sample (to allow more recent values to enter calibration)
+var DEF_EVENT_STDDEV_FACTOR = 2;          // if STD-DEV_measurement is above STD-DEV then assume is signal
+var DEF_EVENT_RECORD_DURATION_MS = 5000;  // time (in ms) to keep event active even if no current_signal
 
-function addCalibrationValue(sensorid, accel_x, accel_y, accel_z) {
-  if (typeof sensorCalibrationValuesXMap.get(sensorid) === 'undefined') {  
-    sensorCalibrationValuesXMap.set(sensorid, []);
-    sensorCalibrationValuesYMap.set(sensorid, []);
-    sensorCalibrationValuesZMap.set(sensorid, []);
+var sensorEventMap = new Map();  // stores info about event
+                              // fields:  
+                              // sensorEvent:
+                              // - sensorEventDataStart_ms    // if !=0 means there is an event in progress
+                              // - sensorEventDataStop_ms
+                              // - maxAccelEvent              // max acceleration during event
+/*
+            eventData.time_start_ms=date.getTime(); 
+            eventData.time_end_ms  =0;  //indicates ongoing
+            eventData.time_update_ms=date.getTime(); //when is still active, update this with current_time
+            eventData.max_accel_x  =stat.max(sensorMeasurementsXMap.get(sensorid));
+            eventData.max_accel_y  =stat.max(sensorMeasurementsYMap.get(sensorid));
+            eventData.max_accel_z  =stat.max(sensorMeasurementsZMap.get(sensorid));
+            eventData.accel_rms    =stat.rootMeanSquare([max_accel_x,max_accel_y,max_accel_z]);
+            eventData.stddev_rms   =sdev_rms;
+*/
+
+//var sensorEventDataStart_ms=0;               
+//var sensorEventDataStop_ms =0;
+//var maxAccelEvent=[0,0,0];                
+
+
+// function that continuouly adds sensor measurements
+// to queue array - will be used for:
+//  - extract calibration values
+//  - event detection
+function addMeasurementValueToQueue(sensorid, accel_x, accel_y, accel_z) {
+  if (typeof sensorMeasurementsXMap.get(sensorid) === 'undefined') {  
+    sensorMeasurementsXMap.set(sensorid, []);
+    sensorMeasurementsYMap.set(sensorid, []);
+    sensorMeasurementsZMap.set(sensorid, []);
   }
-  let valuesX=sensorCalibrationValuesXMap.get(sensorid);
-  let valuesY=sensorCalibrationValuesYMap.get(sensorid);
-  let valuesZ=sensorCalibrationValuesZMap.get(sensorid);
-  valuesX.unshift(accel_x);
-  valuesY.unshift(accel_y);
-  valuesZ.unshift(accel_z);
-  if (valuesX.length>CALIBRATION_SAMPLES) {
-    valuesX.pop();
-    valuesY.pop();
-    valuesZ.pop();
+  sensorMeasurementsXMap.get(sensorid).unshift(accel_x);
+  sensorMeasurementsYMap.get(sensorid).unshift(accel_y);
+  sensorMeasurementsZMap.get(sensorid).unshift(accel_z);
+  if (sensorMeasurementsXMap.get(sensorid).length>CALIBRATION_SAMPLES) {
+    sensorMeasurementsXMap.get(sensorid).pop();
+    sensorMeasurementsYMap.get(sensorid).pop();
+    sensorMeasurementsZMap.get(sensorid).pop();   
   }
-  sensorCalibrationValuesXMap.set(sensorid, valuesX);
-  sensorCalibrationValuesYMap.set(sensorid, valuesY);
-  sensorCalibrationValuesZMap.set(sensorid, valuesZ);
-  //console.log("-- samples for calibration: "+valuesX.length);
+  //console.log("-- samples for calibration: "+sensorMeasurementsXMap.get(sensorid).length);
 }
-function calculateCalibrationValues(sensorid) {
+function processMeasurementValues(sensorid) {
   //calculate average value
-  if ( typeof sensorCalibrationValuesXMap.get(sensorid) !== 'undefined' ) {
+  if ( typeof sensorMeasurementsXMap.get(sensorid) !== 'undefined' ) {
 
-    let samplesX=sensorCalibrationValuesXMap.get(sensorid);
-    let samplesY=sensorCalibrationValuesYMap.get(sensorid);
-    let samplesZ=sensorCalibrationValuesZMap.get(sensorid);
+    let samplesX=sensorMeasurementsXMap.get(sensorid);
+    let samplesY=sensorMeasurementsYMap.get(sensorid);
+    let samplesZ=sensorMeasurementsZMap.get(sensorid);
     let sampleSizeX=samplesX.length;
 
     if ( sampleSizeX >= CALIBRATION_SAMPLES) {
@@ -106,33 +127,87 @@ function calculateCalibrationValues(sensorid) {
           writeLogAndConsole("log_", sensorid+" updated calibration to: "+average_x+" "+average_y+" "+average_z+" std.dev(rms)="+sdev_rms);
         }
         else {
-          sensorCalibrationStdDevMap.set(sensorid, calibr_sdev.map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );
-        }
-      }
-      /*
-      let average_x=stat.mean(samplesX);
-      let variance_x = stat.variance(samplesX);
-      let sdev_x = stat.standardDeviation(samplesX);
-      let average_y=stat.mean(samplesY);
-      let variance_y = stat.variance(samplesY);
-      let sdev_y = stat.standardDeviation(samplesY);
-      let average_z=stat.mean(samplesZ);
-      let variance_z = stat.variance(samplesZ);
-      let sdev_z = stat.standardDeviation(samplesZ);
-      sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
-      console.log(sampleSizeX
-        +"\t"+average_x+"\t"+variance_x+"\t"+sdev_x
-        +"\t"+average_y+"\t"+variance_y+"\t"+sdev_y
-        +"\t"+average_z+"\t"+variance_z+"\t"+sdev_z
-        );
-        */
-    }
+          //check if is event
+          if ( sdev_rms > DEF_EVENT_STDDEV_FACTOR*calibr_rms ) {
+            //YES - collect event data
+            let eventData={};
+            eventData.time_start_ms =date.getTime(); 
+            eventData.time_update_ms=date.getTime(); 
+            eventData.time_end_ms   =0;  //indicates ongoing
+            eventData.max_accel_x   =average_x;
+            eventData.max_accel_y   =average_y;
+            eventData.max_accel_z   =average_z;
+            //eventData.max_accel_x   =stat.max(sensorMeasurementsXMap.get(sensorid));
+            //eventData.max_accel_y   =stat.max(sensorMeasurementsYMap.get(sensorid));
+            //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
+            eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
+            eventData.stddev_rms    =sdev_rms;
+            //no entry exists? put data
+            if ( typeof sensorEvent.get(sensorid) === 'undefined') {
+              sensorEventMap.set(sensorid, eventData);
+            }
+            //entry exists? check what to update
+            else {
+              sensorEvent.get(sensorid).time_update_ms=date.getTime();
+              if (sensorEvent.get(sensorid).accel_rms<eventData.accel_rms) {
+                sensorEvent.get(sensorid).accel_rms  =eventData.accel_rms;
+                sensorEvent.get(sensorid).max_accel_x=eventData.max_accel_x;
+                sensorEvent.get(sensorid).max_accel_y=eventData.max_accel_y;
+                sensorEvent.get(sensorid).max_accel_z=eventData.max_accel_z;
+                sensorEvent.get(sensorid).stddev_rms =eventData.stddev_rms;
+              }
+            }
+            writeLogAndConsole("log_", 
+              "EVENT time: " +sensorEvent.get(sensorid).time_update_ms
+              +", sensorid: "+sensorid
+              +", sdev_rms:" +sensorEvent.get(sensorid).accel_rms
+              +", max_x: "   +sensorEvent.get(sensorid).max_accel_x
+              +", max_y: "   +sensorEvent.get(sensorid).max_accel_y
+              +", max_z: "   +sensorEvent.get(sensorid).max_accel_z
+              +", stddedv: " +sensorEvent.get(sensorid).stddev_rms);
+          }//if EVENT
+        }//else no update to calibration
+        //add decay factor to calibration std.dev
+        sensorCalibrationStdDevMap.set(sensorid, calibr_sdev.map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );
+      }//else not calibrated
+    }//else calibration samples
+  }// if there are measurements
+}
+function resetEventValues(sensorid) {  
+  if (typeof sensorEvent.get(sensorid) !== 'undefined') {
+    sensorEvent.get(sensorid).max_accel_x   =0;
+    sensorEvent.get(sensorid).max_accel_y   =0;
+    sensorEvent.get(sensorid).max_accel_z   =0;
+    sensorEvent.get(sensorid).accel_rms     =0;
+    sensorEvent.get(sensorid).time_start_ms =0;
+    sensorEvent.get(sensorid).time_update_ms=0;
+    sensorEvent.get(sensorid).time_end_ms   =0;
   }
 }
 function isCalibrated(sensorid) {
   if (typeof sensorCalibrationMap.get(sensorid) !== 'undefined')
     return true;
   return false;
+}
+function isSensorSignal(sensorid) {
+  let isSignal=false;
+  //get calibration std.dev
+
+/*
+
+  if (typeof sensorCalibrationMap.get(sensorid) !== 'undefined'
+    && typeof ) {
+
+
+
+    let calibr_sdev=sensorCalibrationStdDevMap.get(sensorid);
+    calibr_rms=stat.rootMeanSquare(calibr_sdev);
+  }
+  */
+  //get measurement std.dev
+
+
+  return isSignal;
 }
 
 
@@ -541,11 +616,11 @@ if (cluster.isMaster) {
                           measurement['accel_y'] = Number(measurement['accel_y'])/sensor_conversion_range;
                           measurement['accel_z'] = Number(measurement['accel_z'])/sensor_conversion_range;
                           writeSensorData(sensorId, JSON.stringify(measurement));
-                          addCalibrationValue(sensorId, 
+                          addMeasurementValueToQueue(sensorId, 
                             measurement['accel_x'],
                             measurement['accel_y'],
                             measurement['accel_z']);
-                          calculateCalibrationValues(sensorId);
+                          processMeasurementValues(sensorId);
                         }                
                       }
                       catch (e) {
@@ -579,11 +654,11 @@ if (cluster.isMaster) {
                             accel_z:        Number(messageArray[4])/sensor_conversion_range
                           };
                           writeSensorData(sensorId, JSON.stringify(measurement));
-                          addCalibrationValue(sensorId, 
+                          addMeasurementValueToQueue(sensorId, 
                             measurement['accel_x'],
                             measurement['accel_y'],
                             measurement['accel_z']);
-                          calculateCalibrationValues(sensorId);
+                          processMeasurementValues(sensorId);
                         }
 
                       }
