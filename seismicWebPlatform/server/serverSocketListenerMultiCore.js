@@ -149,8 +149,16 @@ function processMeasurementValues(sensorid) {
             eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
             eventData.stddev_rms    =sdev_rms;
             //no entry exists? put data
-            if ( typeof sensorEventMap.get(sensorid) === 'undefined') {
+            if ( typeof sensorEventMap.get(sensorid) === 'undefined' ) {
               sensorEventMap.set(sensorid, eventData);
+              writeLogAndConsole("log_", 
+                "START EVENT time: " +sensorEventMap.get(sensorid).time_update_ms
+                +", sensorid: "+sensorid
+                +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
+                +", d_a_x: "   +sensorEventMap.get(sensorid).max_accel_x
+                +", d_a_y: "   +sensorEventMap.get(sensorid).max_accel_y
+                +", d_a_z: "   +sensorEventMap.get(sensorid).max_accel_z
+                +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
             }
             //entry exists? check what to update
             else {
@@ -163,18 +171,34 @@ function processMeasurementValues(sensorid) {
                 sensorEventMap.get(sensorid).stddev_rms =eventData.stddev_rms;
               }
             }
-            writeLogAndConsole("log_", 
-              "EVENT time: " +sensorEventMap.get(sensorid).time_update_ms
-              +", sensorid: "+sensorid
-              +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
-              +", max_x: "   +sensorEventMap.get(sensorid).max_accel_x
-              +", max_y: "   +sensorEventMap.get(sensorid).max_accel_y
-              +", max_z: "   +sensorEventMap.get(sensorid).max_accel_z
-              +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
           }//if EVENT
         }//else no update to calibration
+        
+        //ONCE WE HAVE CALIBRATED THE SENSOR, THE BELOW ALWAYS OCCUR
+
         //add decay factor to calibration std.dev
         sensorCalibrationStdDevMap.set(sensorid, sensorCalibrationStdDevMap.get(sensorid).map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );
+
+        //IF IN EVENT: determine if should stop it
+        if ( typeof sensorEventMap.get(sensorid) !== 'undefined' ) {
+          let time_now=date.getTime();
+          if ( (sensorEventMap.get(sensorid).time_update_ms-sensorEventMap.get(sensorid).time_start_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
+            sensorEventMap.get(sensorid).time_end_ms=time_now;
+            writeLogAndConsole("log_", 
+              "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_start_ms-sensorEventMap.get(sensorid).time_start_ms)
+              +", sensorid: "+sensorid
+              +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
+              +", d_a_x: "   +sensorEventMap.get(sensorid).max_accel_x
+              +", d_a_y: "   +sensorEventMap.get(sensorid).max_accel_y
+              +", d_a_z: "   +sensorEventMap.get(sensorid).max_accel_z
+              +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
+            
+            console.log("TODO: write to MQTT and DB");
+
+            resetEventValues(sensorid);
+          }
+        }
+
       }//else not calibrated
     }//else calibration samples
   }// if there are measurements
