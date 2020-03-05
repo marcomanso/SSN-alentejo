@@ -146,7 +146,7 @@ console.log("1");
             eventData.stddev_rms    =sdev_rms;
 console.log("2");
             //no entry exists? put data
-            if ( typeof sensorEvent.get(sensorid) === 'undefined') {
+            if ( typeof sensorEventMap.get(sensorid) === 'undefined') {
               sensorEventMap.set(sensorid, eventData);
             }
             //entry exists? check what to update
