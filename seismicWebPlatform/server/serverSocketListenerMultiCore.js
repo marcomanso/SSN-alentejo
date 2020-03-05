@@ -181,7 +181,7 @@ function processMeasurementValues(sensorid) {
 
         //IF IN EVENT: determine if should stop it
         if ( typeof sensorEventMap.get(sensorid) !== 'undefined' ) {
-          if ( sensorEventMap.get(sensorid).eventData.time_start_ms != 0 ) {
+          if ( sensorEventMap.get(sensorid).time_start_ms != 0 ) {
             let time_now=date.getTime();
             if ( (time_now-sensorEventMap.get(sensorid).time_update_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
               sensorEventMap.get(sensorid).time_end_ms=time_now;
