@@ -152,23 +152,23 @@ console.log("2");
             //entry exists? check what to update
             else {
 console.log("3");
-              sensorEvent.get(sensorid).time_update_ms=date.getTime();
-              if (sensorEvent.get(sensorid).accel_rms<eventData.accel_rms) {
-                sensorEvent.get(sensorid).accel_rms  =eventData.accel_rms;
-                sensorEvent.get(sensorid).max_accel_x=eventData.max_accel_x;
-                sensorEvent.get(sensorid).max_accel_y=eventData.max_accel_y;
-                sensorEvent.get(sensorid).max_accel_z=eventData.max_accel_z;
-                sensorEvent.get(sensorid).stddev_rms =eventData.stddev_rms;
+              sensorEventMap.get(sensorid).time_update_ms=date.getTime();
+              if (sensorEventMap.get(sensorid).accel_rms<eventData.accel_rms) {
+                sensorEventMap.get(sensorid).accel_rms  =eventData.accel_rms;
+                sensorEventMap.get(sensorid).max_accel_x=eventData.max_accel_x;
+                sensorEventMap.get(sensorid).max_accel_y=eventData.max_accel_y;
+                sensorEventMap.get(sensorid).max_accel_z=eventData.max_accel_z;
+                sensorEventMap.get(sensorid).stddev_rms =eventData.stddev_rms;
               }
             }
             writeLogAndConsole("log_", 
-              "EVENT time: " +sensorEvent.get(sensorid).time_update_ms
+              "EVENT time: " +sensorEventMap.get(sensorid).time_update_ms
               +", sensorid: "+sensorid
-              +", sdev_rms:" +sensorEvent.get(sensorid).accel_rms
-              +", max_x: "   +sensorEvent.get(sensorid).max_accel_x
-              +", max_y: "   +sensorEvent.get(sensorid).max_accel_y
-              +", max_z: "   +sensorEvent.get(sensorid).max_accel_z
-              +", stddedv: " +sensorEvent.get(sensorid).stddev_rms);
+              +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
+              +", max_x: "   +sensorEventMap.get(sensorid).max_accel_x
+              +", max_y: "   +sensorEventMap.get(sensorid).max_accel_y
+              +", max_z: "   +sensorEventMap.get(sensorid).max_accel_z
+              +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
           }//if EVENT
         }//else no update to calibration
         //add decay factor to calibration std.dev
@@ -178,14 +178,14 @@ console.log("3");
   }// if there are measurements
 }
 function resetEventValues(sensorid) {  
-  if (typeof sensorEvent.get(sensorid) !== 'undefined') {
-    sensorEvent.get(sensorid).max_accel_x   =0;
-    sensorEvent.get(sensorid).max_accel_y   =0;
-    sensorEvent.get(sensorid).max_accel_z   =0;
-    sensorEvent.get(sensorid).accel_rms     =0;
-    sensorEvent.get(sensorid).time_start_ms =0;
-    sensorEvent.get(sensorid).time_update_ms=0;
-    sensorEvent.get(sensorid).time_end_ms   =0;
+  if (typeof sensorEventMap.get(sensorid) !== 'undefined') {
+    sensorEventMap.get(sensorid).max_accel_x   =0;
+    sensorEventMap.get(sensorid).max_accel_y   =0;
+    sensorEventMap.get(sensorid).max_accel_z   =0;
+    sensorEventMap.get(sensorid).accel_rms     =0;
+    sensorEventMap.get(sensorid).time_start_ms =0;
+    sensorEventMap.get(sensorid).time_update_ms=0;
+    sensorEventMap.get(sensorid).time_end_ms   =0;
   }
 }
 function isCalibrated(sensorid) {
