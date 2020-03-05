@@ -144,6 +144,7 @@ console.log("1");
             //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
             eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
             eventData.stddev_rms    =sdev_rms;
+console.log("..eventData"+eventData);
 console.log("2");
             //no entry exists? put data
             if ( typeof sensorEventMap.get(sensorid) === 'undefined') {
