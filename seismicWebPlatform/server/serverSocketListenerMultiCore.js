@@ -186,7 +186,7 @@ function processMeasurementValues(sensorid) {
             if ( (time_now-sensorEventMap.get(sensorid).time_update_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
               sensorEventMap.get(sensorid).time_end_ms=time_now;
               writeLogAndConsole("log_", 
-                "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_start_ms-sensorEventMap.get(sensorid).time_start_ms)
+                "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_end_ms-sensorEventMap.get(sensorid).time_start_ms)
                 +", sensorid: "+sensorid
                 +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
                 +", d_a_x: "   +sensorEventMap.get(sensorid).max_accel_x
@@ -197,9 +197,11 @@ function processMeasurementValues(sensorid) {
               console.log("TODO: write to MQTT and DB");
 
               resetEventValues(sensorid);
+              
             }//if should end
           }//if has started
         }//if has event
+
       }//else not calibrated
     }//else calibration samples
   }// if there are measurements
