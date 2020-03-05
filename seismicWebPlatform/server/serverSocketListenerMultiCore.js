@@ -143,6 +143,10 @@ function processMeasurementValues(sensorid) {
             eventData.max_accel_x   =average_x;
             eventData.max_accel_y   =average_y;
             eventData.max_accel_z   =average_z;
+            eventData.d_accel_x     =average_x-sensorCalibrationMap.get(sensorid)[0];
+            eventData.d_accel_y     =average_y-sensorCalibrationMap.get(sensorid)[1];
+            eventData.d_accel_z     =average_z-sensorCalibrationMap.get(sensorid)[2];
+            eventData.d_accel_rms   =stat.rootMeanSquare([eventData.d_accel_x,eventData.d_accel_y,eventData.d_accel_z]);
             //eventData.max_accel_x   =stat.max(sensorMeasurementsXMap.get(sensorid));
             //eventData.max_accel_y   =stat.max(sensorMeasurementsYMap.get(sensorid));
             //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
@@ -155,19 +159,23 @@ function processMeasurementValues(sensorid) {
                 "START EVENT time: " +sensorEventMap.get(sensorid).time_update_ms
                 +", sensorid: "+sensorid
                 +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
-                +", d_a_x: "   +sensorEventMap.get(sensorid).max_accel_x
-                +", d_a_y: "   +sensorEventMap.get(sensorid).max_accel_y
-                +", d_a_z: "   +sensorEventMap.get(sensorid).max_accel_z
+                +", d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
+                +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
+                +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
                 +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
             }
             //entry exists? check what to update
             else {               
               sensorEventMap.get(sensorid).time_update_ms=date.getTime();
-              if (sensorEventMap.get(sensorid).accel_rms<eventData.accel_rms) {
+              if (sensorEventMap.get(sensorid).d_accel_rms<eventData.d_accel_rms) {
                 sensorEventMap.get(sensorid).accel_rms  =eventData.accel_rms;
                 sensorEventMap.get(sensorid).max_accel_x=eventData.max_accel_x;
                 sensorEventMap.get(sensorid).max_accel_y=eventData.max_accel_y;
                 sensorEventMap.get(sensorid).max_accel_z=eventData.max_accel_z;
+                sensorEventMap.get(sensorid).d_accel_x  =eventData.d_accel_x;
+                sensorEventMap.get(sensorid).d_accel_y  =eventData.d_accel_y;
+                sensorEventMap.get(sensorid).d_accel_z  =eventData.d_accel_z;
+                sensorEventMap.get(sensorid).d_accel_rms=eventData.d_accel_rms;
                 sensorEventMap.get(sensorid).stddev_rms =eventData.stddev_rms;
               }
             }
@@ -188,10 +196,10 @@ function processMeasurementValues(sensorid) {
               writeLogAndConsole("log_", 
                 "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_end_ms-sensorEventMap.get(sensorid).time_start_ms)
                 +", sensorid: "+sensorid
-                +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
-                +", d_a_x: "   +sensorEventMap.get(sensorid).max_accel_x
-                +", d_a_y: "   +sensorEventMap.get(sensorid).max_accel_y
-                +", d_a_z: "   +sensorEventMap.get(sensorid).max_accel_z
+                +", d_a_rms:"  +sensorEventMap.get(sensorid).d_accel_rms
+                +", d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
+                +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
+                +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
                 +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
               
               console.log("TODO: write to MQTT and DB");
