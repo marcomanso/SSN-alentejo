@@ -42,6 +42,7 @@ var DEF_CONVERSION_RAGE  = 1;
 
 //DB operations
 var sensorDBMap = {};
+var sensorInfoMap = {};
 
 // MEASUREMENTS
 var sensorMeasurementsXMap = new Map();
