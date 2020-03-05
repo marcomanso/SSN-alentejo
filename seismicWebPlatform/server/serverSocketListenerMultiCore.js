@@ -180,26 +180,26 @@ function processMeasurementValues(sensorid) {
         sensorCalibrationStdDevMap.set(sensorid, sensorCalibrationStdDevMap.get(sensorid).map( function(x) { return x * (1.0+DEF_CALIBRATION_DECAY_FACTOR); }) );
 
         //IF IN EVENT: determine if should stop it
-        if ( typeof sensorEventMap.get(sensorid) !== 'undefined' 
-          && sensorEventMap.get(sensorid).eventData.time_start_ms != 0 ) {
-          let time_now=date.getTime();
-          if ( (time_now-sensorEventMap.get(sensorid).time_update_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
-            sensorEventMap.get(sensorid).time_end_ms=time_now;
-            writeLogAndConsole("log_", 
-              "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_start_ms-sensorEventMap.get(sensorid).time_start_ms)
-              +", sensorid: "+sensorid
-              +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
-              +", d_a_x: "   +sensorEventMap.get(sensorid).max_accel_x
-              +", d_a_y: "   +sensorEventMap.get(sensorid).max_accel_y
-              +", d_a_z: "   +sensorEventMap.get(sensorid).max_accel_z
-              +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
-            
-            console.log("TODO: write to MQTT and DB");
+        if ( typeof sensorEventMap.get(sensorid) !== 'undefined' ) {
+          if ( sensorEventMap.get(sensorid).eventData.time_start_ms != 0 ) {
+            let time_now=date.getTime();
+            if ( (time_now-sensorEventMap.get(sensorid).time_update_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
+              sensorEventMap.get(sensorid).time_end_ms=time_now;
+              writeLogAndConsole("log_", 
+                "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_start_ms-sensorEventMap.get(sensorid).time_start_ms)
+                +", sensorid: "+sensorid
+                +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
+                +", d_a_x: "   +sensorEventMap.get(sensorid).max_accel_x
+                +", d_a_y: "   +sensorEventMap.get(sensorid).max_accel_y
+                +", d_a_z: "   +sensorEventMap.get(sensorid).max_accel_z
+                +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
+              
+              console.log("TODO: write to MQTT and DB");
 
-            resetEventValues(sensorid);
-          }
-        }
-
+              resetEventValues(sensorid);
+            }//if should end
+          }//if has started
+        }//if has event
       }//else not calibrated
     }//else calibration samples
   }// if there are measurements
