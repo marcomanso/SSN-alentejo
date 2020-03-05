@@ -131,7 +131,6 @@ function processMeasurementValues(sensorid) {
           //check if is event
           if ( sdev_rms > DEF_EVENT_STDDEV_FACTOR*calibr_rms ) {
             //YES - collect event data
-console.log("1");            
             let eventData={};
             eventData.time_start_ms =date.getTime(); 
             eventData.time_update_ms=date.getTime(); 
@@ -144,17 +143,12 @@ console.log("1");
             //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
             eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
             eventData.stddev_rms    =sdev_rms;
-console.log("..eventData"+eventData);
-console.log("2");
             //no entry exists? put data
             if ( typeof sensorEventMap.get(sensorid) === 'undefined') {
-console.log("2.1");
               sensorEventMap.set(sensorid, eventData);
-console.log("2.2");
             }
             //entry exists? check what to update
             else {
-console.log("3");
               sensorEventMap.get(sensorid).time_update_ms=date.getTime();
               if (sensorEventMap.get(sensorid).accel_rms<eventData.accel_rms) {
                 sensorEventMap.get(sensorid).accel_rms  =eventData.accel_rms;
@@ -219,10 +213,6 @@ function isSensorSignal(sensorid) {
 
 
 //
-// SENSOR MAP FOR SENSOR DATA
-var sensorDBMap = {};
-var sensorInfoMap = {};
-var sensorEventMap = {};
 function fillSensorInfoMap(sensorData) {
   /*
   MQTT status messages are to be JSON formatted as:
