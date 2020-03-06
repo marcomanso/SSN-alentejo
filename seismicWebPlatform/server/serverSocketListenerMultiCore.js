@@ -696,11 +696,6 @@ if (cluster.isMaster) {
                           processMeasurementValues(sensorId);
                         }
                       }
-                      catch (e) {
-                        writeLogAndConsole("log_","Malformed JSON from sensor data: "+message.utf8Data)
-                        //rejectRequest(req);
-                        return;
-                      } 
                     }
                     else {
                       console.log("Discarded message from "+sensorId);
