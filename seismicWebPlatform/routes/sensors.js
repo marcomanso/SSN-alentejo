@@ -8,7 +8,7 @@ var debug = require('debug')('seismic:sensors');
 
 var sensorFilesDir = (process.env.SENSOR_DATA_FILE_DIR || 'data');
 
-/* GET users listing. */
+/* GET sensors listing. */
 router.get('/', (req, res, next) => {
   sensors.readAll()
     .then(sensorlist => {

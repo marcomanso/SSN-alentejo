@@ -116,7 +116,7 @@ exports.readAll = function() {
             new Sensor(row.sensorkey, row.name, row.description,  row.lat,  row.lon, row.elevation, row.model, row.model_URL,  row.timecreated, row.sensor_URL, row.data_URL));
         }
       },
-              (err, num) => {
+      (err, num) => {
         if (err) 
           reject(err);
         else 

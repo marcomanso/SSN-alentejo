@@ -1,0 +1,52 @@
+<% include top %>
+
+<!--
+<div class="input-group">
+  <input type="text" class="form-control" placeholder="Search">
+  <span class="input-group-btn">
+    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+  </span>
+</div>
+<br />
+-->
+
+<!--
+<form name='sensor_search' action='/sensors' method='get'>
+  <input type='text' name='sensor_name' />
+  <input type='submit' value='Submit' />
+</form>
+-->
+
+  <p></p>
+    <h3>Events List</h3> 
+  <% if (eventslist.length > 0) {       
+    for (var event of eventslist) { %>  
+
+    <p>Below are events registered in this portal. Click to access its details.</p>
+  
+  <!-- <a href="/sensors/view?key=<%= sensor.sensorkey %>" class="list-group-item"> -->
+
+  <div class="card">
+    <div class="card-header">
+      Date: <% let date = new Date(eventData.time_start_ms);
+      dateEvent.toISOString(); %>
+      <span class="badge badge-pill badge-dark"><%= event.sensorkey %></span>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Acceleration: <% event.accel_rms %> g (rms)</h5>
+      <h5 class="card-title">Duration: 
+        <% ( event.time_end_ms - event.time_start_ms ) %> (ms)</h5>
+      <p>dX=<% event.d_accel_x %>  dY=<% event.d_accel_y %>   dZ=<% event.d_accel_z %>  Std.dev=<% event.stddev_rms %>(rms)</p>
+      <a href="#" class="btn btn-primary">Details</a>
+    </div>
+  </div>
+
+  <% } 
+  }
+  else {
+  %>
+    <p>No events have been recorded yet.</p>  
+  <%
+  } %>
+  
+<% include bottom %>

@@ -18,18 +18,18 @@ const sqlite3 = require('sqlite3');
 var debug = require('debug')('seismic');
 
 sqlite3.verbose();
-var _dbEvents; // store the database connection here
+var db; // store the database connection here
 
 exports.connectDB = function() {
   return new Promise((resolve, reject) => {
-    if (_dbEvents) return resolve(_dbEvents);
+    if (db) return resolve(db);
     var dbfile = process.env.SQLITE_FILE || "db/db.sqlite3";
-    _dbEvents = new sqlite3.Database(dbfile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, err => {
+    db = new sqlite3.Database(dbfile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, err => {
       if (err) 
         reject(err);
       else {
         debug('Opened SQLite3 database '+ dbfile);
-        resolve(_dbEvents);
+        resolve(db);
       }
     }); 
   });
@@ -43,7 +43,7 @@ exports.create = function(
     return exports.connectDB()
     .then(() => {
       return new Promise((resolve, reject) => {
-        _dbEvents.run("INSERT INTO events "
+        db.run("INSERT INTO events "
              +"( sensorkey, time_start_ms, time_end_ms, d_accel_x, d_accel_y, d_accel_z, d_accel_rms, accel_x, accel_y, accel_z, accel_rms, stddev_rms ) "
              +"VALUES ( ?, ?, ?,   ?, ?, ?, ?,   ?, ?, ?, ?,  ?);",
              [ sensorkey, time_start_ms, time_end_ms, 
@@ -64,3 +64,38 @@ exports.create = function(
   }); 
 };
 
+exports.readAll = function() {
+  return exports.connectDB()
+  .then(() => {
+    return new Promise((resolve, reject) => {
+      var eventList = [];
+      db.each("SELECT * FROM events", (err, row) => {
+        if (err) 
+          reject(err);
+        else {
+          let event={};
+          (event) 
+              .sensorkey    =row.sensorkey
+              .time_start_ms=row.time_start_ms
+              .time_end_ms  =row.time_end_ms
+              .d_accel_x    =row.d_accel_x
+              .d_accel_y    =row.d_accel_y 
+              .d_accel_z    =row.d_accel_z 
+              .d_accel_rms  =row.d_accel_rms
+              .accel_x      =row.accel_x
+              .accel_y      =row.accel_y   
+              .accel_z      =row.accel_z   
+              .accel_rms    =row.accel_rms
+              .stddev_rms   =row.accel_rms;
+          eventList.push(event);
+        }
+      },
+      (err, num) => {
+      if (err) 
+        reject(err);
+      else 
+        resolve(eventList);
+      }); 
+    });
+  })
+};
