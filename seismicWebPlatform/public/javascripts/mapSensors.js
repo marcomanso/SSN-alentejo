@@ -189,6 +189,7 @@ function newSensorEventMessage(sensorevent_msg) {
   eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
   eventData.stddev_rms    =sdev_rms;
   */
+
   console.log("newSensorEventMessage: "+msg);
 
   if (typeof sensorEventMap.get(sensorevent_msg.sensorid) === 'undefined') {
