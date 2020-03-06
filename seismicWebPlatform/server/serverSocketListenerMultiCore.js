@@ -351,7 +351,7 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   eventData.stddev_rms    =sdev_rms;
   */
   eventData.sensorid=sensorid;
-  
+
   console.log("event: "+JSON.stringify(eventData));
 
   mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, JSON.stringify(eventData));
@@ -660,7 +660,7 @@ if (cluster.isMaster) {
                       }
                       catch (e) {
                         writeLogAndConsole("log_","Malformed JSON from sensor data: "+message.utf8Data)
-                        rejectRequest(req);
+                        //rejectRequest(req);
                         return;
                       } 
                     }
@@ -695,8 +695,12 @@ if (cluster.isMaster) {
                             measurement['accel_z']);
                           processMeasurementValues(sensorId);
                         }
-
                       }
+                      catch (e) {
+                        writeLogAndConsole("log_","Malformed JSON from sensor data: "+message.utf8Data)
+                        //rejectRequest(req);
+                        return;
+                      } 
                     }
                     else {
                       console.log("Discarded message from "+sensorId);
