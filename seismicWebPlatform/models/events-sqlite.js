@@ -65,6 +65,7 @@ exports.create = function(
 };
 
 exports.readAll = function() {
+                    console.log("-- readAll ");          
   return exports.connectDB()
   .then(() => {
     return new Promise((resolve, reject) => {
