@@ -162,12 +162,13 @@ function setSensorAsMoving(sensorid, accel_value) {
 }
 
 function sensorIsMoving(sensorid) {
-  marker=sensorMarkerMap.get(sensorid);
-  let style=marker.getStyle();
-  if (style.color === STATUS_COLOR_MOVING)
-    return true;
-  else
-    return false;  
+  if (typeof sensorEventMap.get(sensorevent_msg.sensorid) !== 'undefined') {
+    let keys = sensorEventMap.get(sensorevent_msg.sensorid).keys();
+    let last_record = sensorEventMap.get(sensorevent_msg.sensorid).get(keys[keys.length-1]);
+    if (last_record.time_end_ms===0)
+      return true;
+  }
+  return false;
 }
 
 function newSensorEventMessage(sensorevent_msg) {
@@ -203,11 +204,15 @@ console.log("--is EVENT");
     sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
   }
   else {
+
+console.log("--is END EVENT");
+
     setSensorAsActive(sensorevent_msg.sensorid);
     sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
+
     if ( sensorEventMap.get(sensorevent_msg.sensorid).length > MAX_SENSOR_EVENT_MAP_SIZE ) { 
       //todo:.. check if works
-      console.log("--- delete item from evenet map");
+      console.log("--- delete item from event map");
       Array.from(sensorEventMap.get(sensorevent_msg.sensorid).keys())
      .slice(0, 1)
      .forEach(key => sensorEventMap.get(sensorevent_msg.sensorid).delete(key));
