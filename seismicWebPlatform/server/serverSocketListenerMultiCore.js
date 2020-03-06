@@ -218,45 +218,12 @@ function resetEventValues(sensorid) {
   if (typeof sensorEventMap.get(sensorid) !== 'undefined') {
     sensorEventMap.delete(sensorid);
   }
-
-  /*
-  if (typeof sensorEventMap.get(sensorid) !== 'undefined') {
-    sensorEventMap.get(sensorid).max_accel_x   =0;
-    sensorEventMap.get(sensorid).max_accel_y   =0;
-    sensorEventMap.get(sensorid).max_accel_z   =0;
-    sensorEventMap.get(sensorid).accel_rms     =0;
-    sensorEventMap.get(sensorid).time_start_ms =0;
-    sensorEventMap.get(sensorid).time_update_ms=0;
-    sensorEventMap.get(sensorid).time_end_ms   =0;
-  }
-  */
 }
 function isCalibrated(sensorid) {
   if (typeof sensorCalibrationMap.get(sensorid) !== 'undefined')
     return true;
   return false;
 }
-function isSensorSignal(sensorid) {
-  let isSignal=false;
-  //get calibration std.dev
-
-/*
-
-  if (typeof sensorCalibrationMap.get(sensorid) !== 'undefined'
-    && typeof ) {
-
-
-
-    let calibr_sdev=sensorCalibrationStdDevMap.get(sensorid);
-    calibr_rms=stat.rootMeanSquare(calibr_sdev);
-  }
-  */
-  //get measurement std.dev
-
-
-  return isSignal;
-}
-
 
 //
 function fillSensorInfoMap(sensorData) {
@@ -362,8 +329,29 @@ function mqttPublishSensorInfoMessage(sensorId) {
     mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_INFO, JSON.stringify(sensorInfoMap[sensorId]))
   }
 }
-function mqttPublishSensorEventMessage(sensorId) {
-    mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, 'Hello SSN')
+function mqttPublishSensorEventMessage(sensorid, eventData) {
+/*  
+  eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
+  eventData.time_update_ms=date.getTime(); //!=0 indicated ongoing event
+  eventData.time_end_ms   =0;
+  eventData.max_accel_x   =average_x;
+  eventData.max_accel_y   =average_y;
+  eventData.max_accel_z   =average_z;
+  eventData.d_accel_x     =average_x-sensorCalibrationMap.get(sensorid)[0];
+  eventData.d_accel_y     =average_y-sensorCalibrationMap.get(sensorid)[1];
+  eventData.d_accel_z     =average_z-sensorCalibrationMap.get(sensorid)[2];
+  eventData.d_accel_rms   =stat.rootMeanSquare([eventData.d_accel_x,eventData.d_accel_y,eventData.d_accel_z]);
+  //eventData.max_accel_x   =stat.max(sensorMeasurementsXMap.get(sensorid));
+  //eventData.max_accel_y   =stat.max(sensorMeasurementsYMap.get(sensorid));
+  //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
+  eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
+  eventData.stddev_rms    =sdev_rms;
+*/
+
+  console.log("event: "+JSON.stringify(eventData));
+  
+  //mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, JSON.stringify(eventData));
+
 }
 
 
