@@ -56,7 +56,7 @@ exports.create = function(
         }
         else {
           //console.log('DB CREATE event for '+ sensorkey);
-          debug('DB CREATE event for '+ sensorkey);
+          //debug('DB CREATE event for '+ sensorkey);
           resolve(sensorkey);
         }
       }); 
@@ -91,8 +91,10 @@ exports.readAll = function() {
         }
       },
       (err, num) => {
-      if (err) 
+      if (err) {
+        console.log("DB EVENTS - read error "+err)
         reject(err);
+      }
       else 
         resolve(eventList);
       }); 

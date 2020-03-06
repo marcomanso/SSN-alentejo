@@ -27,11 +27,11 @@
   <!-- <a href="/sensors/view?key=<%= sensor.sensorkey %>" class="list-group-item"> -->
 
   <div class="card">
-    <div class="card-header">
+    <h5 class="card-header">
       Date: <% let date = new Date(eventData.time_start_ms);
       dateEvent.toISOString(); %>
       <span class="badge badge-pill badge-dark"><%= event.sensorkey %></span>
-    </div>
+    </h5>
     <div class="card-body">
       <h5 class="card-title">Acceleration: <% event.accel_rms %> g (rms)</h5>
       <h5 class="card-title">Duration: 
