@@ -88,6 +88,7 @@ exports.readAll = function() {
               .accel_rms    =row.accel_rms
               .stddev_rms   =row.accel_rms;
           eventList.push(event);
+console.log("-- added event from "+row.sensorkey);          
         }
       },
       (err, num) => {
