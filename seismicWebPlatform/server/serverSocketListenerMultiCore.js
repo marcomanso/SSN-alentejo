@@ -203,6 +203,9 @@ function processMeasurementValues(sensorid) {
                 +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
               
               console.log("TODO: write to MQTT and DB");
+              
+              let eventData = sensorEventMap.get(sensorid);
+              mqttPublishSensorEventMessage(sensorid, eventData);
 
               resetEventValues(sensorid);
 
@@ -349,7 +352,7 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
 */
 
   console.log("event: "+JSON.stringify(eventData));
-  
+
   //mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, JSON.stringify(eventData));
 
 }
