@@ -38,14 +38,15 @@
  */
 
 
+var sensorMap = new Map();
+var sensorMarkerMap = new Map();
+var sensorEventMap = new Map();
+var MAX_SENSOR_EVENT_MAP_SIZE = 1024;
+
 /* 
  * FUNCTIONS 
  *
  */
-
-var MAX_SENSOR_EVENT_MAP_SIZE = 1024;
-var sensorEventMap = new Map();
-
 
 function addSensorFieldsToMap(sensorid, name, latitude, longitude, elevation, sensor_URL, data_URL, last_update_sec) {
   let sensor = {
@@ -193,7 +194,7 @@ function newSensorEventMessage(sensorevent_msg) {
   if (typeof sensorEventMap.get(sensorevent_msg.sensorid) === 'undefined') {
     sensorEventMap.set(sensorevent_msg.sensorid, new Map());
   }
-  if ( eventData.time_end_ms == 0 ) {
+  if ( eventData.time_end_ms === 0 ) {
     setSensorAsMoving(sensorevent_msg.sensorid, sensorevent_msg.d_accel_rms);
     sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
   }
