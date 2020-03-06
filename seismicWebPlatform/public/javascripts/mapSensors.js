@@ -148,6 +148,7 @@ function setSensorAsActive(sensorid) {
 }
 
 function newSensorEventMessage(sensorevent_msg) {
+  console.log("newSensorMessage"+msg);
 
 }
 
@@ -188,7 +189,7 @@ function newSensorMessage(topic, msg) {
     newSensorInfoMessage(msg);
   }
   else if (topic.endsWith(MQTT_TOPIC_SUB_EVENT)) {
-    //newSensorEventMessage(msg);
+    newSensorEventMessage(msg);
   }
   else { 
     //unknown
