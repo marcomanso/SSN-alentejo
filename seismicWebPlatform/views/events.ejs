@@ -1,22 +1,5 @@
 <% include top %>
 
-<!--
-<div class="input-group">
-  <input type="text" class="form-control" placeholder="Search">
-  <span class="input-group-btn">
-    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
-  </span>
-</div>
-<br />
--->
-
-<!--
-<form name='sensor_search' action='/sensors' method='get'>
-  <input type='text' name='sensor_name' />
-  <input type='submit' value='Submit' />
-</form>
--->
-
   <p></p>
     <h3>Events List</h3> 
   <% if (eventslist.length > 0) {       
@@ -24,8 +7,6 @@
 
     <p>Below are events registered in this portal. Click to access its details.</p>
   
-  <!-- <a href="/sensors/view?key=<%= sensor.sensorkey %>" class="list-group-item"> -->
-
   <div class="card">
     <h5 class="card-header">
       Date: <% let date = new Date(eventData.time_start_ms);
