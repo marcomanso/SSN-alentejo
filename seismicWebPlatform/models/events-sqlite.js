@@ -65,7 +65,6 @@ exports.create = function(
 };
 
 exports.readAll = function() {
-                    console.log("-- readAll ");          
   return exports.connectDB()
   .then(() => {
     return new Promise((resolve, reject) => {
@@ -74,6 +73,7 @@ exports.readAll = function() {
         if (err) 
           reject(err);
         else {
+console.log("-- readAll ");          
           let event={};
           (event) 
               .sensorkey    =row.sensorkey
