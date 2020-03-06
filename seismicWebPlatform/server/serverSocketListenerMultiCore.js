@@ -333,7 +333,7 @@ function mqttPublishSensorInfoMessage(sensorId) {
   }
 }
 function mqttPublishSensorEventMessage(sensorid, eventData) {
-/*  
+  /*  
   eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
   eventData.time_update_ms=date.getTime(); //!=0 indicated ongoing event
   eventData.time_end_ms   =0;
@@ -349,11 +349,12 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
   eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
   eventData.stddev_rms    =sdev_rms;
-*/
+  */
   eventData.sensorid=sensorid;
+  
   console.log("event: "+JSON.stringify(eventData));
 
-  //mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, JSON.stringify(eventData));
+  mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, JSON.stringify(eventData));
 
 }
 
