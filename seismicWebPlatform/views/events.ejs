@@ -11,7 +11,7 @@
 
   <div class="card">
     <h5 class="card-header">
-      Date: <script> dateEvent = new Date(<%=event.time_start_ms%>);
+      Date: <script> dateEvent = new Date(event.time_start_ms);
       dateEvent.toISOString(); </script>
       <span class="badge badge-pill badge-dark"><%= event.sensorkey %></span>
     </h5>
