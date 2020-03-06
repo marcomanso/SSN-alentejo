@@ -86,7 +86,7 @@ console.log("-- readAll ");
           event.accel_y      =row.accel_y;  
           event.accel_z      =row.accel_z;   
           event.accel_rms    =row.accel_rms;
-          event.stddev_rms   =row.accel_rms;
+          event.stddev_rms   =row.stddev_rms;
           eventList.push(event);
 console.log("-- added event from "+row.sensorkey);          
         }
