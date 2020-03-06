@@ -201,8 +201,6 @@ function processMeasurementValues(sensorid) {
                 +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
                 +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
                 +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
-              
-              console.log("TODO: write to MQTT and DB");
 
               let eventData = sensorEventMap.get(sensorid);
               mqttPublishSensorEventMessage(sensorid, eventData);
@@ -322,14 +320,14 @@ function mqttSetup() {
   });
 }
 
-function mqttPublishSensorInfoMessage(sensorId) {
+function mqttPublishSensorInfoMessage(sensorid) {
 
   var time_now = date.getTime();
-  if ( (time_now-1000*sensorInfoMap[sensorId].last_update_sec) > PUBLISH_PERIOD ) {
+  if ( (time_now-1000*sensorInfoMap[sensorid].last_update_sec) > PUBLISH_PERIOD ) {
     //console.log("-- now  time "+date.getTime());
-    //console.log("-- last time "+(1000*sensorInfoMap[sensorId].last_update_sec).toString());
-    sensorInfoMap[sensorId].last_update_sec=Math.round(time_now/1000);
-    mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_INFO, JSON.stringify(sensorInfoMap[sensorId]))
+    //console.log("-- last time "+(1000*sensorInfoMap[sensorid].last_update_sec).toString());
+    sensorInfoMap[sensorid].last_update_sec=Math.round(time_now/1000);
+    mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorid+MQTT_TOPIC_PUB_INFO, JSON.stringify(sensorInfoMap[sensorid]));
   }
 }
 function mqttPublishSensorEventMessage(sensorid, eventData) {
@@ -350,11 +348,12 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
   eventData.stddev_rms    =sdev_rms;
   */
+
   eventData.sensorid=sensorid;
 
   console.log("event: "+JSON.stringify(eventData));
 
-  mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorId+MQTT_TOPIC_PUB_EVENT, JSON.stringify(eventData));
+  mqtt_client.publish(MQTT_TOPIC_MAIN+"/"+sensorid+MQTT_TOPIC_PUB_EVENT, JSON.stringify(eventData));
 
 }
 
