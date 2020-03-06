@@ -354,10 +354,11 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
 
   eventData.sensorid=sensorid;
 
-  events.create(
-    eventData.sensorid, time_start_ms, eventData.time_end_ms, 
-    eventData.d_accel_x, eventData.d_accel_y, eventData.d_accel_z, eventData.d_accel_rms, 
-    eventData.accel_rms, eventData.stddev_rms);
+  if (eventData.time_end_ms!==0) //event ended -> WRITE
+    events.create(
+      eventData.sensorid,  eventData.time_start_ms, eventData.time_end_ms, 
+      eventData.d_accel_x, eventData.d_accel_y,     eventData.d_accel_z, eventData.d_accel_rms, 
+      eventData.accel_rms, eventData.stddev_rms);
 
   console.log("event: "+JSON.stringify(eventData));
 
