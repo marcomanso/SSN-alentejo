@@ -19,6 +19,7 @@ var numCPUs = require('os').cpus().length;
 
 var certificates = require('../models/certificates-sqlite')
 var sensorDB     = require('../models/sensors-sqlite')
+var eventsDB     = require('../models/events-sqlite')
 
 var utils = require('../utils/utils.js');
 var dataUtils = require('../utils/datautils.js');
@@ -352,6 +353,11 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   */
 
   eventData.sensorid=sensorid;
+
+  events.create(
+    eventData.sensorid, time_start_ms, eventData.time_end_ms, 
+    eventData.d_accel_x, eventData.d_accel_y, eventData.d_accel_z, eventData.d_accel_rms, 
+    eventData.accel_rms, eventData.stddev_rms);
 
   console.log("event: "+JSON.stringify(eventData));
 
