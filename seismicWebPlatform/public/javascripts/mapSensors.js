@@ -43,6 +43,10 @@
  *
  */
 
+var MAX_SENSOR_EVENT_MAP_SIZE = 1024;
+var sensorEventMap = new Map();
+
+
 function addSensorFieldsToMap(sensorid, name, latitude, longitude, elevation, sensor_URL, data_URL, last_update_sec) {
   let sensor = {
     "sensorid":   sensorid,
@@ -141,14 +145,69 @@ function setSensorAsInactive(sensorid) {
 }
 
 function setSensorAsActive(sensorid) {
+  if (!sensorIsMoving(sensorid)) {
+    marker=sensorMarkerMap.get(sensorid);
+    marker.setStyle({
+      color: STATUS_COLOR_ACTIVE,
+      fillColor: STATUS_COLOR_ACTIVE});  
+  }
+}
+
+function setSensorAsMoving(sensorid, accel_value) {
   marker=sensorMarkerMap.get(sensorid);
   marker.setStyle({
-    color: STATUS_COLOR_ACTIVE,
-    fillColor: STATUS_COLOR_ACTIVE});  
+    color: STATUS_COLOR_MOVING,
+    fillColor: STATUS_COLOR_MOVING});  
+}
+
+function sensorIsMoving(sensorid) {
+  marker=sensorMarkerMap.get(sensorid);
+  let style=marker.getStyle();
+  if (style.color === STATUS_COLOR_MOVING)
+    return true;
+  else
+    return false;  
 }
 
 function newSensorEventMessage(sensorevent_msg) {
-  console.log("newSensorMessage"+msg);
+  /*  
+  eventData.sensorid
+  eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
+  eventData.time_update_ms=date.getTime(); //!=0 indicated ongoing event
+  eventData.time_end_ms   =0;
+  eventData.max_accel_x   =average_x;
+  eventData.max_accel_y   =average_y;
+  eventData.max_accel_z   =average_z;
+  eventData.d_accel_x     =average_x-sensorCalibrationMap.get(sensorid)[0];
+  eventData.d_accel_y     =average_y-sensorCalibrationMap.get(sensorid)[1];
+  eventData.d_accel_z     =average_z-sensorCalibrationMap.get(sensorid)[2];
+  eventData.d_accel_rms   =stat.rootMeanSquare([eventData.d_accel_x,eventData.d_accel_y,eventData.d_accel_z]);
+  //eventData.max_accel_x   =stat.max(sensorMeasurementsXMap.get(sensorid));
+  //eventData.max_accel_y   =stat.max(sensorMeasurementsYMap.get(sensorid));
+  //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
+  eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
+  eventData.stddev_rms    =sdev_rms;
+  */
+  console.log("newSensorEventMessage: "+msg);
+
+  if (typeof sensorEventMap.get(sensorevent_msg.sensorid) === 'undefined') {
+    sensorEventMap.set(sensorevent_msg.sensorid, new Map());
+  }
+  if ( eventData.time_end_ms == 0 ) {
+    setSensorAsMoving(sensorevent_msg.sensorid, sensorevent_msg.d_accel_rms);
+    sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
+  }
+  else {
+    setSensorAsActive(sensorevent_msg.sensorid);
+    sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
+    if ( sensorEventMap.get(sensorevent_msg.sensorid).length > MAX_SENSOR_EVENT_MAP_SIZE ) { 
+      //todo:.. check if works
+      console.log("--- delete item from evenet map");
+      Array.from(sensorEventMap.get(sensorevent_msg.sensorid).keys())
+     .slice(0, 1)
+     .forEach(key => sensorEventMap.get(sensorevent_msg.sensorid).delete(key));
+   }
+  }
 
 }
 

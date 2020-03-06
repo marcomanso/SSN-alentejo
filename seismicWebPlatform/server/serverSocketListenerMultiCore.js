@@ -163,6 +163,7 @@ function processMeasurementValues(sensorid) {
                 +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
                 +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
                 +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
+              mqttPublishSensorEventMessage(sensorid, sensorEventMap.get(sensorid));             
             }
             //entry exists? check what to update
             else {               
@@ -332,6 +333,7 @@ function mqttPublishSensorInfoMessage(sensorid) {
 }
 function mqttPublishSensorEventMessage(sensorid, eventData) {
   /*  
+  eventData.sensorid
   eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
   eventData.time_update_ms=date.getTime(); //!=0 indicated ongoing event
   eventData.time_end_ms   =0;
