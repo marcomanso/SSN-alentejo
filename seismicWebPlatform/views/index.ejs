@@ -4,6 +4,14 @@
   <strong>Error!</strong> Cannot connect to message broker. <a href="." class="alert-link">RETRY</a>.
 </div>
 
+<div id="alert_warning" class="alert alert-warning">
+  Trying to connect to message broker. <a href="." class="alert-link">RETRY</a>.
+</div>
+
+<div id="alert_event" class="alert alert-dark">
+  No Recorded Events.
+</div>
+
 <div id="mapid" class="container-fluid"></div>
 
 <!-- <script src="/javascripts/leaflet-heat.js"></script> -->
@@ -15,6 +23,7 @@
 
 <script>
   document.getElementById("alert_error").style.display = "none";
+  document.getElementById("alert_warning").style.display = "none";
 
   //GLOBALS
   var INITIAL_ZOOM          = 10;
@@ -46,9 +55,6 @@
 <script type="text/JavaScript" src="/javascripts/mqtt-client.js"></script>
 
 <script>
-
-  var sensorMap = new Map();
-  var sensorMarkerMap = new Map();
 
   mqtt_init();
 

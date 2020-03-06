@@ -10,6 +10,7 @@ var error = require('debug')('sensors:error');
 
 var index = require('./routes/index');
 var sensors = require('./routes/sensors');
+var events = require('./routes/events');
 var users = require('./routes/users');
 var certificates = require('./routes/certificates');
 
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/sensors', sensors);
+app.use('/events', events);
 app.use('/users', users);
 app.use('/certificates', certificates);
 

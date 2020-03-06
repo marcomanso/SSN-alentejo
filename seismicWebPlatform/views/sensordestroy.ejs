@@ -1,27 +1,21 @@
 <% include top %>
 
-<div class="row"><div class="col-xs-12">
-  
-<div class="form-group">
+<p></p>
+
+<div class="form-horizontal" class="form-group">
   <form method='POST' action='/sensors/destroy/confirm'>
     <input type='hidden' class="form-control" name='sensorkey' value='<%= sensor ? sensorkey : "" %>' />
-    <p class="breadcrumb warning">Delete <%= sensor.name %> ?</p>  
+    <h6 class="breadcrumb bg-danger justify-content-center"><strong>Delete <%= sensor.name %> ?</strong></h6>  
     <p>If you delete the sensor it will no longer be available in the platform.</p>
     
     <div class="row">    
-      <div class="btn-group btn-group-justified">
-        <div class="btn-group">
-          <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button>        
-        </div>
-        <div class="btn-group">
-          <a class="btn btn-default" href="/sensors/view/<%= sensorkey %>" role="button"><span class="glyphicon glyphicon-remove-sign"></span> Cancel</a>
-        </div>
+      <div class="btn-group btn-group-justified col-12">
+          <a class="btn btn-default bg-light" href="/sensors/view/<%= sensorkey %>" role="button">Cancel</a>
+          <button type="submit" class="btn btn-danger">Delete</button>
       </div>
     </div>
 
   </form>
 </div>
   
-</div></div>
-
 <% include bottom %>

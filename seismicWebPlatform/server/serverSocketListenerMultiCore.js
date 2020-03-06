@@ -193,7 +193,7 @@ function processMeasurementValues(sensorid) {
           if ( sensorEventMap.get(sensorid).time_start_ms != 0 ) {
             let time_now=date.getTime();
             if ( (time_now-sensorEventMap.get(sensorid).time_update_ms)>=DEF_EVENT_RECORD_DURATION_MS ) {
-              sensorEventMap.get(sensorid).time_end_ms=time_now;
+              sensorEventMap.get(sensorid).time_end_ms=time_now-DEF_EVENT_RECORD_DURATION_MS;
               writeLogAndConsole("log_", 
                 "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_end_ms-sensorEventMap.get(sensorid).time_start_ms)
                 +", sensorid: "+sensorid

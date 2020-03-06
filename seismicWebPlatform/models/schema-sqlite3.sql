@@ -11,3 +11,14 @@ CREATE TABLE IF NOT EXISTS sensors (
   sensor_URL     VARCHAR(100) NOT NULL,
   data_URL       VARCHAR(100) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS events (
+  sensorkey      TEXT PRIMARY KEY NOT NULL,
+  time_start_ms  INTEGER SECONDARY KEY NOT NULL,
+  time_end_ms    INTEGER,
+  d_accel_x      DOUBLE,
+  d_accel_y      DOUBLE,
+  d_accel_z      DOUBLE,
+  d_accel_rms    DOUBLE,
+  stddev_rms     DOUBLE
+);

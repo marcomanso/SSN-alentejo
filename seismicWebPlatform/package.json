@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "sqlite3-setup": "sqlite3 db/db.sqlite3 --init models/schema-sqlite3.sql",
+    "sqlite3-setup": "sqlite3 db/db.sqlite3 -init models/schema-sqlite3.sql",
     "socket_server": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' node ./server/serverSocketListener",
     "socket_server_multi": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' MESSAGE_AUTH='sensor' SENSOR_SQLITE_FILE=./sensordb/sensorDB.sqlite3 MQTT_SERVER='server1.particle-summary.pt' MQTT_PORT=18830 MQTT_TOPIC_MAIN='ssnalentejo' node ./server/serverSocketListenerMultiCore",
     "server_cassandra": "DEBUG=seismic.* PORT=3030 SENSOR_DATA_FILE_DIR='data' CASSANDRA_NODE='localhost' node ./server/serverCassandraMultiCore",

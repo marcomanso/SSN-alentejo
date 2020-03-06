@@ -41,12 +41,27 @@
 var sensorMap = new Map();
 var sensorMarkerMap = new Map();
 var sensorEventMap = new Map();
+var sensorIsMovingMap = new Map();
 var MAX_SENSOR_EVENT_MAP_SIZE = 1024;
 
 /* 
  * FUNCTIONS 
  *
  */
+
+function displayEventAlert(eventData) {
+  let time = new Date(eventData.time_start_ms);
+  if (eventData.time_end_ms === 0) {
+    document.getElementById("alert_event").innerHTML 
+      = "Recorded event started at "+time.toISOString()+" with acceleration "+eventData.d_accel_rms+"g(rms) for sensor "+eventData.sensorid;
+  }
+  else {
+    document.getElementById("alert_event").innerHTML 
+      = "Recorded event at "+time.toISOString()+" lasted "+(eventData.time_end_ms-eventData.time_start_ms)+" (ms) with max acceleration "+eventData.d_accel_rms+"g(rms) for sensor "+eventData.sensorid;
+  }
+}
+
+//
 
 function addSensorFieldsToMap(sensorid, name, latitude, longitude, elevation, sensor_URL, data_URL, last_update_sec) {
   let sensor = {
@@ -162,16 +177,14 @@ function setSensorAsMoving(sensorid, accel_value) {
 }
 
 function sensorIsMoving(sensorid) {
-  if (typeof sensorEventMap.get(sensorevent_msg.sensorid) !== 'undefined') {
-    let keys = sensorEventMap.get(sensorevent_msg.sensorid).keys();
-    let last_record = sensorEventMap.get(sensorevent_msg.sensorid).get(keys[keys.length-1]);
-    if (last_record.time_end_ms===0)
-      return true;
-  }
+  if (typeof sensorIsMovingMap.get(sensorid) !== 'undefined')
+    return sensorIsMovingMap.get(sensorid);
   return false;
 }
 
-function newSensorEventMessage(sensorevent_msg) {
+function newSensorEventMessage(msg) {
+
+  var sensorevent_msg = JSON.parse(msg);
   /*  
   eventData.sensorid
   eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
@@ -191,34 +204,32 @@ function newSensorEventMessage(sensorevent_msg) {
   eventData.stddev_rms    =sdev_rms;
   */
 
-  console.log("newSensorEventMessage: "+msg);
+  //process only if known sensor
+  if ( typeof sensorMap.get(sensorevent_msg.sensorid) === 'undefined')
+    return; 
 
   if (typeof sensorEventMap.get(sensorevent_msg.sensorid) === 'undefined') {
     sensorEventMap.set(sensorevent_msg.sensorid, new Map());
+    sensorIsMovingMap.set(sensorevent_msg.sensorid,false);
   }
+
   if ( sensorevent_msg.time_end_ms === 0 ) {
-
-console.log("--is EVENT");
-
+    sensorEventMap.get(sensorevent_msg.sensorid).set(sensorevent_msg.time_start_ms, sensorevent_msg);
+    sensorIsMovingMap.set(sensorevent_msg.sensorid,true);
     setSensorAsMoving(sensorevent_msg.sensorid, sensorevent_msg.d_accel_rms);
-    sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
+    displayEventAlert(sensorevent_msg);
   }
   else {
-
-console.log("--is END EVENT");
-
+    sensorEventMap.get(sensorevent_msg.sensorid).set(sensorevent_msg.time_start_ms, sensorevent_msg);
+    sensorIsMovingMap.set(sensorevent_msg.sensorid,false);
     setSensorAsActive(sensorevent_msg.sensorid);
-    sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
-
-    if ( sensorEventMap.get(sensorevent_msg.sensorid).length > MAX_SENSOR_EVENT_MAP_SIZE ) { 
-      //todo:.. check if works
-      console.log("--- delete item from event map");
-      Array.from(sensorEventMap.get(sensorevent_msg.sensorid).keys())
-     .slice(0, 1)
-     .forEach(key => sensorEventMap.get(sensorevent_msg.sensorid).delete(key));
-   }
+    displayEventAlert(sensorevent_msg);
+    //keep size manageable - remove first element if too big
+    if ( sensorEventMap.get(sensorevent_msg.sensorid).length > MAX_SENSOR_EVENT_MAP_SIZE ) {
+      let key=m.values().next().value;
+      sensorEventMap.get(sensorevent_msg.sensorid).delete(key);
+    }
   }
-
 }
 
 function newSensorInfoMessage(sensorinfo_msg) {

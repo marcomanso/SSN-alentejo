@@ -422,4 +422,10 @@ router.get('/datafiles/:key/:year/:month/:day', (req, res, next) => {
 
 });
 
+//EVENTS
+router.get('/events/', (req, res, next) => { 
+  res.send('working on it .....');
+
+});
+
 module.exports = router;
