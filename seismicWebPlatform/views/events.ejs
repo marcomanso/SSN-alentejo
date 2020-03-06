@@ -11,16 +11,18 @@
 
   <div class="card">
     <h5 class="card-header">
-      Date: <script> dateEvent = new Date(event.time_start_ms);
-      dateEvent.toISOString(); </script>
       <span class="badge badge-pill badge-dark"><%= event.sensorkey %></span>
+      <script> dateEvent = new Date(<%=event.time_start_ms%>);
+      dateEvent.toISOString(); </script>
+      Duration: <%=( event.time_end_ms - event.time_start_ms ) %> (ms)
+      <a href="#" class="btn btn-primary">Details</a>
     </h5>
     <div class="card-body">
-      <h5 class="card-title">Acceleration: <%=event.accel_rms %> g (rms)</h5>
-      <h5 class="card-title">Duration: 
-        <%=( event.time_end_ms - event.time_start_ms ) %> (ms)</h5>
-      <p>dX=<%= event.d_accel_x %>  dY=<%= event.d_accel_y %>   dZ=<%= event.d_accel_z %>  Std.dev=<%= event.stddev_rms %>(rms)</p>
-      <a href="#" class="btn btn-primary">Details</a>
+      <h6 class="card-title">dAcceleration: <%=event.d_accel_rms %> g (rms)</h6>
+      <p>dX=<%= event.d_accel_x %>  
+        dY=<%= event.d_accel_y %>   
+        dZ=<%= event.d_accel_z %>  
+        Std.dev=<%= event.stddev_rms %>(rms)</p>
     </div>
   </div>
 
