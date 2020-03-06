@@ -194,10 +194,7 @@ function newSensorEventMessage(sensorevent_msg) {
   if (typeof sensorEventMap.get(sensorevent_msg.sensorid) === 'undefined') {
     sensorEventMap.set(sensorevent_msg.sensorid, new Map());
   }
-  if ( eventData.time_end_ms === 0 ) {
-
-console.log("--is EVENT");
-
+  if ( sensorevent_msg.time_end_ms == 0 ) {
     setSensorAsMoving(sensorevent_msg.sensorid, sensorevent_msg.d_accel_rms);
     sensorEventMap.get(sensorevent_msg.sensorid).set(eventData.time_start_ms, sensorevent_msg);
   }
