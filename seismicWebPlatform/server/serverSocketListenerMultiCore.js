@@ -357,9 +357,10 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   if (eventData.time_end_ms!==0)  { //event ended -> WRITE
     let data = eventData;
     eventsDB.create(
-      data.sensorid,  data.time_start_ms, data.time_end_ms, 
-      data.d_accel_x, data.d_accel_y,     data.d_accel_z, 
-      data.d_accel_rms, data.stddev_rms)
+      data.sensorid,   data.time_start_ms, data.time_end_ms, 
+      data.d_accel_x,  data.d_accel_y,     data.d_accel_z,   data.d_accel_rms, 
+      data.max_accel_x,data.max_accel_y,   data.max_accel_z, data.accel_rms, 
+      data.stddev_rms)
     .catch(err=>{ writeLogAndConsole("log_","eventsDB: error writing event for sensor "+sensorid) });
   }
 

@@ -37,23 +37,25 @@ exports.connectDB = function() {
 
 exports.create = function(
   sensorkey, time_start_ms, time_end_ms, 
-  d_accel_x, d_accel_y, d_accel_z, 
-  d_accel_rms, stddev_rms) {
+  d_accel_x, d_accel_y, d_accel_z, d_accel_rms,
+  accel_x,   accel_y,   accel_z,   accel_rms
+  stddev_rms) {
     return exports.connectDB()
     .then(() => {
       return new Promise((resolve, reject) => {
         _dbEvents.run("INSERT INTO events "
-             +"( sensorkey, time_start_ms, time_end_ms, d_accel_x, d_accel_y, d_accel_z, d_accel_rms, stddev_rms ) "
-             +"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);",
+             +"( sensorkey, time_start_ms, time_end_ms, d_accel_x, d_accel_y, d_accel_z, d_accel_rms, accel_x, accel_y, accel_z, accel_rms, stddev_rms ) "
+             +"VALUES ( ?, ?, ?,   ?, ?, ?, ?,   ?, ?, ?, ?,  ?);",
              [ sensorkey, time_start_ms, time_end_ms, 
-              d_accel_x, d_accel_y, d_accel_z, 
-              d_accel_rms, stddev_rms ], err => {
+               d_accel_x, d_accel_y, d_accel_z, d_accel_rms,
+               accel_x,   accel_y,   accel_z,   accel_rms
+               stddev_rms ], err => {
         if (err) {
           console.log("DB EVENTS - insert error "+err)
           reject(err);
         }
         else {
-          console.log('DB CREATE event for '+ sensorkey);
+          //console.log('DB CREATE event for '+ sensorkey);
           debug('DB CREATE event for '+ sensorkey);
           resolve(sensorkey);
         }
