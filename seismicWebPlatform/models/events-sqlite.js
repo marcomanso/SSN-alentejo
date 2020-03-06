@@ -46,8 +46,8 @@ exports.create = function(
              +"( sensorkey, time_start_ms, time_end_ms, d_accel_x, d_accel_y, d_accel_z, d_accel_rms, accel_rms, stddev_rms ) "
              +"VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
              [ sensorkey, time_start_ms, time_end_ms, 
-              d_accel_x, d_accel_y, d_accel_z, d_accel_rms, 
-              accel_rms, stddev_rms ], err => {
+              d_accel_x, d_accel_y, d_accel_z, 
+              d_accel_rms, accel_rms, stddev_rms ], err => {
         if (err) 
           reject(err);
         else {
