@@ -8,8 +8,7 @@
     <p>Below are events registered in this portal. Click to access its details.</p>
 
   <% for (var event of eventslist) { 
-    var dateEventStr = new Date(<%=event.time_start_ms%>).toISOString();
-
+    var dateEventStr = new Date(event.time_start_ms).toISOString();
   %>  
 
   <div class="card">
