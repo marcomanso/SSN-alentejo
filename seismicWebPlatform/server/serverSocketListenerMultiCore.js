@@ -359,7 +359,7 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
     events.create(
       data.sensorid,  data.time_start_ms, data.time_end_ms, 
       data.d_accel_x, data.d_accel_y,     data.d_accel_z, 
-      data.d_accel_rms, data.accel_rms, data.stddev_rms);
+      data.d_accel_rms, data.stddev_rms);
   }
 
   console.log("event: "+JSON.stringify(eventData));
