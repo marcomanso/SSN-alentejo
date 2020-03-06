@@ -9,7 +9,7 @@
   
   <div class="card">
     <h5 class="card-header">
-      Date: <% let dateEvent = new Date(event.time_start_ms);
+      Date: <% dateEvent = new Date(event.time_start_ms);
       dateEvent.toISOString(); %>
       <span class="badge badge-pill badge-dark"><%= event.sensorkey %></span>
     </h5>
