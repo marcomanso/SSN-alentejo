@@ -19,13 +19,13 @@
       <a href="#" class="btn btn-primary">Details</a>
     </h5>
     <div class="card-body">
-      <h6 class="card-title">dAcceleration: <%=event.d_accel_rms %> g (rms)
-        Accel (max): <%= event.accel_rms %> g (rms)
+      <h6 class="card-title">dAcceleration: <%=event.d_accel %> g
+        Accel (max): <%= event.accel %> g
       </h6>
       <p>dX=<%= event.d_accel_x %>  
         dY=<%= event.d_accel_y %>   
         dZ=<%= event.d_accel_z %>  
-        Std.dev=<%= event.stddev_rms %>(rms)</p>
+        Std.dev=<%= event.stddev_abs %></p>
     </div>
   </div>
 

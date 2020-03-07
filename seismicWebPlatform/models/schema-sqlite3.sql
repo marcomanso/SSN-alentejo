@@ -21,11 +21,11 @@ CREATE TABLE IF NOT EXISTS events (
   d_accel_x      DOUBLE,
   d_accel_y      DOUBLE,
   d_accel_z      DOUBLE,
-  d_accel_rms    DOUBLE,
+  d_accel        DOUBLE,
   accel_x        DOUBLE,
   accel_y        DOUBLE,
   accel_z        DOUBLE,
-  accel_rms      DOUBLE,
-  stddev_rms     DOUBLE,
+  accel          DOUBLE,
+  stddev_abs     DOUBLE,
   PRIMARY KEY (sensorkey, time_start_ms)
 );

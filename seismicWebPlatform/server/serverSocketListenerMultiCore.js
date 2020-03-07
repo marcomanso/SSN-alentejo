@@ -22,7 +22,6 @@ var sensorDB     = require('../models/sensors-sqlite')
 var eventsDB     = require('../models/events-sqlite')
 
 var utils = require('../utils/utils.js');
-var dataUtils = require('../utils/datautils.js');
 var debug = require('debug')('seismic:server');
 
 var rsa = new nodeRSA();
@@ -72,8 +71,8 @@ var sensorEventMap = new Map();  // stores info about event
             eventData.max_accel_x  =stat.max(sensorMeasurementsXMap.get(sensorid));
             eventData.max_accel_y  =stat.max(sensorMeasurementsYMap.get(sensorid));
             eventData.max_accel_z  =stat.max(sensorMeasurementsZMap.get(sensorid));
-            eventData.accel_rms    =stat.rootMeanSquare([max_accel_x,max_accel_y,max_accel_z]);
-            eventData.stddev_rms   =sdev_rms;
+            eventData.accel        
+            eventData.stddev       =sdev;
 */
 
 //var sensorEventDataStart_ms=0;               
@@ -126,16 +125,16 @@ function processMeasurementValues(sensorid) {
         writeLogAndConsole("log_", sensorid+" first calibration to: "+average_x+" "+average_y+" "+average_z);
       }
       else {
-        let calibr_rms=stat.rootMeanSquare(calibr_sdev);
-        let sdev_rms  =stat.rootMeanSquare([sdev_x,sdev_y,sdev_z]);
-        if (sdev_rms<calibr_rms) {
+        let calib_sdev_abs=Math.hypot(calibr_sdev.sdev_x,calibr_sdev.sdev_y,calibr_sdev.sdev_z);
+        let sdev_abs  =Math.hypot(sdev_x,sdev_y,sdev_z);
+        if (sdev_abs<calib_sdev_abs) {
           sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
           sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z]);
-          writeLogAndConsole("log_", sensorid+" updated calibration to: "+average_x+" "+average_y+" "+average_z+" std.dev(rms)="+sdev_rms);
+          writeLogAndConsole("log_", sensorid+" updated calibration to: "+average_x+" "+average_y+" "+average_z+" std.dev="+sdev_abs);
         }
         else {
           //check if is event
-          if ( sdev_rms > DEF_EVENT_STDDEV_FACTOR*calibr_rms ) {
+          if ( sdev_abs > DEF_EVENT_STDDEV_FACTOR*calib_sdev_abs ) {
             //YES - collect event data
             let eventData={};
             eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
@@ -147,38 +146,39 @@ function processMeasurementValues(sensorid) {
             eventData.d_accel_x     =average_x-sensorCalibrationMap.get(sensorid)[0];
             eventData.d_accel_y     =average_y-sensorCalibrationMap.get(sensorid)[1];
             eventData.d_accel_z     =average_z-sensorCalibrationMap.get(sensorid)[2];
-            eventData.d_accel_rms   =stat.rootMeanSquare([eventData.d_accel_x,eventData.d_accel_y,eventData.d_accel_z]);
+            eventData.d_accel       =Math.hypot(eventData.d_accel_x,eventData.d_accel_y,eventData.d_accel_z);
             //eventData.max_accel_x   =stat.max(sensorMeasurementsXMap.get(sensorid));
             //eventData.max_accel_y   =stat.max(sensorMeasurementsYMap.get(sensorid));
             //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
-            eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
-            eventData.stddev_rms    =sdev_rms;
+            eventData.accel         =Math.hypot(eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z);
+            eventData.stddev_abs    =sdev_abs;
             //no entry exists? put data
             if ( typeof sensorEventMap.get(sensorid) === 'undefined' ) {
               sensorEventMap.set(sensorid, eventData);
               writeLogAndConsole("log_", 
                 "START EVENT time: " +sensorEventMap.get(sensorid).time_update_ms
                 +", sensorid: "+sensorid
-                +", sdev_rms:" +sensorEventMap.get(sensorid).accel_rms
+                +", d_accel:"  +sensorEventMap.get(sensorid).d_accel
                 +", d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
                 +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
                 +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
-                +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
+                +", (accel:"  +sensorEventMap.get(sensorid).accel
+                +"), stddedv: " +sensorEventMap.get(sensorid).stddev_abs);
               mqttPublishSensorEventMessage(sensorid, sensorEventMap.get(sensorid));             
             }
             //entry exists? check what to update
             else {               
               sensorEventMap.get(sensorid).time_update_ms=date.getTime();
-              if (sensorEventMap.get(sensorid).d_accel_rms<eventData.d_accel_rms) {
-                sensorEventMap.get(sensorid).accel_rms  =eventData.accel_rms;
+              if (sensorEventMap.get(sensorid).d_accel<eventData.d_accel) {
+                sensorEventMap.get(sensorid).accel      =eventData.accel;
                 sensorEventMap.get(sensorid).max_accel_x=eventData.max_accel_x;
                 sensorEventMap.get(sensorid).max_accel_y=eventData.max_accel_y;
                 sensorEventMap.get(sensorid).max_accel_z=eventData.max_accel_z;
                 sensorEventMap.get(sensorid).d_accel_x  =eventData.d_accel_x;
                 sensorEventMap.get(sensorid).d_accel_y  =eventData.d_accel_y;
                 sensorEventMap.get(sensorid).d_accel_z  =eventData.d_accel_z;
-                sensorEventMap.get(sensorid).d_accel_rms=eventData.d_accel_rms;
-                sensorEventMap.get(sensorid).stddev_rms =eventData.stddev_rms;
+                sensorEventMap.get(sensorid).d_accel    =eventData.d_accel;
+                sensorEventMap.get(sensorid).stddev_abs =eventData.stddev_abs;
               }
             }
           }//if EVENT
@@ -198,11 +198,12 @@ function processMeasurementValues(sensorid) {
               writeLogAndConsole("log_", 
                 "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_end_ms-sensorEventMap.get(sensorid).time_start_ms)
                 +", sensorid: "+sensorid
-                +", d_a_rms:"  +sensorEventMap.get(sensorid).d_accel_rms
+                +", d_accel:"  +sensorEventMap.get(sensorid).d_accel
                 +", d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
                 +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
                 +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
-                +", stddedv: " +sensorEventMap.get(sensorid).stddev_rms);
+                +", (accel:"  +sensorEventMap.get(sensorid).accel
+                +"), stddedv: " +sensorEventMap.get(sensorid).stddev_abs);
 
               let eventData = sensorEventMap.get(sensorid);
               mqttPublishSensorEventMessage(sensorid, eventData);
@@ -344,12 +345,12 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   eventData.d_accel_x     =average_x-sensorCalibrationMap.get(sensorid)[0];
   eventData.d_accel_y     =average_y-sensorCalibrationMap.get(sensorid)[1];
   eventData.d_accel_z     =average_z-sensorCalibrationMap.get(sensorid)[2];
-  eventData.d_accel_rms   =stat.rootMeanSquare([eventData.d_accel_x,eventData.d_accel_y,eventData.d_accel_z]);
+  eventData.d_accel 
   //eventData.max_accel_x   =stat.max(sensorMeasurementsXMap.get(sensorid));
   //eventData.max_accel_y   =stat.max(sensorMeasurementsYMap.get(sensorid));
   //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
-  eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
-  eventData.stddev_rms    =sdev_rms;
+  eventData.accel
+  eventData.stddev         =sdev;
   */
 
   eventData.sensorid=sensorid;
@@ -358,9 +359,9 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
     let data = eventData;
     eventsDB.create(
       data.sensorid,   data.time_start_ms, data.time_end_ms, 
-      data.d_accel_x,  data.d_accel_y,     data.d_accel_z,   data.d_accel_rms, 
-      data.max_accel_x,data.max_accel_y,   data.max_accel_z, data.accel_rms, 
-      data.stddev_rms)
+      data.d_accel_x,  data.d_accel_y,     data.d_accel_z,   data.d_accel, 
+      data.max_accel_x,data.max_accel_y,   data.max_accel_z, data.accel, 
+      data.stddev_abs)
     .catch(err=>{ writeLogAndConsole("log_","eventsDB: error writing event for sensor "+sensorid) });
   }
 
