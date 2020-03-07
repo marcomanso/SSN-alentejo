@@ -23,29 +23,31 @@
   
     <p>Below are sensors registered in this website. Click to access its details.</p>
   
-  <% if (sensorlist.length > 0) {       
-    for (var sensor of sensorlist) { %>  
+    <table class="table table-hover table-sm">
+      <thead>
+        <tr class="table-active">
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
 
-  <!-- <a href="/sensors/view?key=<%= sensor.sensorkey %>" class="list-group-item"> -->
+      <% for (var sensor of sensorlist) { %>  
 
+        <tr>
+          <th scope="row"><span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span></h6></th>
+          <td><a href="/sensors/view/<%= sensor.sensorkey %>"><%= sensor.name %></a></td>
+          <td><%= sensor.description %></td>
+          <td class="text-nowrap"><a href="/sensors/live/<%= sensor.sensorkey %>" class="btn btn-danger">LIVE Data</a></td>
+          <td class="text-nowrap"><a href="/sensors/datafiles/<%= sensor.sensorkey %>" class="btn btn-primary">Datafiles</a></td>
+        </tr>
 
-  <div class="card">
-    <div class="card-header">
-      <a href="/sensors/view/<%= sensor.sensorkey %>">
-        <h6><%= sensor.name %>
-        <span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span></h6>
-      </a>
-    </div>
-      <div class="card-body">
-        <p class="card-text"><%= sensor.description %></p>
-        <a href="/sensors/live/<%= sensor.sensorkey %>" class="card-link btn btn-danger">LIVE Data</a>
-        <a href="/sensors/datafiles/<%= sensor.sensorkey %>" class="card-link btn btn-primary">Datafiles</a>
-      </div>
-    </div>
+      <% } %>
 
-
-  <% } 
-  } %>
-
+      </tbody>
+    </table>
   
 <% include bottom %>

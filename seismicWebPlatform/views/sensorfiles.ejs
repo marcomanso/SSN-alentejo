@@ -1,68 +1,51 @@
 <% include top %>
 
 <p></p>
-<h5><a href="/sensors/view/<%= sensor.sensorkey %>"><%= sensor.name %></a>
-  <span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span></h5>
 
-<div class="card">
-  <h5 class="card-header">Datafiles</h5>
-  <div class="card-body">
+<h5>Datafiles for sensor 
+  <a href="/sensors/view/<%= sensor.sensorkey %>"><%= sensor.name %></a>
+  <span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span>
+</h5>
 
-    <% 
-      var path = "/";
-      if (year)  path +=year+"/";
-      if (month) path +=month+"/";
-      if (day)   path +=day+"/";
-    %>
+<ul class="list-group">
+
+  <% 
+    var path = "/";
+    if (year)  path +=year+"/";
+    if (month) path +=month+"/";
+    if (day)   path +=day+"/";
+  %>
+  
+  <% if (directories) {       
+    for (var dir of directories) { %>  
+
+    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-light" href="/sensors/datafiles/<%= sensor.sensorkey + path + dir %>">
+      <%= dir %>
+      <span class="badge badge-pill badge-dark">Directory</span>    
+    </a> 
     
-    <% if (directories) {       
-      for (var dir of directories) { %>  
-    <a class="list-group-item" href="/sensors/datafiles/<%= sensor.sensorkey + path + dir %>">
-      <div class="card-text">
-        <div class="card-text">
-          <%= dir %> <span class="badge badge-pill badge-dark">Directory</span>
-        </div>
-      </div>
-    </a>
     <% } 
     } %>
 
-    <% if (files) {       
-      for (var file of files) { %>  
+  <% if (files) {       
+    for (var file of files) { %>  
+  
+  <li class="list-group-item">
+    <img src="/images/seismicsensor.png" class="media-object" style="width:50px">
+    <a href="/sensors/showdata/<%= sensor.sensorkey +'/'+ file + path %>">
+    <%= file %> 
+    </a>
+    <span class="badge badge-pill badge-dark">File</span>
     
-    <!--
-        <a class="list-group-item" href="/sensors/showdata/<%= sensor.sensorkey +"/"+ file + path %>">
-      </a> -->
-
-    <li class="list-group-item">
-          <div class="card-text">
-            <div class="card-text">
-              <img src="/images/seismicsensor.png" class="media-object" style="width:50px">
-              <a href="/sensors/showdata/<%= sensor.sensorkey +"/"
-              + file + path %>">
-              <%= file %> 
-              </a>
-              <span class="badge badge-pill badge-dark">File</span>
-              
-              <a class="btn btn-secondary btn-sm" href=<%= "/"+sensorFilesDir+"/" + sensor.sensorkey + path + file %> download role="button">Download</a>
-              
-            </div>
-          </div>
-    </li>
+    <div class="btn-group float-right" role="group">
+      <a class="btn btn-primary btn-sm" href="/sensors/showdata/<%= sensor.sensorkey +'/'+ file + path %>">View</a>
+      <a class="btn btn-secondary btn-sm float-right" href="<%= '/'+sensorFilesDir+'/' + sensor.sensorkey + path + file %>" download role="button">Download</a>
+    </div>
+  </li>
       
     <% } 
     } %>
     
-  </div>
-  
-  <div class="card-footer">
-    <div class="btn-group col-12" role="group" aria-label="Prev/Next">
-      <a class="btn btn-outline-dark" href="#" role="button"> &lt; Previous</a>
-      <a class="btn btn-outline-dark" href="#" role="button">Next &gt;</a> 
-    </div>
-  </div>
-
-</div>
-  
+</ul>
 
 <% include bottom %>
