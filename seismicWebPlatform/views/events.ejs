@@ -26,10 +26,10 @@
       var dateEventStr = new Date(event.time_start_ms).toISOString();
       var intensity_color = datautils.getColorMercalliIntensity(event.intensity);
       var intensity_colorSTR = 
-        "rgba("+intensity_color[1]+","
+        "rgba("+intensity_color[0]+","
+        +intensity_color[1]+","
         +intensity_color[2]+","
-        +intensity_color[3]+","
-        +intensity_color[4]+")";
+        +intensity_color[3]+")";
     %>  
 
       <tr style="background-color: <%= intensity_colorSTR %>;">

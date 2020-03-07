@@ -45,7 +45,7 @@ module.exports = {
   		return 1;
   	},
 
-	function getColorMercalliIntensity (intensity) {
+	getColorMercalliIntensity : function (intensity) {
 	  let transp = 0.3*(intensity/12.0);
 	  return [255, 200, 200, transp];
 	},
