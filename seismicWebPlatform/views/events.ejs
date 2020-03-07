@@ -4,10 +4,16 @@
 
 <p></p>
 <h3>Events List</h3> 
-  
-<% if (eventslist.length > 0) { %>
-
-  <p>Below are events registered in this portal. Click to access its details.</p>
+  <p>Registered events in this portal.</p>
+  <p>Filter options: <strong>Intensity:</strong>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/8">8+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/7">7+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/6">6+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/5">5+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/6">4+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/3">3+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events">All</a>
+  </p>
 
   <table class="table table-hover table-sm">
     <thead>
@@ -20,37 +26,29 @@
       </tr>
     </thead>
     <tbody>
+  
+  <% for (var event of eventslist) { 
 
-    <% for (var event of eventslist) { 
+    var dateEventStr = new Date(event.time_start_ms).toISOString();
+    var intensity_color = datautils.getColorMercalliIntensity(event.intensity);
+    var intensity_colorSTR = 
+      "rgba("+intensity_color[0]+","
+      +intensity_color[1]+","
+      +intensity_color[2]+","
+      +intensity_color[3]+")";
+  %>  
 
-      var dateEventStr = new Date(event.time_start_ms).toISOString();
-      var intensity_color = datautils.getColorMercalliIntensity(event.intensity);
-      var intensity_colorSTR = 
-        "rgba("+intensity_color[0]+","
-        +intensity_color[1]+","
-        +intensity_color[2]+","
-        +intensity_color[3]+")";
-    %>  
+    <tr style="background-color: <%= intensity_colorSTR %>;">
+      <th scope="row"><%= dateEventStr %></th>
+      <td><%=( event.time_end_ms - event.time_start_ms ) %></td>
+      <td><%= event.d_accel %></td>
+      <td><%= event.intensity %></td>
+      <td><span class="badge badge-pill badge-dark"><%= event.sensorkey %></span></td>
+    </tr>
 
-      <tr style="background-color: <%= intensity_colorSTR %>;">
-        <th scope="row"><%= dateEventStr %></th>
-        <td><%=( event.time_end_ms - event.time_start_ms ) %></td>
-        <td><%= event.d_accel %></td>
-        <td><%= event.intensity %></td>
-        <td><span class="badge badge-pill badge-dark"><%= event.sensorkey %></span></td>
-      </tr>
-
-    <% } %>
+  <% } %>
 
     </tbody>
   </table>
-
-<%
-}
-else {
-%>
-  <p>No events have been recorded yet.</p>  
-<%
-} %>
 
 <% include bottom %>

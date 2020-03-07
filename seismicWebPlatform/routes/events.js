@@ -25,4 +25,23 @@ router.get('/', (req, res, next) => {
     });
 });
 
+
+/* GET events listing. */
+router.get('/intensity/:intensity', (req, res, next) => {
+	eventsDB.readAllMagnitudeAbove(req.params.intensity)
+    .then(eventslist => {
+    res.render('events', 
+               { title: 'Events',
+                eventslist: eventslist,
+                datautils:  datautils,
+                breadcrumbs: [ { href: '/', text: 'Home' }, 
+                              { active: true, text: "Events List" } ]
+               }) 
+    })
+    .catch(err => { 
+      next(err); 
+    });
+});
+
+
 module.exports = router;

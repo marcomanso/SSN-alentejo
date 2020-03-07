@@ -1,8 +1,8 @@
 'use strict';
 
-const util    = require('util');
-const sqlite3 = require('sqlite3');
-const datautil= require('../utils/datautils');
+const util     = require('util');
+const sqlite3  = require('sqlite3');
+const datautils= require('../utils/datautils');
 
   /*  
   eventData.sensorid
@@ -71,6 +71,45 @@ exports.readAll = function() {
     return new Promise((resolve, reject) => {
       var eventList = [];
       db.each("SELECT * FROM events ORDER BY time_start_ms DESC", (err, row) => {
+        if (err) 
+          reject(err);
+        else {
+          let event={};
+          event.sensorkey    =row.sensorkey;
+          event.time_start_ms=row.time_start_ms;
+          event.time_end_ms  =row.time_end_ms;
+          event.d_accel_x    =row.d_accel_x;
+          event.d_accel_y    =row.d_accel_y;
+          event.d_accel_z    =row.d_accel_z; 
+          event.d_accel      =row.d_accel;
+          event.accel_x      =row.accel_x;
+          event.accel_y      =row.accel_y;  
+          event.accel_z      =row.accel_z;   
+          event.accel        =row.accel;
+          event.stddev_abs   =row.stddev_abs;
+          event.intensity    =datautils.getMercalliIntensity(event.d_accel);
+          eventList.push(event);
+        }
+      },
+      (err, num) => {
+      if (err) {
+        console.log("DB EVENTS - read error "+err)
+        reject(err);
+      }
+      else 
+        resolve(eventList);
+      }); 
+    });
+  })
+};
+
+exports.readAllMagnitudeAbove = function(intensity) {
+  var min_accel = datautils.getAccelFromMercalliIntensity(intensity);
+  return exports.connectDB()
+  .then(() => {
+    return new Promise((resolve, reject) => {
+      var eventList = [];
+      db.each("SELECT * FROM events WHERE "+min_accel+" >= d_accel ORDER BY time_start_ms DESC", (err, row) => {
         if (err) 
           reject(err);
         else {

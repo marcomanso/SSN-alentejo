@@ -43,11 +43,51 @@ module.exports = {
   	}
   	else
   		return 1;
-  	},
+  },
 
-	getColorMercalliIntensity : function (intensity) {
-	  let transp = 0.9*(intensity/12.0);
-	  return [255, 200, 200, transp];
-	},
+  //return mercalli intensity scale
+  getAccelFromMercalliIntensity : function (intensity) {
+  	if (intensity>=12) {
+  		return 3.0;
+  	}
+  	else if (intensity>=11) {
+  		return 1.5;
+  	}
+  	else if (intensity>=10) {
+  		return 0.7;
+  	}
+  	else if (intensity>=9) {
+  		return 0.3;
+  	}
+  	else if (intensity>=8) {
+  		return 0.15;
+  	}
+  	else if (intensity>=7) {
+  		return 0.07;
+  	}
+  	else if (intensity>=6) {
+  		return 0.03;
+  	}
+  	else if (intensity>=5) {
+  		return 0.015;
+  	}
+  	else if (intensity>=4) {
+  		return 0.007;
+  	}
+  	else if (intensity>=3) {
+  		return 0.003;
+  	}
+  	else if (intensity>=2) {
+  		return 0.0015;
+  	}
+  	else {
+  		return 0.0;
+  	}
+  },
 
-}
+  getColorMercalliIntensity : function (intensity) {
+	let transp = 0.9*(intensity/12.0);
+	return [255, 200, 200, transp];
+  },
+
+};
