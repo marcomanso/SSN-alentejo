@@ -125,8 +125,11 @@ function processMeasurementValues(sensorid) {
         writeLogAndConsole("log_", sensorid+" first calibration to: "+average_x+" "+average_y+" "+average_z);
       }
       else {
-        let calib_sdev_abs=Math.hypot(calibr_sdev.sdev_x,calibr_sdev.sdev_y,calibr_sdev.sdev_z);
-        let sdev_abs  =Math.hypot(sdev_x,sdev_y,sdev_z);
+        let calib_sdev_abs=Math.hypot(
+          sensorCalibrationStdDevMap.get(sensorid)[0],
+          sensorCalibrationStdDevMap.get(sensorid)[1],
+          sensorCalibrationStdDevMap.get(sensorid)[2]);
+        let sdev_abs      =Math.hypot(sdev_x,sdev_y,sdev_z);
         if (sdev_abs<calib_sdev_abs) {
           sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
           sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z]);
