@@ -1,45 +1,56 @@
 <% include top %>
 
-  <p></p>
-    <h3>Events List</h3> 
+<script type="text/JavaScript" src="/javascripts/mapSensors.js"></script>
+
+<p></p>
+<h3>Events List</h3> 
   
-  <% if (eventslist.length > 0) { %>
+<% if (eventslist.length > 0) { %>
 
-    <p>Below are events registered in this portal. Click to access its details.</p>
+  <p>Below are events registered in this portal. Click to access its details.</p>
 
-    <table class="table table-hover table-sm">
-      <thead>
-        <tr class="table-active">
-          <th scope="col">Time (UTC)</th>
-          <th scope="col">Duration (ms)</th>
-          <th scope="col">dAcceleration (g) (max)</th>
-          <th scope="col">Source (sensor)</th>
-        </tr>
-      </thead>
-      <tbody>
+  <table class="table table-hover table-sm">
+    <thead>
+      <tr class="table-active">
+        <th scope="col">Time <br/>(UTC)</th>
+        <th scope="col">Duration <br/>(ms)</th>
+        <th scope="col">dAcceleration <br/>(g) (max)</th>
+        <th scope="col">Intensity<br/>(Mercalli)</th>
+        <th scope="col">Source <br/>(sensor id)</th>
+      </tr>
+    </thead>
+    <tbody>
 
-      <% for (var event of eventslist) { 
-        var dateEventStr = new Date(event.time_start_ms).toISOString();
-      %>  
+    <% for (var event of eventslist) { 
 
-        <tr>
-          <th scope="row"><%= dateEventStr %></th>
-          <td><%=( event.time_end_ms - event.time_start_ms ) %></td>
-          <td><%= event.d_accel %></td>
-          <td><span class="badge badge-pill badge-dark"><%= event.sensorkey %></span></td>
-        </tr>
+      var dateEventStr = new Date(event.time_start_ms).toISOString();
+      var intensity_color = datautils.getColorMercalliIntensity(event.intensity);
+      var intensity_colorSTR = 
+        "rgba("+intensity_color[1]+","
+        +intensity_color[2]+","
+        +intensity_color[3]+","
+        +intensity_color[4]+")";
+    %>  
 
-      <% } %>
+      <tr style="background-color: <%= intensity_colorSTR %>;">
+        <th scope="row"><%= dateEventStr %></th>
+        <td><%=( event.time_end_ms - event.time_start_ms ) %></td>
+        <td><%= event.d_accel %></td>
+        <td><%= event.intensity %></td>
+        <td><span class="badge badge-pill badge-dark"><%= event.sensorkey %></span></td>
+      </tr>
 
-      </tbody>
-    </table>
+    <% } %>
+
+    </tbody>
+  </table>
 
 <%
-  }
-  else {
-  %>
-    <p>No events have been recorded yet.</p>  
-  <%
-  } %>
-  
+}
+else {
+%>
+  <p>No events have been recorded yet.</p>  
+<%
+} %>
+
 <% include bottom %>

@@ -2,6 +2,7 @@
 
 const util    = require('util');
 const sqlite3 = require('sqlite3');
+const datautil= require('../utils/datautils');
 
   /*  
   eventData.sensorid
@@ -86,6 +87,7 @@ exports.readAll = function() {
           event.accel_z      =row.accel_z;   
           event.accel        =row.accel;
           event.stddev_abs   =row.stddev_abs;
+          event.intensity    =datautil.getMercalliIntensity(event.d_accel);
           eventList.push(event);
         }
       },

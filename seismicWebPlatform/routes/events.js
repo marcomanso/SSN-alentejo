@@ -1,11 +1,12 @@
-var router  = require('express').Router();
-var eventsDB = require('../models/events-sqlite');
+var router        = require('express').Router();
+const eventsDB    = require('../models/events-sqlite');
 
-var scrapeUtils   = require('../utils/scrape');
-var htmlUtils = require('../utils/utils');
+const scrapeUtils = require('../utils/scrape');
+const htmlUtils   = require('../utils/utils');
+const datautils   = require('../utils/datautils');
 
-const http = require('http');
-var debug = require('debug')('seismic:sensors');
+const http        = require('http');
+const debug       = require('debug')('seismic:sensors');
 
 /* GET events listing. */
 router.get('/', (req, res, next) => {
@@ -14,6 +15,7 @@ router.get('/', (req, res, next) => {
     res.render('events', 
                { title: 'Events',
                 eventslist: eventslist,
+                datautils:  datautils,
                 breadcrumbs: [ { href: '/', text: 'Home' }, 
                               { active: true, text: "Events List" } ]
                }) 
