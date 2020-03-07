@@ -24,15 +24,19 @@
 
   MQTT event messages are JSON formatted as:
   {
-    "sensorid": "4222973344b945d0b4918fd919dae63a", 
-    "magnitude_accel_rms": 2.4
-    "max_accel_x": 0,
-    "max_accel_y": 0,
-    "max_accel_z": 2.4,
-    "start_time_epoch_sec": 1583165821, 
-    "start_time_micro": 555000, 
-    "end_time_epoch_sec": 1583165822, 
-    "end_time_micro": 555000, 
+    "sensorid":      "sensor_adxl355_0001",
+    "time_start_ms": 1583597964185,
+    "time_update_ms":1583597964493,
+    "time_end_ms":   1583597964494,
+    "max_accel_x":   -0.01104205322265625,
+    "max_accel_y":   0.0213004150390625,
+    "max_accel_z":   1.0028894958496093,
+    "d_accel_x":     -0.00001818847656250011,
+    "d_accel_y":     0.000027435302734375028,
+    "d_accel_z":     0.000012634277343659406,
+    "d_accel":       0.00003525821152282015,
+    "accel":         1.0031764428582302,
+    "stddev_abs":    0.000550210009755386
    }
 
  */
@@ -53,11 +57,11 @@ function displayEventAlert(eventData) {
   let time = new Date(eventData.time_start_ms);
   if (eventData.time_end_ms === 0) {
     document.getElementById("alert_event").innerHTML 
-      = "Recorded event started at "+time.toISOString()+" with acceleration "+eventData.d_accel_rms+"g(rms) for sensor "+eventData.sensorid;
+      = "Recorded event started at "+time.toISOString()+" with acceleration "+eventData.d_accel+"g for sensor "+eventData.sensorid;
   }
   else {
     document.getElementById("alert_event").innerHTML 
-      = "Recorded event at "+time.toISOString()+" lasted "+(eventData.time_end_ms-eventData.time_start_ms)+" (ms) with max acceleration "+eventData.d_accel_rms+"g(rms) for sensor "+eventData.sensorid;
+      = "Recorded event at "+time.toISOString()+" lasted "+(eventData.time_end_ms-eventData.time_start_ms)+" (ms) with max acceleration "+eventData.d_accel+"g for sensor "+eventData.sensorid;
   }
 }
 
@@ -185,24 +189,6 @@ function sensorIsMoving(sensorid) {
 function newSensorEventMessage(msg) {
 
   var sensorevent_msg = JSON.parse(msg);
-  /*  
-  eventData.sensorid
-  eventData.time_start_ms =date.getTime(); //!=0 indicated ongoing event
-  eventData.time_update_ms=date.getTime(); //!=0 indicated ongoing event
-  eventData.time_end_ms   =0;
-  eventData.max_accel_x   =average_x;
-  eventData.max_accel_y   =average_y;
-  eventData.max_accel_z   =average_z;
-  eventData.d_accel_x     =average_x-sensorCalibrationMap.get(sensorid)[0];
-  eventData.d_accel_y     =average_y-sensorCalibrationMap.get(sensorid)[1];
-  eventData.d_accel_z     =average_z-sensorCalibrationMap.get(sensorid)[2];
-  eventData.d_accel_rms   =stat.rootMeanSquare([eventData.d_accel_x,eventData.d_accel_y,eventData.d_accel_z]);
-  //eventData.max_accel_x   =stat.max(sensorMeasurementsXMap.get(sensorid));
-  //eventData.max_accel_y   =stat.max(sensorMeasurementsYMap.get(sensorid));
-  //eventData.max_accel_z   =stat.max(sensorMeasurementsZMap.get(sensorid));
-  eventData.accel_rms     =stat.rootMeanSquare([eventData.max_accel_x,eventData.max_accel_y,eventData.max_accel_z]);
-  eventData.stddev_rms    =sdev_rms;
-  */
 
   //process only if known sensor
   if ( typeof sensorMap.get(sensorevent_msg.sensorid) === 'undefined')
@@ -216,7 +202,7 @@ function newSensorEventMessage(msg) {
   if ( sensorevent_msg.time_end_ms === 0 ) {
     sensorEventMap.get(sensorevent_msg.sensorid).set(sensorevent_msg.time_start_ms, sensorevent_msg);
     sensorIsMovingMap.set(sensorevent_msg.sensorid,true);
-    setSensorAsMoving(sensorevent_msg.sensorid, sensorevent_msg.d_accel_rms);
+    setSensorAsMoving(sensorevent_msg.sensorid, sensorevent_msg.d_accel);
     displayEventAlert(sensorevent_msg);
   }
   else {
