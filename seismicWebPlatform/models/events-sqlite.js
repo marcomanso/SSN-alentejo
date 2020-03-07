@@ -69,7 +69,7 @@ exports.readAll = function() {
   .then(() => {
     return new Promise((resolve, reject) => {
       var eventList = [];
-      db.each("SELECT * FROM events", (err, row) => {
+      db.each("SELECT * FROM events ORDER BY time_end_ms DESC", (err, row) => {
         if (err) 
           reject(err);
         else {
