@@ -43,5 +43,21 @@ router.get('/intensity/:intensity', (req, res, next) => {
     });
 });
 
+/* GET events listing. */
+router.get('/datetime/:datetime', (req, res, next) => {
+	eventsDB.readAllSinceTime(req.params.datetime)
+    .then(eventslist => {
+    res.render('events', 
+               { title: 'Events',
+                eventslist: eventslist,
+                datautils:  datautils,
+                breadcrumbs: [ { href: '/', text: 'Home' }, 
+                              { active: true, text: "Events List" } ]
+               }) 
+    })
+    .catch(err => { 
+      next(err); 
+    });
+});
 
 module.exports = router;

@@ -4,14 +4,22 @@
 
 <p></p>
 <h3>Events List</h3> 
-  <p>Registered events in this portal.</p>
-  <p>Filter options: <strong>Intensity:</strong>
+  <p>Registered events in this portal. Select below for filter options.</p>
+  <p><strong>Intensity:</strong>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/8">8+</a>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/7">7+</a>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/6">6+</a>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/5">5+</a>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/6">4+</a>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/3">3+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events">All</a>
+  </p>
+  <p><strong>Time:</strong>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/datetime/1">1 Hour</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/datetime/2">2 Hours</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/datetime/3">3 Hours</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/datetime/12">12 Hours</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/datetime/24">1 Day</a>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events">All</a>
   </p>
 
@@ -27,7 +35,16 @@
     </thead>
     <tbody>
   
-  <% for (var event of eventslist) { 
+  <% 
+
+  var time_first_record=0;
+  var time_last_record=0;
+
+  for (var event of eventslist) { 
+
+    if (typeof time_first_record === 'undefined')
+      time_first_record=event.time_start_ms;
+    time_last_record=event.time_start_ms;
 
     var dateEventStr = new Date(event.time_start_ms).toISOString();
     var intensity_color = datautils.getColorMercalliIntensity(event.intensity);
@@ -50,5 +67,10 @@
 
     </tbody>
   </table>
+
+    <div class="btn-group col-12" role="group">
+      <a class="btn bg-light btn-outline-dark " href="#" role="button">&lt; Previous</a>   
+      <a class="btn bg-light btn-outline-dark " href="#" role="button">Next &gt;</a>
+    </div>
 
 <% include bottom %>
