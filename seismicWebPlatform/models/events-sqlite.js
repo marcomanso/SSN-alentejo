@@ -69,11 +69,10 @@ exports.readAll = function() {
   .then(() => {
     return new Promise((resolve, reject) => {
       var eventList = [];
-      db.each("SELECT * FROM events ORDER BY time_end_ms DESC", (err, row) => {
+      db.each("SELECT * FROM events ORDER BY time_start_ms DESC", (err, row) => {
         if (err) 
           reject(err);
         else {
-console.log("-- readAll ");         
           let event={};
           event.sensorkey    =row.sensorkey;
           event.time_start_ms=row.time_start_ms;
@@ -88,7 +87,6 @@ console.log("-- readAll ");
           event.accel        =row.accel;
           event.stddev_abs   =row.stddev_abs;
           eventList.push(event);
-console.log("-- added event from "+row.sensorkey);          
         }
       },
       (err, num) => {
