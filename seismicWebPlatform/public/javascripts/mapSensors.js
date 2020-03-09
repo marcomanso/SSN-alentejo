@@ -60,7 +60,7 @@ function displayEventAlert(eventData) {
     mmi=eventData.mmi.toFixed(1);
   if (eventData.time_end_ms === 0) {
     document.getElementById("alert_event").innerHTML 
-      = "Recorded event started at "+time.toISOString()+" with MMI "+mmi+" for sensor "+eventData.sensorid;
+      = "Recorded event started at "+time.toISOString()+" for sensor "+eventData.sensorid;
   }
   else {
     document.getElementById("alert_event").innerHTML 
