@@ -28,7 +28,7 @@
       <tr class="table-active">
         <th scope="col">Time <br/>(UTC)</th>
         <th scope="col">Duration <br/>(ms)</th>
-        <th scope="col">dAcceleration <br/>(g) (max)</th>
+        <th scope="col">PGA <br/>(%g, in cm/s^2)</th>
         <th scope="col">MMI</th>
         <th scope="col">Source <br/>(sensor id)</th>
       </tr>
@@ -58,13 +58,16 @@
     if (typeof event.mmi !== 'undefined')
       mmi=event.mmi.toFixed(1);
 
+    var pga='-'
+    if (typeof event.d_accel !== 'undefined' )
+      pga= event.d_accel.toFixed(9);
 
   %>  
 
     <tr style="background-color: <%= intensity_colorSTR %>;">
       <th scope="row"><%= dateEventStr %></th>
       <td><%=( event.time_end_ms - event.time_start_ms ) %></td>
-      <td><%= event.d_accel %></td>
+      <td><%= pga %></td>
       <td><%= mmi %></td>
       <td><span class="badge badge-pill badge-dark"><%= event.sensorkey %></span></td>
     </tr>
