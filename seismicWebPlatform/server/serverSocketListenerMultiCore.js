@@ -80,7 +80,7 @@ var sensorEventMap = new Map();  // stores info about event
 //var maxAccelEvent=[0,0,0];                
 
 //return mercalli intensity scale
-function getMercalliIntensity (accel_abs) {
+function getMercalliIntensity (max_accel) {
   let c1, c2;
   if (accel_abs<0.07) {
     c1=2.65;
@@ -91,7 +91,7 @@ function getMercalliIntensity (accel_abs) {
     c2=4.09;
 
   }
-  return (c1+c2*Math.log10(100*accel_abs));
+  return (c1+c2*Math.log10(9.8*100*max_accel));
 }
 
 // function that continuouly adds sensor measurements
