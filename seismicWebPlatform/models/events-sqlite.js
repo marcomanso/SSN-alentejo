@@ -48,7 +48,7 @@ exports.create = function(
       return new Promise((resolve, reject) => {
         db.run("INSERT INTO events "
              +"( sensorkey, time_start_ms, time_end_ms, d_accel_x, d_accel_y, d_accel_z, d_accel, accel_x, accel_y, accel_z, accel, stddev_abs, mmi ) "
-             +"VALUES ( ?, ?, ?,   ?, ?, ?, ?,   ?, ?, ?, ?,  ?);",
+             +"VALUES ( ?, ?, ?,   ?, ?, ?, ?,   ?, ?, ?, ?,  ?, ?);",
              [ sensorkey, time_start_ms, time_end_ms, 
                d_accel_x, d_accel_y, d_accel_z, d_accel,
                accel_x,   accel_y,   accel_z,   accel,
