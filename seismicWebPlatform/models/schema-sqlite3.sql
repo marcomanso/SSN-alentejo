@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS sensors (
 );
 
 DROP TABLE events;
-
 CREATE TABLE IF NOT EXISTS events (
   sensorkey      TEXT NOT NULL,
   time_start_ms  INTEGER NOT NULL,
@@ -27,5 +26,6 @@ CREATE TABLE IF NOT EXISTS events (
   accel_z        DOUBLE,
   accel          DOUBLE,
   stddev_abs     DOUBLE,
+  mmi            DOUBLE,
   PRIMARY KEY (sensorkey, time_start_ms)
 );

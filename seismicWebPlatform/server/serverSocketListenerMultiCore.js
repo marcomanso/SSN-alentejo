@@ -79,6 +79,20 @@ var sensorEventMap = new Map();  // stores info about event
 //var sensorEventDataStop_ms =0;
 //var maxAccelEvent=[0,0,0];                
 
+//return mercalli intensity scale
+function getMercalliIntensity (accel_abs) {
+  let c1, c2;
+  if (accel_abs<0.07) {
+    c1=2.65;
+    c2=1.39;
+  }
+  else {
+    c1=-1.91;
+    c2=4.09;
+
+  }
+  return (c1+c2*Math.log(accel_abs));
+}
 
 // function that continuouly adds sensor measurements
 // to queue array - will be used for:
@@ -357,6 +371,7 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   */
 
   eventData.sensorid=sensorid;
+  eventData.mmi=getMercalliIntensity(accel);
 
   if (eventData.time_end_ms!==0)  { //event ended -> WRITE
     let data = eventData;
@@ -364,7 +379,7 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
       data.sensorid,   data.time_start_ms, data.time_end_ms, 
       data.d_accel_x,  data.d_accel_y,     data.d_accel_z,   data.d_accel, 
       data.max_accel_x,data.max_accel_y,   data.max_accel_z, data.accel, 
-      data.stddev_abs)
+      data.stddev_abs, data.mmi)
     .catch(err=>{ writeLogAndConsole("log_","eventsDB: error writing event for sensor "+sensorid) });
   }
 

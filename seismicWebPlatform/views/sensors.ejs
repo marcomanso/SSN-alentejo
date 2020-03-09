@@ -41,8 +41,8 @@
           <th scope="row"><span class="badge badge-pill badge-dark"><%= sensor.sensorkey %></span></h6></th>
           <td><a href="/sensors/view/<%= sensor.sensorkey %>"><%= sensor.name %></a></td>
           <td><%= sensor.description %></td>
-          <td class="text-nowrap"><a href="/sensors/live/<%= sensor.sensorkey %>" class="btn btn-danger">LIVE Data</a></td>
-          <td class="text-nowrap"><a href="/sensors/datafiles/<%= sensor.sensorkey %>" class="btn btn-primary">Datafiles</a></td>
+          <td class="text-nowrap btn-sm"><a href="/sensors/live/<%= sensor.sensorkey %>" class="btn btn-danger">LIVE Data</a></td>
+          <td class="text-nowrap btn-sm"><a href="/sensors/datafiles/<%= sensor.sensorkey %>" class="btn btn-primary">Datafiles</a></td>
         </tr>
 
       <% } %>

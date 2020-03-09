@@ -27,8 +27,8 @@ router.get('/', (req, res, next) => {
 
 
 /* GET events listing. */
-router.get('/intensity/:intensity', (req, res, next) => {
-	eventsDB.readAllMagnitudeAbove(req.params.intensity)
+router.get('/mmi/:mmi', (req, res, next) => {
+	eventsDB.readAllMagnitudeAbove(req.params.mmi)
     .then(eventslist => {
     res.render('events', 
                { title: 'Events',

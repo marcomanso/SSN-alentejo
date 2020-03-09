@@ -4,7 +4,7 @@ const util     = require('util');
 const sqlite3  = require('sqlite3');
 const datautils= require('../utils/datautils');
 
-const MAX_NUMBER_RECORDS = 100;
+const MAX_NUMBER_RECORDS = 1000;
 
   /*  
   eventData.sensorid
@@ -47,12 +47,12 @@ exports.create = function(
     .then(() => {
       return new Promise((resolve, reject) => {
         db.run("INSERT INTO events "
-             +"( sensorkey, time_start_ms, time_end_ms, d_accel_x, d_accel_y, d_accel_z, d_accel, accel_x, accel_y, accel_z, accel, stddev_abs ) "
+             +"( sensorkey, time_start_ms, time_end_ms, d_accel_x, d_accel_y, d_accel_z, d_accel, accel_x, accel_y, accel_z, accel, stddev_abs, mmi ) "
              +"VALUES ( ?, ?, ?,   ?, ?, ?, ?,   ?, ?, ?, ?,  ?);",
              [ sensorkey, time_start_ms, time_end_ms, 
                d_accel_x, d_accel_y, d_accel_z, d_accel,
                accel_x,   accel_y,   accel_z,   accel,
-               stddev_abs ], err => {
+               stddev_abs, mmi ], err => {
         if (err) {
           console.log("DB EVENTS - insert error "+err)
           reject(err);
@@ -92,7 +92,7 @@ exports.readAll = function(lastvalue) {
           event.accel_z      =row.accel_z;   
           event.accel        =row.accel;
           event.stddev_abs   =row.stddev_abs;
-          event.intensity    =datautils.getMercalliIntensity(event.d_accel);
+          event.mmi          =row.mmi;
           eventList.push(event);
         }
       },
@@ -108,13 +108,12 @@ exports.readAll = function(lastvalue) {
   })
 };
 
-exports.readAllMagnitudeAbove = function(intensity, lastvalue) {
-  var min_accel = datautils.getAccelFromMercalliIntensity(intensity);
+exports.readAllMagnitudeAbove = function(mmi, lastvalue) {
   let WHERE_CLAUSE ="";
   if (typeof lastvalue !== 'undefined')
-    WHERE_CLAUSE=" WHERE (d_accel, time_start_ms) >= ("+min_accel+", "+lastvalue+" ";
+    WHERE_CLAUSE=" WHERE (mmi, time_start_ms) >= ("+mmi+", "+lastvalue+" ";
   else
-    WHERE_CLAUSE=" WHERE d_accel >= "+min_accel+" ";
+    WHERE_CLAUSE=" WHERE mmi >= "+mmi+" ";
   return exports.connectDB()
   .then(() => {
     return new Promise((resolve, reject) => {
@@ -136,7 +135,7 @@ exports.readAllMagnitudeAbove = function(intensity, lastvalue) {
           event.accel_z      =row.accel_z;   
           event.accel        =row.accel;
           event.stddev_abs   =row.stddev_abs;
-          event.intensity    =datautils.getMercalliIntensity(event.d_accel);
+          event.mmi          =row.mmi;
           eventList.push(event);
         }
       },
@@ -178,7 +177,7 @@ exports.readAllSinceTime = function(datetime_h)
           event.accel_z      =row.accel_z;   
           event.accel        =row.accel;
           event.stddev_abs   =row.stddev_abs;
-          event.intensity    =datautils.getMercalliIntensity(event.d_accel);
+          event.mmi          =mmi;
           eventList.push(event);
         }
       },

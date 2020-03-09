@@ -5,13 +5,13 @@
 <p></p>
 <h3>Events List</h3> 
   <p>Registered events in this portal. Select below for filter options.</p>
-  <p><strong>Intensity:</strong>
-    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/8">8+</a>
-    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/7">7+</a>
-    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/6">6+</a>
-    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/5">5+</a>
-    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/6">4+</a>
-    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/intensity/3">3+</a>
+  <p><strong>MMI:</strong>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/mmi/8">8+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/mmi/7">7+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/mmi/6">6+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/mmi/5">5+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/mmi/6">4+</a>
+    <a class="btn btn-light btn-outline-dark btn-sm" href="/events/mmi/3">3+</a>
     <a class="btn btn-light btn-outline-dark btn-sm" href="/events">All</a>
   </p>
   <p><strong>Time:</strong>
@@ -29,7 +29,7 @@
         <th scope="col">Time <br/>(UTC)</th>
         <th scope="col">Duration <br/>(ms)</th>
         <th scope="col">dAcceleration <br/>(g) (max)</th>
-        <th scope="col">Intensity<br/>(Mercalli)</th>
+        <th scope="col">MMI</th>
         <th scope="col">Source <br/>(sensor id)</th>
       </tr>
     </thead>
@@ -53,13 +53,19 @@
       +intensity_color[1]+","
       +intensity_color[2]+","
       +intensity_color[3]+")";
+
+    var mmi='-';
+    if (typeof event.mmi !== 'undefined')
+      mmi=event.mmi.toFixed(1);
+
+
   %>  
 
     <tr style="background-color: <%= intensity_colorSTR %>;">
       <th scope="row"><%= dateEventStr %></th>
       <td><%=( event.time_end_ms - event.time_start_ms ) %></td>
       <td><%= event.d_accel %></td>
-      <td><%= event.intensity %></td>
+      <td><%= mmi %></td>
       <td><span class="badge badge-pill badge-dark"><%= event.sensorkey %></span></td>
     </tr>
 

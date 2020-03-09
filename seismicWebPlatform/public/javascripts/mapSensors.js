@@ -55,13 +55,16 @@ var MAX_SENSOR_EVENT_MAP_SIZE = 1024;
 
 function displayEventAlert(eventData) {
   let time = new Date(eventData.time_start_ms);
+  let mmi = '-';
+  if (typeof eventData.mmi !== 'undefined')
+    mmi=eventData.mmi.toFixed(1);
   if (eventData.time_end_ms === 0) {
     document.getElementById("alert_event").innerHTML 
-      = "Recorded event started at "+time.toISOString()+" with acceleration "+eventData.d_accel+"g for sensor "+eventData.sensorid;
+      = "Recorded event started at "+time.toISOString()+" with MMI "+mmi+" for sensor "+eventData.sensorid;
   }
   else {
     document.getElementById("alert_event").innerHTML 
-      = "Recorded event at "+time.toISOString()+" lasted "+(eventData.time_end_ms-eventData.time_start_ms)+" (ms) with max acceleration "+eventData.d_accel+"g for sensor "+eventData.sensorid;
+      = "Recorded event at "+time.toISOString()+" lasted "+(eventData.time_end_ms-eventData.time_start_ms)+" (ms) with MMI "+mmi+" for sensor "+eventData.sensorid;
   }
 }
 

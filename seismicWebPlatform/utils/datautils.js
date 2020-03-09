@@ -7,7 +7,19 @@ module.exports = {
 
   //return mercalli intensity scale
   getMercalliIntensity : function (accel_abs) {
+  	let c1, c2;
+  	if (accel_abs<0.07) {
+  		c1=2.65;
+  		c2=1.39;
+  	}
+  	else {
+  		c1=-1.91;
+  		c2=4.09;
 
+  	}
+  	return (c1+c2*Math.log(accel_abs));
+
+  	/*
   	if (accel_abs > 3.0 ) {
   		return 12;
   	}
@@ -43,6 +55,7 @@ module.exports = {
   	}
   	else
   		return 1;
+  	*/
   },
 
   //return mercalli intensity scale
