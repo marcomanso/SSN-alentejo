@@ -82,7 +82,7 @@ var sensorEventMap = new Map();  // stores info about event
 //return mercalli intensity scale
 function getMercalliIntensity (max_accel) {
   let c1, c2;
-  if (accel_abs<0.07) {
+  if (max_accel<0.07) {
     c1=2.65;
     c2=1.39;
   }
@@ -371,7 +371,7 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   */
 
   eventData.sensorid=sensorid;
-  eventData.mmi=getMercalliIntensity(eventData.accel);
+  eventData.mmi=getMercalliIntensity(eventData.d_accel);
 
   if (eventData.time_end_ms!==0)  { //event ended -> WRITE
     let data = eventData;
