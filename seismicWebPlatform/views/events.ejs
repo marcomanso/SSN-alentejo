@@ -28,8 +28,8 @@
       <tr class="table-active">
         <th scope="col">Time <br/>(UTC)</th>
         <th scope="col">Duration <br/>(ms)</th>
-        <th scope="col">PGA <br/>(%g, in cm/s^2)</th>
         <th scope="col">MMI</th>
+        <th scope="col">PGA <br/>(%g, in cm/s^2)</th>
         <th scope="col">Source <br/>(sensor id)</th>
       </tr>
     </thead>
@@ -47,7 +47,7 @@
     time_last_record=event.time_start_ms;
 
     var dateEventStr = new Date(event.time_start_ms).toISOString();
-    var intensity_color = datautils.getColorMercalliIntensity(event.intensity);
+    var intensity_color = datautils.getColorMercalliIntensity(event.mmi);
     var intensity_colorSTR = 
       "rgba("+intensity_color[0]+","
       +intensity_color[1]+","
@@ -67,8 +67,8 @@
     <tr style="background-color: <%= intensity_colorSTR %>;">
       <th scope="row"><%= dateEventStr %></th>
       <td><%=( event.time_end_ms - event.time_start_ms ) %></td>
-      <td><%= pga %></td>
       <td><%= mmi %></td>
+      <td><%= pga %></td>
       <td><span class="badge badge-pill badge-dark"><%= event.sensorkey %></span></td>
     </tr>
 
