@@ -17,7 +17,7 @@ module.exports = {
   		c2=4.09;
 
   	}
-  	return (c1+c2*Math.log(accel_abs));
+  	return (c1+c2*Math.log10(accel_abs));
 
   	/*
   	if (accel_abs > 3.0 ) {

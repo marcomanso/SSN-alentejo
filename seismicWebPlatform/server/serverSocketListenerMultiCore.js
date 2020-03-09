@@ -91,7 +91,7 @@ function getMercalliIntensity (accel_abs) {
     c2=4.09;
 
   }
-  return (c1+c2*Math.log(accel_abs));
+  return (c1+c2*Math.log10(accel_abs));
 }
 
 // function that continuouly adds sensor measurements
@@ -371,7 +371,7 @@ function mqttPublishSensorEventMessage(sensorid, eventData) {
   */
 
   eventData.sensorid=sensorid;
-  eventData.mmi=getMercalliIntensity(accel);
+  eventData.mmi=getMercalliIntensity(eventData.accel);
 
   if (eventData.time_end_ms!==0)  { //event ended -> WRITE
     let data = eventData;
