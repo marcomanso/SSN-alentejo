@@ -136,7 +136,7 @@ function processMeasurementValues(sensorid) {
       if (typeof calibr_sdev === 'undefined') {
         sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
         sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z]);
-        writeLogAndConsole("log_", sensorid+" first calibration to: "+average_x+" "+average_y+" "+average_z);
+        writeLogAndConsole("log_", sensorid+" first calibration at time: "+date.getTime()+" x: "+average_x+" y: "+average_y+" z: "+average_z);
       }
       else {
         let calib_sdev_abs=Math.hypot(
@@ -147,7 +147,7 @@ function processMeasurementValues(sensorid) {
         if (sdev_abs<calib_sdev_abs) {
           sensorCalibrationMap.set(sensorid, [average_x, average_y, average_z]);
           sensorCalibrationStdDevMap.set(sensorid, [sdev_x,sdev_y,sdev_z]);
-          writeLogAndConsole("log_", sensorid+" updated calibration to: "+average_x+" "+average_y+" "+average_z+" std.dev="+sdev_abs);
+          writeLogAndConsole("log_", sensorid+" updated calibration at time "+date.getTime()+" x: "+average_x+" y: "+average_y+" z: "+average_z+" std_dev "+sdev_abs);
         }
         else {
           //check if is event
@@ -174,13 +174,13 @@ function processMeasurementValues(sensorid) {
               sensorEventMap.set(sensorid, eventData);
               writeLogAndConsole("log_", 
                 "START EVENT time: " +sensorEventMap.get(sensorid).time_update_ms
-                +", sensorid: "+sensorid
-                +", d_accel:"  +sensorEventMap.get(sensorid).d_accel
-                +", d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
-                +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
-                +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
-                +", (accel:"  +sensorEventMap.get(sensorid).accel
-                +"), stddedv: " +sensorEventMap.get(sensorid).stddev_abs);
+                +" sensorid: "+sensorid
+                +" d_accel: "  +sensorEventMap.get(sensorid).d_accel
+                +" d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
+                +" d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
+                +" d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
+                +" accel: "  +sensorEventMap.get(sensorid).accel
+                +" stddedv: " +sensorEventMap.get(sensorid).stddev_abs);
               mqttPublishSensorEventMessage(sensorid, sensorEventMap.get(sensorid));             
             }
             //entry exists? check what to update
@@ -214,13 +214,13 @@ function processMeasurementValues(sensorid) {
               sensorEventMap.get(sensorid).time_end_ms=time_now-DEF_EVENT_RECORD_DURATION_MS;
               writeLogAndConsole("log_", 
                 "STOP EVENT duration: " +(sensorEventMap.get(sensorid).time_end_ms-sensorEventMap.get(sensorid).time_start_ms)
-                +", sensorid: "+sensorid
-                +", d_accel:"  +sensorEventMap.get(sensorid).d_accel
-                +", d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
-                +", d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
-                +", d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
-                +", (accel:"  +sensorEventMap.get(sensorid).accel
-                +"), stddedv: " +sensorEventMap.get(sensorid).stddev_abs);
+                +" sensorid: "+sensorid
+                +" d_accel: "  +sensorEventMap.get(sensorid).d_accel
+                +" d_a_x: "   +sensorEventMap.get(sensorid).d_accel_x
+                +" d_a_y: "   +sensorEventMap.get(sensorid).d_accel_y
+                +" d_a_z: "   +sensorEventMap.get(sensorid).d_accel_z
+                +" accel: "  +sensorEventMap.get(sensorid).accel
+                +" stddedv: " +sensorEventMap.get(sensorid).stddev_abs);
 
               let eventData = sensorEventMap.get(sensorid);
               mqttPublishSensorEventMessage(sensorid, eventData);
