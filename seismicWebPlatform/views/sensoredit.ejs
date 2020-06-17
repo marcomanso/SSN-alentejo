@@ -30,35 +30,35 @@
   <div class="form-group">
     <label class="control-label col-xs-3" for="name">Name: </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='name' name='name' placeholder="name" value='<%= sensor ? sensor.name : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='name' name='name' placeholder="name" value='<%= sensor ? sensor.name : "" %>' />
     </div>
   </div>
     
   <div class="form-group">
     <label class="control-label col-xs-3" for="latitude">Latitude: </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='latitude' name='latitude' placeholder="latitude" value='<%= sensor ? sensor.latitude : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='latitude' name='latitude' placeholder="latitude" value='<%= sensor ? sensor.latitude : "" %>' />
     </div>
   </div>
 
   <div class="form-group">
     <label class="control-label col-xs-3" for="longitude">Longitude: </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='longitude' name='longitude' placeholder="longitude" value='<%= sensor ? sensor.longitude : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='longitude' name='longitude' placeholder="longitude" value='<%= sensor ? sensor.longitude : "" %>' />
     </div>
   </div>
 
   <div class="form-group">
     <label class="control-label col-xs-3" for="elevation">Elevation: </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='elevation' name='elevation' placeholder="elevation" value='<%= sensor ? sensor.elevation : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='elevation' name='elevation' placeholder="elevation" value='<%= sensor ? sensor.elevation : "" %>' />
     </div>
   </div>
 
   <div class="form-group">
     <label class="control-label col-xs-3" for="sensor_URL">Sensor URL: </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='sensor_URL' name='sensor_URL' placeholder="URL of sensor" value='<%= sensor ? sensor.sensor_URL : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='sensor_URL' name='sensor_URL' placeholder="URL of sensor" value='<%= sensor ? sensor.sensor_URL : "" %>' />
       <span class="help-block">Insert a valid URL pointing to the data files stored by the sensor.</span>
     </div>
   </div>
@@ -66,7 +66,7 @@
     <div class="form-group">
       <label class="control-label col-xs-3" for="data_URL">Data URL: </label>
       <div class="col-xs-9">
-        <input type='text' class="form-control" id='data_URL' name='data_URL' placeholder="Web Socket URL of sensor data" value='<%= sensor ? sensor.data_URL : "" %>' />
+        <input type='text' readonly='readonly' class="form-control" id='data_URL' name='data_URL' placeholder="Web Socket URL of sensor data" value='<%= sensor ? sensor.data_URL : "" %>' />
         <span class="help-block">Insert a valid WebSocket URL pointing to the live connection to the sensor.</span>
       </div>
     </div>
@@ -74,14 +74,14 @@
   <div class="form-group">
     <label class="control-label col-xs-3" for="model">Model: </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='model' name='model' placeholder="model" value='<%= sensor ? sensor.model : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='model' name='model' placeholder="model" value='<%= sensor ? sensor.model : "" %>' />
     </div>
   </div>
 
   <div class="form-group">
     <label class="control-label col-xs-3" for="model_URL">Model (link): </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='model_URL' name='model_URL' placeholder="model URL" value='<%= sensor ? sensor.model_URL : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='model_URL' name='model_URL' placeholder="model URL" value='<%= sensor ? sensor.model_URL : "" %>' />
       <span class="help-block">Insert a valid URL providing information about the sensor.</span>
     </div>
   </div>
@@ -89,20 +89,20 @@
   <div class="form-group">
     <label class="control-label col-xs-3" for="timecreated">Time Created: </label>
     <div class="col-xs-9">
-      <input type='text' class="form-control" id='timecreated' name='timecreated' placeholder="time created" value='<%= sensor ? sensor.timecreated : "" %>' />
+      <input type='text' readonly='readonly' class="form-control" id='timecreated' name='timecreated' placeholder="time created" value='<%= sensor ? sensor.timecreated : "" %>' />
     </div>
   </div>
 
   <div class="form-group">
     <label class="control-label col-xs-3" for="description">Description: </label>
     <div class="col-xs-9">
-      <textarea class="form-control" rows=5 cols=40 id='description' name='description' placeholder="description"><%= sensor ? sensor.description : "" %></textarea>
+      <textarea readonly='readonly' class="form-control" rows=5 cols=40 id='description' name='description' placeholder="description"><%= sensor ? sensor.description : "" %></textarea>
     </div>
   </div>
 
   <div class="btn-group col-12" role="group" aria-label="Cancel/Submit">
-    <a class="btn bg-light" href="/sensors/view/<%= sensorkey %>" role="button">Cancel</a>   
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <a class="btn bg-light" href="/sensors/view/<%= sensorkey %>" role="button">Close</a>   
+<!--    <button type="submit" class="btn btn-primary">Submit</button> -->
   </div>
 
 </form>
