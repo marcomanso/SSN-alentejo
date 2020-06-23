@@ -48,6 +48,8 @@ var sensorEventMap = new Map();
 var sensorIsMovingMap = new Map();
 var MAX_SENSOR_EVENT_MAP_SIZE = 1024;
 
+var SSN_MODEL = "SSN";
+
 /* 
  * FUNCTIONS 
  *
@@ -70,10 +72,11 @@ function displayEventAlert(eventData) {
 
 //
 
-function addSensorFieldsToMap(sensorid, name, latitude, longitude, elevation, sensor_URL, data_URL, last_update_sec) {
+function addSensorFieldsToMap(sensorid, name, model, latitude, longitude, elevation, sensor_URL, data_URL, last_update_sec) {
   let sensor = {
     "sensorid":   sensorid,
     "name":       name, 
+    "model":      model, 
     "latitude":   latitude,
     "longitude":  longitude,
     "elevation":  elevation,
@@ -90,6 +93,7 @@ function addSensorToMap(sensor) {
   let s = {
     "sensorid":   sensor.sensorid,
     "name":       sensor.name, 
+    "model":      sensor.model, 
     "latitude":   sensor.latitude,
     "longitude":  sensor.longitude,
     "elevation":  sensor.elevation,
@@ -110,19 +114,27 @@ function addMarkerToMap(sensor) {
   //radius proportional to zoom ?
   //console.log("--zoom is: "+mymap.getZoom());
 
-  var options = { 
-    radius:     CIRCLE_RADIUS_DEFAULT, 
-    stroke:     true,
-    color:      STATUS_COLOR_UNKNOWN,
-    fill:       true, 
-    fillColor:  STATUS_COLOR_UNKNOWN,
-    fillOpacity: 0.3 };
-    // color : #aaaaaa
-    // weight: 3
-    // opacity: 1.0
-    // fill:  true
-    // fillColor: #aaaaaa
-    // fillOpacity: 1.0
+  console.log(sensor.model)
+  
+    var options = { 
+      radius:     CIRCLE_RADIUS_DEFAULT, 
+      stroke:     true,
+      color:      STATUS_COLOR_UNKNOWN,
+      fill:       true, 
+      fillColor:  STATUS_COLOR_UNKNOWN,
+      fillOpacity: 0.3 };
+      // color : #aaaaaa
+      // weight: 3
+      // opacity: 1.0
+      // fill:  true
+      // fillColor: #aaaaaa
+      // fillOpacity: 1.0
+
+  if ( sensor.model.indexOf(SSN_MODEL) === -1 ) {
+    options.color=STATUS_COLOR_NOT_SSN;
+    options.fillColor=STATUS_COLOR_NOT_SSN;
+  }
+
   var marker = new L.circleMarker([sensor.latitude, sensor.longitude, sensor.elevation], options)
   .addTo(mymap)
   .bindPopup(

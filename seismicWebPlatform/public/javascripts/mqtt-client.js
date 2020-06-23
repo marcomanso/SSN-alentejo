@@ -6,6 +6,7 @@ options = {
   onSuccess: mqtt_onConnect, 
   onFailure: mqtt_onFail,
   timeout: 5,
+  useSSL: false,
   cleanSession: true,
   reconnect: true
 };

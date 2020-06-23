@@ -45,33 +45,42 @@
 var sensorMap[];
 var sensorMarkerMap[];
 
+var SSN_MODEL = "SSN";
+
 function addSensorToMap() {
   
 }
 
 function addMarker(sensorkey, name, model, latitude, longitude) {
-  var options = { 
-    radius: CIRCLE_RADIUS_DEFAULT, 
-    fill: true, 
-    fillColor: "#aaaaaa",
-    fillOpacity: 0.5 };
-    // color : #aaaaaa
-    // weight: 3
-    // opacity: 1.0
-    // fill:  true
-    // fillColor: #aaaaaa
-    // fillOpacity: 1.0
-  var marker = new L.circleMarker([latitude, longitude], options)
-  .addTo(mymap)
-  .bindPopup(
-    "<span STYLE='font-size: 12pt'><b>"+name
-    +"</b></span><br/>\
-    <b>Location:</b> LatLng ("+latitude+","+longitude
-    +")<br/><b>Model: </b>"+model
-    +"<br/><a href='/sensors/view/"+sensorkey
-    +"' target='_top'> Click for details</a></br>");
 
-  sensorMarkerMap[sensorkey]=marker;
+  if ( model.indexOf(SSN_MODEL) !== -1 ) {
+    var options = { 
+      radius: CIRCLE_RADIUS_DEFAULT, 
+      fill: true, 
+      fillColor: "#aaaaaa",
+      fillOpacity: 0.5 };
+      // color : #aaaaaa
+      // weight: 3
+      // opacity: 1.0
+      // fill:  true
+      // fillColor: #aaaaaa
+      // fillOpacity: 1.0
+    var marker = new L.circleMarker([latitude, longitude], options)
+        .addTo(mymap)
+        .bindPopup(
+          "<span STYLE='font-size: 12pt'><b>"+name
+          +"</b></span><br/>\
+          <b>Location:</b> LatLng ("+latitude+","+longitude
+          +")<br/><b>Model: </b>"+model
+          +"<br/><a href='/sensors/view/"+sensorkey
+          +"' target='_top'> Click for details</a></br>");
+    sensorMarkerMap[sensorkey]=marker;
+  }
+  else {
+    var marker = new L.marker([latitude, longitude])
+        .addTo(mymap);
+    sensorMarkerMap[sensorkey]=marker;
+  }
 
 }
 

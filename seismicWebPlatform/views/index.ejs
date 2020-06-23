@@ -33,6 +33,7 @@
   var STATUS_COLOR_ACTIVE   = "#33bb33";
   var STATUS_COLOR_INACTIVE = "#bb3333";
   var STATUS_COLOR_MOVING   = "#ffa500";
+  var STATUS_COLOR_NOT_SSN  = "#777777";
 
   //var MQTT_HOSTNAME = "localhost"
   //var MQTT_HOSTNAME = "templo.ict.uevora.pt"
@@ -74,6 +75,11 @@
   })
   .addTo(mymap);
 
+  mymap.on('click', function(ev){
+    var latlng = mymap.mouseEventToLatLng(ev.originalEvent);
+    console.log(latlng.lat + ' , ' + latlng.lng);
+  });
+
   //while creating page: parse sensors and build 
   //first sensor map to show (info is from DB, not live)
 
@@ -85,6 +91,7 @@
       addSensorFieldsToMap(
         '<%=sensor.sensorkey%>', 
         '<%=sensor.name%>',
+        '<%=sensor.model%>',
         <%=sensor.latitude%>,
         <%=sensor.longitude%>,
         <%=sensor.elevation%>,
