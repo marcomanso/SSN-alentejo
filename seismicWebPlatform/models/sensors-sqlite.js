@@ -12,7 +12,8 @@ var db; // store the database connection here
 exports.connectDB = function() {
   return new Promise((resolve, reject) => {
     if (db) return resolve(db);
-    var dbfile = process.env.SQLITE_FILE || "db/db.sqlite3";
+    var dbfile = process.env.SENSOR_SQLITE_FILE || "sensordb/sensorDB.sqlite3";
+    //var dbfile = process.env.SQLITE_FILE || "db/db.sqlite3";
     db = new sqlite3.Database(dbfile, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, err => {
       if (err) 
         reject(err);

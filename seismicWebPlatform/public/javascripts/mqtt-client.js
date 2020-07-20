@@ -59,6 +59,8 @@ function mqtt_onConnectionLost(responseObject) {
 // called when a message arrives
 function mqtt_onMessageArrived(message) {
 
+  //console.log("mqtt_onMessageArrived:"+message.payloadString);
+
   topic = message.topic;
   msg   = message.payloadString;
   newSensorMessage(topic, msg);

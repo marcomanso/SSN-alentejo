@@ -89,6 +89,9 @@ function addSensorFieldsToMap(sensorid, name, model, latitude, longitude, elevat
 }
 
 function addSensorToMap(sensor) {
+
+  //console.log("addSensorToMap(sensor)"+sensor);
+
   //OK to overwrite if exists
   let s = {
     "sensorid":   sensor.sensorid,
@@ -114,21 +117,21 @@ function addMarkerToMap(sensor) {
   //radius proportional to zoom ?
   //console.log("--zoom is: "+mymap.getZoom());
 
-  console.log(sensor.model)
+  //console.log(sensor.model)
   
-    var options = { 
-      radius:     CIRCLE_RADIUS_DEFAULT, 
-      stroke:     true,
-      color:      STATUS_COLOR_UNKNOWN,
-      fill:       true, 
-      fillColor:  STATUS_COLOR_UNKNOWN,
-      fillOpacity: 0.3 };
-      // color : #aaaaaa
-      // weight: 3
-      // opacity: 1.0
-      // fill:  true
-      // fillColor: #aaaaaa
-      // fillOpacity: 1.0
+  var options = { 
+    radius:     CIRCLE_RADIUS_DEFAULT, 
+    stroke:     true,
+    color:      STATUS_COLOR_UNKNOWN,
+    fill:       true, 
+    fillColor:  STATUS_COLOR_UNKNOWN,
+    fillOpacity: 0.3 };
+    // color : #aaaaaa
+    // weight: 3
+    // opacity: 1.0
+    // fill:  true
+    // fillColor: #aaaaaa
+    // fillOpacity: 1.0
 
   if ( sensor.model.indexOf(SSN_MODEL) === -1 ) {
     options.color=STATUS_COLOR_NOT_SSN;
@@ -137,6 +140,7 @@ function addMarkerToMap(sensor) {
 
   var marker = new L.circleMarker([sensor.latitude, sensor.longitude, sensor.elevation], options)
   .addTo(mymap)
+  .bindTooltip(sensor.name, {direction: 'bottom', permanent: true, opacity: 0.3}).openTooltip()
   .bindPopup(
     "<span STYLE='font-size: 12pt'><b>"+sensor.name
     +"</b></span><span class=\"badge badge-pill badge-dark\">"+sensor.sensorid
@@ -147,6 +151,7 @@ function addMarkerToMap(sensor) {
     +"<br/>URL: <a href='"+sensor.sensor_URL+"/sensors/view/"+sensor.sensorid
     +"' target='_top'>"+sensor.sensor_URL+"</a><br/>");
   sensorMarkerMap.set(sensor.sensorid, marker);
+
 }
 
 function sensorTimerProcessing() {
@@ -174,28 +179,41 @@ function isConnectedSensor(sensor) {
 
 function setSensorAsInactive(sensorid) {
   marker=sensorMarkerMap.get(sensorid);
-  marker.setStyle({
-    color: STATUS_COLOR_INACTIVE,
-    fillColor: STATUS_COLOR_INACTIVE});
+  if (typeof variable !== 'undefined') {
+    marker.setStyle({
+      color: STATUS_COLOR_INACTIVE,
+      fillColor: STATUS_COLOR_INACTIVE});
+  }
 }
 
 function setSensorAsActive(sensorid) {
   if (!sensorIsMoving(sensorid)) {
+
+    //console.log("setSensorAsActive: check sensorMarkerMap.get(sensorid)="+sensorMarkerMap.get(sensorid))
+
     marker=sensorMarkerMap.get(sensorid);
-    marker.setStyle({
-      color: STATUS_COLOR_ACTIVE,
-      fillColor: STATUS_COLOR_ACTIVE});  
+    if (typeof marker !== 'undefined') {
+      marker.setStyle({
+        color: STATUS_COLOR_ACTIVE,
+        fillColor: STATUS_COLOR_ACTIVE});  
+    }
   }
 }
 
 function setSensorAsMoving(sensorid, accel_value) {
   marker=sensorMarkerMap.get(sensorid);
-  marker.setStyle({
-    color: STATUS_COLOR_MOVING,
-    fillColor: STATUS_COLOR_MOVING});  
+  if (typeof variable !== 'undefined') {
+    marker.setStyle({
+      color: STATUS_COLOR_MOVING,
+      fillColor: STATUS_COLOR_MOVING}); 
+  } 
 }
 
 function sensorIsMoving(sensorid) {
+
+  //console.log("sensorIsMoving for "+sensorid);
+  //console.log("sensorIsMovingMap.get(sensorid) = "+sensorIsMovingMap.get(sensorid));
+
   if (typeof sensorIsMovingMap.get(sensorid) !== 'undefined')
     return sensorIsMovingMap.get(sensorid);
   return false;
