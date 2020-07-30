@@ -109,7 +109,7 @@ exports.readAll = function() {
     .then(() => {
     return new Promise((resolve, reject) => {
       var sensorList = [];
-      db.each("SELECT * FROM sensors", (err, row) => {
+      db.each("SELECT * FROM sensors ORDER BY name ASC", (err, row) => {
         if (err) 
           reject(err);
         else {
@@ -132,7 +132,7 @@ exports.keylist = function() {
     .then(() => {
     return new Promise((resolve, reject) => {
       var keyz = [];
-      db.each("SELECT sensorkey FROM sensors", (err, row) => {
+      db.each("SELECT sensorkey FROM sensors ORDER BY name ASC", (err, row) => {
         if (err) 
           reject(err);
         else 

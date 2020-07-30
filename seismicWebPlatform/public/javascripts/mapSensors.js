@@ -118,7 +118,7 @@ function addMarkerToMap(sensor) {
   //console.log("--zoom is: "+mymap.getZoom());
 
   //console.log(sensor.model)
-  
+
   var options = { 
     radius:     CIRCLE_RADIUS_DEFAULT, 
     stroke:     true,
@@ -133,7 +133,8 @@ function addMarkerToMap(sensor) {
     // fillColor: #aaaaaa
     // fillOpacity: 1.0
 
-  if ( sensor.model.indexOf(SSN_MODEL) === -1 ) {
+  if ( typeof sensor.model !== 'undefined'
+    && sensor.model.indexOf(SSN_MODEL) === -1 ) {
     options.color=STATUS_COLOR_NOT_SSN;
     options.fillColor=STATUS_COLOR_NOT_SSN;
   }
@@ -267,8 +268,8 @@ function newSensorInfoMessage(sensorinfo_msg) {
     if ( sensor.latitude  != sensorMarker.getLatLng().lat 
       || sensor.longitude != sensorMarker.getLatLng().lng
       || sensor.elevation != sensorMarker.getLatLng().alt ) {
-    console.log("-- updated location for sensor: "+sensor.sensorid);
-    sensorMarker.setLatLng([sensor.latitude, sensor.longitude, sensor.altitude]);      
+      console.log("-- updated location for sensor: "+sensor.sensorid);
+      sensorMarker.setLatLng([sensor.latitude, sensor.longitude, sensor.altitude]);      
     }
   }
   setSensorAsActive(sensor.sensorid);

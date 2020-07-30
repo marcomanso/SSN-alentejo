@@ -12,8 +12,8 @@
     <p><strong>Sensor URL: </strong><a target="_blank" href="<%= sensor.sensor_URL %>/sensors/view/<%= sensor.sensorkey %>"><%= sensor.sensor_URL %> <span class="glyphicon glyphicon-new-window"></span></a></p>
     <p><strong>Sensor WS: </strong><%= sensor.data_URL %></p>
     <p>
-      <a class="btn btn-danger" href="/sensors/live/<%= sensor.sensorkey %>">LIVE data</a> 
-      <a class="btn btn-primary" href="/sensors/datafiles/<%= sensor.sensorkey %>">Datafiles</a> 
+      <a class="btn btn-danger" href="<%= sensor.sensor_URL %>/sensors/live/<%= sensor.sensorkey %>">LIVE data</a> 
+      <a class="btn btn-primary" href="<%= sensor.sensor_URL %>/sensors/datafiles/<%= sensor.sensorkey %>">Datafiles</a> 
     </p>
     <div id="mapidsmall"></div>
   </div>

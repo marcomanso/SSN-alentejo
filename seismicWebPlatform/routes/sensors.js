@@ -1,10 +1,10 @@
-var router  = require('express').Router();
-var sensors = require('../models/sensors-sqlite');
-var scrapeUtils   = require('../utils/scrape');
-var htmlUtils = require('../utils/utils');
+var   router  = require('express').Router();
+var   sensors = require('../models/sensors-sqlite');
+var   scrapeUtils   = require('../utils/scrape');
+var   htmlUtils = require('../utils/utils');
 
 const http = require('http');
-var debug = require('debug')('seismic:sensors');
+var   debug = require('debug')('seismic:sensors');
 
 var sensorFilesDir = (process.env.SENSOR_DATA_FILE_DIR || 'data');
 
@@ -294,14 +294,20 @@ router.get('/live/:key', (req, res, next) => {
 readDirsAndFiles = function (res, sensor, path, year, month, day, next) {
 
   var files = [];
+  var fileSizeMB = [];
   var directories = [];
   
   allFiles = fs.readdirSync(path);
 
   for (f of allFiles) {
     if (f.indexOf('.') !== 0) {
-      if (f.endsWith('.txt') || f.endsWith('.log') || f.endsWith('.json') || f.endsWith('.zip') || f.endsWith('.gz') || f.endsWith('.tgz'))
+      if (f.endsWith('.txt') || f.endsWith('.log') || f.endsWith('.json') || f.endsWith('.zip') || f.endsWith('.gz') || f.endsWith('.tgz')) {        
         files.push(f);
+        
+        const stats = fs.statSync(path+'/'+f);
+        fileSizeMB.push(parseInt(stats.size/1000000.0, 10));
+
+      }
       else
         directories.push(f);
     }
@@ -316,6 +322,7 @@ readDirsAndFiles = function (res, sensor, path, year, month, day, next) {
     day: day,
     sensorFilesDir: sensorFilesDir,
     files: files,
+    fileSizeMB: fileSizeMB,
     //datafile: data,
     breadcrumbs: [ { href: '/', text: 'Home' }, 
                   { active: true, text: sensor.name+" Files" } ]
