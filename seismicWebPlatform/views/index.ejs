@@ -75,6 +75,8 @@
   })
   .addTo(mymap);
 
+  L.control.scale().addTo(mymap);
+
   mymap.on('click', function(ev){
     var latlng = mymap.mouseEventToLatLng(ev.originalEvent);
     console.log(latlng.lat + ' , ' + latlng.lng);
