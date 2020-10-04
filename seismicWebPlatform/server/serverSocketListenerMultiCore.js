@@ -719,7 +719,7 @@ if (cluster.isMaster) {
                               time_micro:     Number(messageArray[1]),
                               accel_x:        Number(messageArray[2])/sensor_conversion_range,
                               accel_y:        Number(messageArray[3])/sensor_conversion_range,
-                              accel_z:        Number(messageArray[4])/sensor_conversion_range
+                              accel_z:        Number(messageArray[4])/sensor_conversion_range,
                               cpu_time_ms:    Number(messageArray[5])
                             };                            
                           }
