@@ -710,15 +710,29 @@ if (cluster.isMaster) {
                           writeLogAndConsole("log_", "Error in message contents - number of fields is :"+messageArray.length);
                         }
                         else {
-                          var sensor_conversion_range = sensorInfoMap[sensorId].conversion_range; 
-                          let measurement = {
-                            sensor_id:      sensorId,
-                            time_epoch_sec: Number(messageArray[0]),
-                            time_micro:     Number(messageArray[1]),
-                            accel_x:        Number(messageArray[2])/sensor_conversion_range,
-                            accel_y:        Number(messageArray[3])/sensor_conversion_range,
-                            accel_z:        Number(messageArray[4])/sensor_conversion_range
-                          };
+                          var sensor_conversion_range = sensorInfoMap[sensorId].conversion_range;
+                          let measurement;
+                          if (messageArray.length==6) {
+                            measurement = {
+                              sensor_id:      sensorId,
+                              time_epoch_sec: Number(messageArray[0]),
+                              time_micro:     Number(messageArray[1]),
+                              accel_x:        Number(messageArray[2])/sensor_conversion_range,
+                              accel_y:        Number(messageArray[3])/sensor_conversion_range,
+                              accel_z:        Number(messageArray[4])/sensor_conversion_range
+                              cpu_time_ms:    Number(messageArray[5])
+                            };                            
+                          }
+                          else {
+                            measurement = {
+                              sensor_id:      sensorId,
+                              time_epoch_sec: Number(messageArray[0]),
+                              time_micro:     Number(messageArray[1]),
+                              accel_x:        Number(messageArray[2])/sensor_conversion_range,
+                              accel_y:        Number(messageArray[3])/sensor_conversion_range,
+                              accel_z:        Number(messageArray[4])/sensor_conversion_range
+                            };                            
+                          }
                           writeSensorData(sensorId, JSON.stringify(measurement));
                           addMeasurementValueToQueue(sensorId, 
                             measurement['accel_x'],
